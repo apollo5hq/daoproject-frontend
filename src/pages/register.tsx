@@ -1,7 +1,6 @@
 import React from "react";
-// import { useFormik } from 'formik';
-import { Formik, Form, Field, useFormik } from "formik";
-import { Checkbox, CheckboxWithLabel, TextField } from "formik-mui";
+import { Formik, Form, Field } from "formik";
+import { CheckboxWithLabel, TextField } from "formik-mui";
 import * as yup from "yup";
 import { Button, Container, Paper, Grid, Typography } from "@mui/material";
 
@@ -17,17 +16,6 @@ const validationSchema = yup.object({
 });
 
 const WithMaterialUI = () => {
-  //   const formik = useFormik({
-  //     initialValues: {
-  //       email: 'foobar@example.com',
-  //       password: 'foobar',
-  //     },
-  //     validationSchema: validationSchema,
-  //     onSubmit: (values) => {
-  //       alert(JSON.stringify(values, null, 2));
-  //     },
-  //   });
-
   return (
     <Container
       sx={(theme) => ({
