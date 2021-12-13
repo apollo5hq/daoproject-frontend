@@ -24,8 +24,7 @@ const WithMaterialUI = () => {
       })}
     >
       <Typography variant="h4" align="center" m={3}>
-        Sign Up
-        <Typography paragraph>One step closer to getting started!</Typography>
+        Log in
       </Typography>
       <Grid container spacing={0} justifyContent="center">
         <Grid item xs={12} sm={6}>
@@ -67,7 +66,7 @@ const WithMaterialUI = () => {
                     component={TextField}
                   />
                   <Button variant="outlined" fullWidth type="submit">
-                    Sign Up
+                    Login
                   </Button>
                 </Form>
               </Formik>
