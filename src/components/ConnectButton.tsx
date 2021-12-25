@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Button, styled } from "@mui/material";
 import { getAccounts, selectNetwork, supportedChains } from "../utils/network";
 import Avatar from "@mui/material/Avatar";
-
-interface WalletState {
-  address: string | null;
-  ens: string | null;
-  avatar: string | null;
-  chainId: string;
-  network: string;
-}
+import { useAppSelector, useAppDispatch } from "../redux/app/hooks";
+import {
+  disconnectWallet,
+  connectWallet,
+  changeAccount,
+  changeNetwork,
+} from "../redux/features/web3/webSlice";
 
 const Container = styled("div")({
   display: "flex",
@@ -26,63 +25,24 @@ const AuthButton = styled(Button)({
 });
 
 export default () => {
-  const defaultState: WalletState = {
-    address: null,
-    ens: null,
-    avatar: null,
-    chainId: "",
-    network: "",
-  };
-  // State of connected wallet and data associated with it
-  const [{ address: userAddress, ens, avatar, chainId, network }, setWallet] =
-    useState<WalletState>(defaultState);
+  const dispatch = useAppDispatch();
+  const {
+    data: { address: userAddress, ens, avatar, chainId, network },
+    error,
+  } = useAppSelector((state) => state.web3);
   // A fancy function to shorten someones wallet address, no need to show the whole thing.
   const shortenAddress = (str: string) => {
     return str.substring(0, 6) + "..." + str.substring(str.length - 4);
   };
 
-  // Function to connect user wallet. Only supports metamask for now
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert("please install MetaMask");
-      return;
-    }
-    try {
-      // App asks user for permission to view metamask accounts
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const network = selectNetwork(window.ethereum.chainId);
-      const accountData = await getAccounts();
-      setWallet({ ...accountData, network });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // This function runs when the user disconnects the account from the app in metamask.
-  const handleAccountsChanged = async () => {
-    if (!window.ethereum || !window.ethereum.selectedAddress) {
-      return setWallet(defaultState);
-    }
-    try {
-      const accountData = await getAccounts();
-      setWallet(({ network }) => {
-        return { ...accountData, network };
-      });
-    } catch (e) {
-      console.log(e);
-    }
+  const handleAccountsChanged = () => {
+    dispatch(changeAccount());
   };
 
-  const handleNetworkChanged = async (chainId: string) => {
-    try {
-      const network = selectNetwork(chainId);
-      const accountData = await getAccounts();
-      setWallet({ ...accountData, chainId, network });
-    } catch (e) {
-      console.log(e);
-    }
+  const handleNetworkChanged = (chainId: string) => {
+    dispatch(changeNetwork(chainId));
   };
-  const disconnectWallet = () => setWallet(defaultState);
 
   // Sets a listener for when the user changes accounts or disconnects account from the app
   useEffect(() => {
@@ -92,7 +52,7 @@ export default () => {
         const network = selectNetwork(window.ethereum.chainId);
         getAccounts()
           .then((data) => {
-            setWallet({ ...data, network });
+            dispatch({ type: "web3/connect", payload: { ...data, network } });
           })
           .catch((e) => {
             console.log(e);
@@ -111,12 +71,18 @@ export default () => {
     }
   }, []);
 
+  if (error) {
+    <div data-testid="noMetamask">
+      Make sure you have metamask installed in your browser
+    </div>;
+  }
+
   // If user not connected show connect button
   if (!userAddress) {
     return (
       <AuthButton
         data-testid="connectButton"
-        onClick={connectWallet}
+        onClick={() => dispatch(connectWallet())}
         variant="outlined"
       >
         Connect
@@ -149,7 +115,7 @@ export default () => {
         <div data-testid="network">{network}</div>
         <AuthButton
           data-testid="disconnectButton"
-          onClick={disconnectWallet}
+          onClick={() => dispatch(disconnectWallet())}
           variant="outlined"
         >
           Disconnect
