@@ -114,7 +114,11 @@ export default () => {
   // If user not connected show connect button
   if (!userAddress) {
     return (
-      <AuthButton onClick={connectWallet} variant="outlined">
+      <AuthButton
+        data-testid="connectButton"
+        onClick={connectWallet}
+        variant="outlined"
+      >
         Connect
       </AuthButton>
     );
@@ -123,7 +127,7 @@ export default () => {
   // If user's metamask is on an unsupported chain show message
   if (!supportedChains.includes(chainId)) {
     return (
-      <div>
+      <div data-testid="wrongChain">
         Unsupported network. Switch your network to either Ethereum Mainnet,
         Ropsten, Rinkeby, Goerli, Kovan, Polygon Mainnet or Mumabi Test Net
       </div>
@@ -133,13 +137,21 @@ export default () => {
   return (
     <Container>
       <div style={{ padding: 5 }}>
-        <UserAvatar alt="userAvatar" src={avatar ? avatar : ""} />
+        <UserAvatar
+          data-testid="avatar"
+          alt="userAvatar"
+          src={avatar ? avatar : ""}
+        />
       </div>
       <div>
-        {ens && <div>{ens}</div>}
-        <div>{shortenAddress(userAddress)}</div>
-        <div>{network}</div>
-        <AuthButton onClick={disconnectWallet} variant="outlined">
+        {ens && <div data-testid="ens">{ens}</div>}
+        <div data-testid="address">{shortenAddress(userAddress)}</div>
+        <div data-testid="network">{network}</div>
+        <AuthButton
+          data-testid="disconnectButton"
+          onClick={disconnectWallet}
+          variant="outlined"
+        >
           Disconnect
         </AuthButton>
       </div>
