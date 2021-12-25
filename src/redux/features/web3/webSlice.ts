@@ -46,6 +46,7 @@ export const connectWallet = createAsyncThunk(
   }
 );
 
+// Handles changing user account
 export const changeAccount = createAsyncThunk(
   "web3/changeAccount",
   async () => {
@@ -63,6 +64,7 @@ export const changeAccount = createAsyncThunk(
   }
 );
 
+// Handles changing the network the user is on
 export const changeNetwork = createAsyncThunk(
   "web3/changeNetwork",
   async (chainId: string) => {
@@ -77,6 +79,7 @@ export const changeNetwork = createAsyncThunk(
   }
 );
 
+// Web3 reducer
 export const web3 = createSlice({
   name: "web3",
   initialState,

@@ -25,6 +25,7 @@ const updatedState = {
   error: false,
 };
 
+// Initial render of app
 test("should return initial state", () => {
   expect(web3reducer(undefined, { type: "" })).toEqual(initialState);
 });

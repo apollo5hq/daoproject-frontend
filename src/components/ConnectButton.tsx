@@ -40,6 +40,7 @@ export default () => {
     dispatch(changeAccount());
   };
 
+  // This runs when the user switch networks in metamask
   const handleNetworkChanged = (chainId: string) => {
     dispatch(changeNetwork(chainId));
   };
@@ -71,6 +72,7 @@ export default () => {
     }
   }, []);
 
+  // Error message is shown if user gets error connecting to metamask
   if (error) {
     <div data-testid="noMetamask">
       Make sure you have metamask installed in your browser

@@ -3,11 +3,8 @@ import {
   ThunkAction,
   Action,
   MiddlewareArray,
-  Dispatch,
-  AsyncThunkAction,
 } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
-import { useDispatch } from "react-redux";
 import web3Reducer from "../features/web3/webSlice";
 import { Web3ActionTypes } from "../features/web3/actions";
 
