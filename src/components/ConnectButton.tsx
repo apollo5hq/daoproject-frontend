@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Button, styled } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Button, styled, Typography, Tooltip } from "@mui/material";
 import { getAccounts, selectNetwork, supportedChains } from "../utils/network";
 import Avatar from "@mui/material/Avatar";
 import { useAppSelector, useAppDispatch } from "../redux/app/hooks";
@@ -9,6 +9,9 @@ import {
   changeAccount,
   changeNetwork,
 } from "../redux/features/web3/webSlice";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
+import copy from "copy-to-clipboard";
 
 const Container = styled("div")({
   display: "flex",
@@ -24,12 +27,27 @@ const AuthButton = styled(Button)({
   textTransform: "none",
 });
 
+const AddressWrapper = styled(Typography)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  borderRadius: 5,
+  borderStyle: "solid",
+  borderColor: theme.palette.background.default,
+  borderWidth: 0,
+  "&:hover": {
+    backgroundColor: theme.palette.grey[300],
+    cursor: "pointer",
+  },
+}));
+
 export default () => {
   const dispatch = useAppDispatch();
   const {
     data: { address: userAddress, ens, avatar, chainId, network },
     error,
   } = useAppSelector((state) => state.web3);
+  const [copied, setCopied] = useState<boolean>(false);
   // A fancy function to shorten someones wallet address, no need to show the whole thing.
   const shortenAddress = (str: string) => {
     return str.substring(0, 6) + "..." + str.substring(str.length - 4);
@@ -44,6 +62,19 @@ export default () => {
   const handleNetworkChanged = (chainId: string) => {
     dispatch(changeNetwork(chainId));
   };
+
+  const handleCopyToClipboard = () => {
+    if (userAddress) {
+      copy(userAddress);
+      setCopied(true);
+    }
+  };
+
+  useEffect(() => {
+    if (copied) {
+      setInterval(() => setCopied(false), 250);
+    }
+  }, [copied]);
 
   // Sets a listener for when the user changes accounts or disconnects account from the app
   useEffect(() => {
@@ -111,10 +142,19 @@ export default () => {
           src={avatar ? avatar : ""}
         />
       </div>
-      <div>
-        {ens && <div data-testid="ens">{ens}</div>}
-        <div data-testid="address">{shortenAddress(userAddress)}</div>
-        <div data-testid="network">{network}</div>
+      <div style={{ paddingLeft: 10 }}>
+        {ens && <Typography data-testid="ens">{ens}</Typography>}
+        <Tooltip title="Copy to clipboard" arrow>
+          <AddressWrapper data-testid="address" onClick={handleCopyToClipboard}>
+            {shortenAddress(userAddress)}
+            {copied ? (
+              <CheckIcon sx={{ fontSize: 15 }} />
+            ) : (
+              <ContentCopyIcon sx={{ fontSize: 15 }} />
+            )}
+          </AddressWrapper>
+        </Tooltip>
+        <Typography data-testid="network">{network}</Typography>
         <AuthButton
           data-testid="disconnectButton"
           onClick={() => dispatch(disconnectWallet())}
