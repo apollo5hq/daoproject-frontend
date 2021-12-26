@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, styled, Typography, Tooltip } from "@mui/material";
-import { getAccounts, selectNetwork, supportedChains } from "../utils/network";
-import Avatar from "@mui/material/Avatar";
+import { Button, styled, Typography, Tooltip, Avatar } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "../redux/app/hooks";
 import {
   disconnectWallet,
@@ -16,16 +14,20 @@ import copy from "copy-to-clipboard";
 const Container = styled("div")({
   display: "flex",
   flexDirection: "row",
+  alignItems: "center",
 });
 
 const UserAvatar = styled(Avatar)({
-  width: 65,
-  height: 65,
+  width: 45,
+  height: 45,
 });
 
-const AuthButton = styled(Button)({
+const AuthButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
-});
+  color: "black",
+  backgroundColor: theme.palette.secondary.main,
+  height: 35,
+}));
 
 const AddressWrapper = styled(Typography)(({ theme }) => ({
   display: "flex",
@@ -36,7 +38,10 @@ const AddressWrapper = styled(Typography)(({ theme }) => ({
   borderColor: theme.palette.background.default,
   borderWidth: 0,
   "&:hover": {
-    backgroundColor: theme.palette.grey[300],
+    backgroundColor:
+      theme.palette.mode === "light"
+        ? theme.palette.grey[300]
+        : theme.palette.grey[700],
     cursor: "pointer",
   },
 }));
@@ -44,9 +49,11 @@ const AddressWrapper = styled(Typography)(({ theme }) => ({
 export default () => {
   const dispatch = useAppDispatch();
   const {
-    data: { address: userAddress, ens, avatar, chainId, network },
-    error,
-  } = useAppSelector((state) => state.web3);
+    address: userAddress,
+    ens,
+    avatar,
+    network,
+  } = useAppSelector((state) => state.web3.data);
   const [copied, setCopied] = useState<boolean>(false);
   // A fancy function to shorten someones wallet address, no need to show the whole thing.
   const shortenAddress = (str: string) => {
@@ -70,6 +77,7 @@ export default () => {
     }
   };
 
+  // Use effect for hiding copy checkmark
   useEffect(() => {
     if (copied) {
       setInterval(() => setCopied(false), 250);
@@ -81,14 +89,7 @@ export default () => {
     if (window.ethereum) {
       // If wallet already connected to app just get data
       if (window.ethereum.selectedAddress) {
-        const network = selectNetwork(window.ethereum.chainId);
-        getAccounts()
-          .then((data) => {
-            dispatch({ type: "web3/connect", payload: { ...data, network } });
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+        dispatch(connectWallet());
       }
       // Always set listeners
       window.ethereum.on("accountsChanged", handleAccountsChanged);
@@ -103,33 +104,16 @@ export default () => {
     }
   }, []);
 
-  // Error message is shown if user gets error connecting to metamask
-  if (error) {
-    <div data-testid="noMetamask">
-      Make sure you have metamask installed in your browser
-    </div>;
-  }
-
   // If user not connected show connect button
   if (!userAddress) {
     return (
       <AuthButton
         data-testid="connectButton"
         onClick={() => dispatch(connectWallet())}
-        variant="outlined"
+        variant="contained"
       >
         Connect
       </AuthButton>
-    );
-  }
-
-  // If user's metamask is on an unsupported chain show message
-  if (!supportedChains.includes(chainId)) {
-    return (
-      <div data-testid="wrongChain">
-        Unsupported network. Switch your network to either Ethereum Mainnet,
-        Ropsten, Rinkeby, Goerli, Kovan, Polygon Mainnet or Mumabi Test Net
-      </div>
     );
   }
 
@@ -142,10 +126,18 @@ export default () => {
           src={avatar ? avatar : ""}
         />
       </div>
-      <div style={{ paddingLeft: 10 }}>
-        {ens && <Typography data-testid="ens">{ens}</Typography>}
+      <div style={{ paddingLeft: 10, paddingRight: 10 }}>
+        {ens && (
+          <Typography variant="body2" data-testid="ens">
+            {ens}
+          </Typography>
+        )}
         <Tooltip title="Copy to clipboard" arrow>
-          <AddressWrapper data-testid="address" onClick={handleCopyToClipboard}>
+          <AddressWrapper
+            variant="body2"
+            data-testid="address"
+            onClick={handleCopyToClipboard}
+          >
             {shortenAddress(userAddress)}
             {copied ? (
               <CheckIcon sx={{ fontSize: 15 }} />
@@ -154,15 +146,18 @@ export default () => {
             )}
           </AddressWrapper>
         </Tooltip>
-        <Typography data-testid="network">{network}</Typography>
-        <AuthButton
-          data-testid="disconnectButton"
-          onClick={() => dispatch(disconnectWallet())}
-          variant="outlined"
-        >
-          Disconnect
-        </AuthButton>
+        <Typography variant="body2" data-testid="network">
+          {network}
+        </Typography>
       </div>
+      <AuthButton
+        data-testid="disconnectButton"
+        onClick={() => dispatch(disconnectWallet())}
+        variant="contained"
+        size="small"
+      >
+        Disconnect
+      </AuthButton>
     </Container>
   );
 };

@@ -49,7 +49,7 @@ export const selectNetwork = (chainId: string) => {
     case "80001":
       return "Mumbai Test Network";
     default:
-      return "Unsupported network. Switch your network to either Ethereum Mainnet, Ropsten, Rinkeby, Goerli, Kovan, Polygon Mainnet or Mumabi Test Net";
+      return "UNSUPPORTED NETWORK";
   }
 };
 

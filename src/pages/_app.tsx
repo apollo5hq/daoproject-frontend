@@ -24,7 +24,7 @@ export default function MyApp(props: MyAppProps) {
       <Provider store={store}>
         <CacheProvider value={emotionCache}>
           <Head>
-            <title>ForkItUp</title>
+            <title>DAO</title>
             <meta
               name="viewport"
               content="initial-scale=1, width=device-width"
