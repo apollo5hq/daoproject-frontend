@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "jest --watch",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -24,6 +25,8 @@
     "@mui/material": "latest",
     "@openzeppelin/contracts": "^4.4.1",
     "@reduxjs/toolkit": "^1.6.2",
+    "copy-to-clipboard": "^3.3.1",
+    "ethers": "^5.5.2",
     "formik": "^2.2.9",
     "formik-mui": "^4.0.0-alpha.3",
     "formik-mui-lab": "^1.0.0-alpha.3",
@@ -31,11 +34,14 @@
     "react": "latest",
     "react-dom": "latest",
     "react-redux": "^7.2.6",
+    "redux-thunk": "^2.4.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
     "@types/react": "latest",
     "chai": "^4.3.4",
     "eslint": "latest",
@@ -45,6 +51,7 @@
     "ethers": "^5.5.2",
     "hardhat": "^2.8.0",
     "husky": "^7.0.4",
+    "jest": "^27.4.5",
     "lint-staged": "^12.1.2",
     "prettier": "2.5.1",
     "typescript": "latest"
