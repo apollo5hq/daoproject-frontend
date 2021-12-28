@@ -132,7 +132,11 @@ export default () => {
       </div>
       <div style={{ paddingLeft: 10, paddingRight: 10 }}>
         {ens && (
-          <Typography variant="body2" data-testid="ens">
+          <Typography
+            sx={{ display: "flex", justifyContent: "center" }}
+            variant="body2"
+            data-testid="ens"
+          >
             {ens}
           </Typography>
         )}
