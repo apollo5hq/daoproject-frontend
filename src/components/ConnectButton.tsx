@@ -32,6 +32,7 @@ const AuthButton = styled(Button)(({ theme }) => ({
 const AddressWrapper = styled(Typography)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
+  justifyContent: "center",
   alignItems: "center",
   borderRadius: 5,
   borderStyle: "solid",
@@ -80,7 +81,7 @@ export default () => {
   // Use effect for hiding copy checkmark
   useEffect(() => {
     if (copied) {
-      setInterval(() => setCopied(false), 250);
+      setInterval(() => setCopied(false), 500);
     }
   }, [copied]);
 
@@ -143,9 +144,9 @@ export default () => {
           >
             {shortenAddress(userAddress)}
             {copied ? (
-              <CheckIcon sx={{ fontSize: 15 }} />
+              <CheckIcon sx={{ fontSize: 13 }} />
             ) : (
-              <ContentCopyIcon sx={{ fontSize: 15 }} />
+              <ContentCopyIcon sx={{ fontSize: 13 }} />
             )}
           </AddressWrapper>
         </Tooltip>
