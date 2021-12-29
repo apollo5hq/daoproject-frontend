@@ -1,7 +1,8 @@
 require("@nomiclabs/hardhat-waffle");
 const fs = require("fs");
+// This is the private key to your metamask account you are using to deploy your smart contract
 const privateKey = fs.readFileSync(".secret").toString();
-const projectId = "846be1d2f22046b699f1d3e18d064448";
+const projectId = "x3SAFsJCm4xuqn7dWr7CdTRB0xWWvq_4";
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -25,12 +26,12 @@ module.exports = {
     hardhat: {
       chainId: 1337,
     },
-    rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${projectId}`,
+    mumbai: {
+      url: `https://polygon-mumbai.g.alchemy.com/v2/${projectId}`,
       accounts: [privateKey],
     },
-    mumbai: {
-      url: `https://polygon-mumbai.infura.io/v3/${projectId}`,
+    mainnet: {
+      url: "INSERT_MAINNET_URL_HERE",
       accounts: [privateKey],
     },
   },

@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
+
 // We inherit the contract we imported. This means we'll have access
 // to the inherited contract's methods.
 contract NFT is ERC721URIStorage {
@@ -14,17 +15,24 @@ contract NFT is ERC721URIStorage {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
+  event NewNFTMinted(address sender, uint256 tokenId);
   // We need to pass the name of our NFTs token and its symbol.
   constructor() ERC721 ("DaoNFT", "DAO") {
     console.log("This is my NFT contract. Woah!");
   }
 
+  // Function for getting the total number of NFTs minted
+  function getTotalNFTsMintedSoFar () external view returns (uint256) {
+    return _tokenIds.current() - 1;
+  }
+
   // A function our user will hit to mint their NFT.
   function mint() public {
-     // Get the current tokenId, this starts at 0.
+    // Get the current tokenId, this starts at 0.
     uint256 newItemId = _tokenIds.current();
-
-     // Actually mint the NFT to the sender using msg.sender.
+    // Here we can set a limit on the number of NFTs that are minted
+    require(newItemId < 2 , "Only 2 NFTs to be minted max!");
+    // Actually mint the NFT to the sender using msg.sender.
     _safeMint(msg.sender, newItemId);
 
     // Set the NFTs data.
@@ -34,5 +42,8 @@ contract NFT is ERC721URIStorage {
 
     // Increment the counter for when the next NFT is minted.
     _tokenIds.increment();
+
+    // This emits an event that on the contract and capture when an NFT is minted on the frontend
+    emit NewNFTMinted(msg.sender, newItemId);
   }
 }

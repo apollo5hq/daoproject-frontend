@@ -52,3 +52,13 @@ npx hardhat node
 node scripts/sample-script.js
 npx hardhat help
 ```
+
+<!-- Deploying the NFT smart contract  -->
+
+```shell
+ # Test net
+npx hardhat run scripts/deploy.js --network mumbai
+
+# mainnet
+npx hardhat run scripts/deploy.js --network mainnet
+```
