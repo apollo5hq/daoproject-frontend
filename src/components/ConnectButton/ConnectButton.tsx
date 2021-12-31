@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Button, styled, Typography, Tooltip, Avatar } from "@mui/material";
-import { useAppSelector, useAppDispatch } from "../redux/app/hooks";
+import { useAppSelector, useAppDispatch } from "src/redux/app/hooks";
 import {
   disconnectWallet,
   connectWallet,
   changeAccount,
   changeNetwork,
-} from "../redux/features/web3/webSlice";
+} from "src/redux/features/web3/webSlice";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import copy from "copy-to-clipboard";

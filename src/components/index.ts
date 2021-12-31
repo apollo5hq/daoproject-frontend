@@ -1,6 +1,6 @@
 import ConnectButton from "./ConnectButton";
 import Copyright from "./Copyright";
 import Link from "./Link";
-import MenuAppbar from "./Appbar";
+import MenuAppBar from "./MenuAppBar";
 
-export { ConnectButton, Copyright, Link, MenuAppbar };
+export { ConnectButton, Copyright, Link, MenuAppBar };

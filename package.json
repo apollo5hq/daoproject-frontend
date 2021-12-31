@@ -37,6 +37,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@swc/jest": "^0.2.15",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@types/react": "latest",
