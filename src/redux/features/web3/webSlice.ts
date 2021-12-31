@@ -28,7 +28,7 @@ const initialState: Web3State = {
 
 declare global {
   interface Window {
-    ethereum: any;
+    ethereum?: any;
   }
 }
 
