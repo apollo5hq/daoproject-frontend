@@ -7,7 +7,7 @@ import Head from "next/head";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "../styles/theme";
 import createEmotionCache from "../utils/createEmotionCache";
-import MenuAppBar from "../components/Appbar";
+import { MenuAppBar } from "@/components";
 import store from "../redux/app/store";
 
 // Client-side cache, shared for the whole session of the user in the browser.
