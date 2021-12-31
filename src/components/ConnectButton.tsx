@@ -46,7 +46,7 @@ const AddressWrapper = styled(Typography)(({ theme }) => ({
   },
 }));
 
-export default () => {
+const ConnectButton = () => {
   const dispatch = useAppDispatch();
   const {
     address: userAddress,
@@ -164,3 +164,5 @@ export default () => {
     </Container>
   );
 };
+
+export default ConnectButton;

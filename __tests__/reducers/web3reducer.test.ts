@@ -1,6 +1,6 @@
 import web3reducer, {
   disconnectWallet,
-} from "../../src/redux/features/web3/webSlice";
+} from "src/redux/features/web3/webSlice";
 
 const initialState = {
   data: {
