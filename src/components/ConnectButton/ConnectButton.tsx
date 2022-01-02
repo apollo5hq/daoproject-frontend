@@ -32,6 +32,7 @@ const AuthButton = styled(Button)(({ theme }) => ({
 const AddressWrapper = styled(Typography)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
+  justifyContent: "center",
   alignItems: "center",
   borderRadius: 5,
   borderStyle: "solid",
@@ -80,7 +81,7 @@ const ConnectButton = () => {
   // Use effect for hiding copy checkmark
   useEffect(() => {
     if (copied) {
-      setInterval(() => setCopied(false), 250);
+      setInterval(() => setCopied(false), 500);
     }
   }, [copied]);
 
@@ -131,7 +132,11 @@ const ConnectButton = () => {
       </div>
       <div style={{ paddingLeft: 10, paddingRight: 10 }}>
         {ens && (
-          <Typography variant="body2" data-testid="ens">
+          <Typography
+            sx={{ display: "flex", justifyContent: "center" }}
+            variant="body2"
+            data-testid="ens"
+          >
             {ens}
           </Typography>
         )}
@@ -143,9 +148,9 @@ const ConnectButton = () => {
           >
             {shortenAddress(userAddress)}
             {copied ? (
-              <CheckIcon sx={{ fontSize: 15 }} />
+              <CheckIcon sx={{ fontSize: 13 }} />
             ) : (
-              <ContentCopyIcon sx={{ fontSize: 15 }} />
+              <ContentCopyIcon sx={{ fontSize: 13 }} />
             )}
           </AddressWrapper>
         </Tooltip>

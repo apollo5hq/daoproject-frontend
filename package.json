@@ -22,6 +22,7 @@
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.1",
     "@mui/lab": "^5.0.0-alpha.59",
+    "@openzeppelin/contracts": "^4.4.1",
     "@mui/material": "^5.2.6",
     "@reduxjs/toolkit": "^1.6.2",
     "copy-to-clipboard": "^3.3.1",
@@ -37,8 +38,14 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.2",
+    "hardhat": "^2.8.0",
     "@types/react": "^17.0.38",
     "eslint": "^8.5.0",
     "eslint-config-next": "^12.0.7",
