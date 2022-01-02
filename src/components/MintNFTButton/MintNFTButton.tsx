@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
-import { useAppSelector } from "../redux/app/hooks";
-import NFT from "../../artifacts/contracts/NFT.sol/NFT.json";
+import { useAppSelector } from "../../redux/app/hooks";
+import NFT from "../../../artifacts/contracts/ERC721.sol/NFT.json";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
 const CONTRACT_ADDRESS = "0xc32DC21F4ff5635cc4B80454ed2508b40f3eB6Db";
@@ -19,12 +19,11 @@ export default () => {
 
   // Function to handle updating the amount of NFTs minted whenever a new NFT is minted
   const handleNewMint = async (_from: string, tokenId: BigNumber) => {
-    console.log(tokenId.toNumber());
     setAmountMinted(tokenId.toNumber() + 1);
   };
 
   useEffect(() => {
-    const { ethereum } = window as any;
+    const { ethereum } = window;
     if (ethereum) {
       // Create provider to communicate with ethereum nodes
       const provider = new ethers.providers.Web3Provider(ethereum);

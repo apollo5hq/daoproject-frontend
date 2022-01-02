@@ -48,6 +48,8 @@ export const selectNetwork = (chainId: string) => {
     case "0x13881":
     case "80001":
       return "Mumbai Test Network";
+    case "0x539":
+      return "Localhost 8545";
     default:
       return "UNSUPPORTED NETWORK";
   }
@@ -66,4 +68,5 @@ export const supportedChains = [
   "80001",
   "0x89",
   "0x13881",
+  "0x539",
 ];
