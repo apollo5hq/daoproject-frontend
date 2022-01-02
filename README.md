@@ -90,7 +90,6 @@ npx hardhat run scripts/deploy.js --network mainnet
 - Deploy contract
 - Once deployed, set the address of the NFT contract from the terminal to the CONTRACT_ADDRESS variable in the MintNFTButton comp
 - Copy and paste the private key of your test account inside the .secret file
-- Import the mint NFT component inside the Box component in index.tsx
 - Run 'yarn dev'
 - Make sure metamask is on the mumbai testnet
 - Once mint is successful, your NFT will appear in your account at https://testnets.opensea.io/ within 5 - 10 minutes
