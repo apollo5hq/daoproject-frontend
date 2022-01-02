@@ -12,6 +12,7 @@ const initialState = {
   },
   loading: false,
   error: false,
+  isMetamask: false,
 };
 const updatedState = {
   data: {
@@ -23,6 +24,7 @@ const updatedState = {
   },
   loading: false,
   error: false,
+  isMetamask: true,
 };
 
 // Initial render of app
@@ -30,6 +32,9 @@ test("should return initial state", () => {
   expect(web3reducer(undefined, { type: "" })).toEqual(initialState);
 });
 
-test("disconnecting wallet should return initial state", () => {
-  expect(web3reducer(updatedState, disconnectWallet())).toEqual(initialState);
+test("disconnecting wallet should return initial state with isMetamask property true", () => {
+  expect(web3reducer(updatedState, disconnectWallet())).toEqual({
+    ...initialState,
+    isMetamask: true,
+  });
 });
