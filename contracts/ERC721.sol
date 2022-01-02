@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 
 // We first import some OpenZeppelin Contracts.
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
@@ -23,7 +24,12 @@ contract NFT is ERC721URIStorage {
 
   // Function for getting the total number of NFTs minted
   function getTotalNFTsMintedSoFar () external view returns (uint256) {
-    return _tokenIds.current() - 1;
+    return _tokenIds.current();
+  }
+
+  // Function for checking if person minting has the NFT already
+  function getBalance (address owner) external view returns (uint256) {
+    return balanceOf(owner);
   }
 
   // A function our user will hit to mint their NFT.
