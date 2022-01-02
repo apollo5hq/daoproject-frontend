@@ -26,12 +26,6 @@ const initialState: Web3State = {
   error: false,
 };
 
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
-
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
@@ -40,7 +34,8 @@ declare global {
 export const connectWallet = createAsyncThunk(
   "web3/connectWallet",
   async () => {
-    if (!window.ethereum) {
+    const { ethereum } = window;
+    if (!ethereum) {
       throw new Error("Must install metamask");
     }
     // App asks user for permission to view metamask accounts
@@ -56,11 +51,12 @@ export const connectWallet = createAsyncThunk(
 export const changeAccount = createAsyncThunk(
   "web3/changeAccount",
   async () => {
-    if (!window.ethereum || !window.ethereum.selectedAddress) {
+    const { ethereum } = window;
+    if (!ethereum || !ethereum.selectedAddress) {
       return { ...initialState.data };
     }
     try {
-      const network = selectNetwork(window.ethereum.chainId);
+      const network = selectNetwork(ethereum.chainId);
       const accountData = await getAccounts();
       return { ...accountData, network };
     } catch (e) {

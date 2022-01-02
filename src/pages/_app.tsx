@@ -10,6 +10,13 @@ import createEmotionCache from "../utils/createEmotionCache";
 import { MenuAppBar } from "@/components";
 import store from "../redux/app/store";
 
+// Globally assign the ethereum typing in the window object
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
