@@ -1,5 +1,5 @@
-import { render, screen } from "../utils/test-utils";
-import ConnectButton from "../src/components/ConnectButton";
+import { render, screen } from "utils/test-utils";
+import { ConnectButton } from "@/components";
 
 describe("ConnectButton", () => {
   render(<ConnectButton />);
