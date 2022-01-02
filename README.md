@@ -2,6 +2,10 @@
 
 ## How to use
 
+Create .secret file in root directory
+
+- Create test account and copy test account's private key, then paste into .secret file
+
 Locally, install it and run:
 
 ```sh
@@ -73,6 +77,10 @@ npx hardhat help
 <!-- Deploying the NFT smart contract  -->
 
 ```shell
+# Locally
+npx hardhat node
+npx hardhat run scripts/deploy.js --network localhost
+
 # Test net
 npx hardhat run scripts/deploy.js --network mumbai
 

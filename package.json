@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "yarn contract_deploy && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "contract_deploy": "npx hardhat node && npx hardhat run scripts/deploy.js --network localhost"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown",
