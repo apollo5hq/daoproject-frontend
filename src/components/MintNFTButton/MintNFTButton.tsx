@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
 import { Button, CircularProgress } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useAppDispatch, useAppSelector } from "../../redux/app/hooks";
 import { hasMetamask } from "src/redux/features/web3/webSlice";
+import { ConnectButton } from "@/components";
+import Box from "@mui/material/Box";
 import NFT from "../../../artifacts/contracts/ERC721.sol/NFT.json";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
 const CONTRACT_ADDRESS = "0xf0eB85fd9F9C858Cf94F6772c16D95a3582Cd3B4";
 
 export default () => {
-  const { isMetamask } = useAppSelector((state) => state.web3);
+  const { isMetamask, data } = useAppSelector((state) => state.web3);
+  const { address: userAddress } = data;
   const dispatch = useAppDispatch();
   // State for whether or not the user is minting
   const [minting, setMinting] = useState<boolean>(false);
@@ -111,25 +113,27 @@ export default () => {
     return <div>Make sure you have metamask installed</div>;
   }
 
+  if (!userAddress) {
+    return <ConnectButton />;
+  }
+
   // Check if user has claimed NFT
   if (hasClaimed) {
     return <div>{claimedMessage}</div>;
   }
 
   return (
-    <>
-      <Box sx={{ my: 4 }}>
-        {minting ? (
-          <div>Minting...</div>
-        ) : (
-          <>
-            <Button onClick={askContractToMintNft}>Mint NFT</Button>
-            <Box sx={{ my: 4, color: ({ palette }) => palette.primary.main }}>
-              <div>{amountMinted}/2 Minted</div>
-            </Box>
-          </>
-        )}
-      </Box>
-    </>
+    <Box sx={{ my: 4 }}>
+      {minting ? (
+        <div>Minting...</div>
+      ) : (
+        <>
+          <Button onClick={askContractToMintNft}>Mint NFT</Button>
+          <Box sx={{ my: 4, color: ({ palette }) => palette.primary.main }}>
+            <div>{amountMinted}/2 Minted</div>
+          </Box>
+        </>
+      )}
+    </Box>
   );
 };

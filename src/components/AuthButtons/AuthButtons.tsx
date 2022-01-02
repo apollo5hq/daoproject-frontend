@@ -47,7 +47,20 @@ const AddressWrapper = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const ConnectButton = () => {
+export const ConnectButton = () => {
+  const dispatch = useAppDispatch();
+  return (
+    <AuthButton
+      data-testid="connectButton"
+      onClick={() => dispatch(connectWallet())}
+      variant="contained"
+    >
+      Connect
+    </AuthButton>
+  );
+};
+
+export default () => {
   const dispatch = useAppDispatch();
   const {
     address: userAddress,
@@ -101,15 +114,7 @@ const ConnectButton = () => {
 
   // If user not connected show connect button
   if (!userAddress) {
-    return (
-      <AuthButton
-        data-testid="connectButton"
-        onClick={() => dispatch(connectWallet())}
-        variant="contained"
-      >
-        Connect
-      </AuthButton>
-    );
+    return <ConnectButton />;
   }
 
   return (
@@ -160,5 +165,3 @@ const ConnectButton = () => {
     </Container>
   );
 };
-
-export default ConnectButton;
