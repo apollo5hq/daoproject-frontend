@@ -87,23 +87,14 @@ const ConnectButton = () => {
 
   // Sets a listener for when the user changes accounts or disconnects account from the app
   useEffect(() => {
-    if ((window as any).ethereum) {
-      // If wallet already connected to app just get data
-      if ((window as any).ethereum.selectedAddress) {
-        dispatch(connectWallet());
-      }
-      // Always set listeners
-      (window as any).ethereum.on("accountsChanged", handleAccountsChanged);
-      (window as any).ethereum.on("chainChanged", handleNetworkChanged);
+    const { ethereum } = window;
+    if (ethereum) {
+      // Set listeners for when a user changes network or metamask account
+      ethereum.on("accountsChanged", handleAccountsChanged);
+      ethereum.on("chainChanged", handleNetworkChanged);
       return () => {
-        (window as any).ethereum.removeListener(
-          "accountsChanged",
-          handleAccountsChanged
-        );
-        (window as any).ethereum.removeListener(
-          "chainChanged",
-          handleNetworkChanged
-        );
+        ethereum.removeListener("accountsChanged", handleAccountsChanged);
+        ethereum.removeListener("chainChanged", handleNetworkChanged);
       };
     }
   }, []);

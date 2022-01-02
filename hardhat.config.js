@@ -1,6 +1,6 @@
 require("@nomiclabs/hardhat-waffle");
 const fs = require("fs");
-// This is the private key to your metamask account you are using to deploy your smart contract
+// This is the private key to your metamask account you are using to deploy your smart contract on the testnet or mainnet
 const privateKey = fs.readFileSync(".secret").toString();
 const projectId = "x3SAFsJCm4xuqn7dWr7CdTRB0xWWvq_4";
 
