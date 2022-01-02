@@ -37,6 +37,23 @@ Automated Formatting:
 - husky
 - lint-staged
 
+# Setting up metamask for development
+
+- Create a test account in your metamask if you haven't already
+- Add the mumbai test net to your metamask
+  - Network Name: Mumbai Testnet
+  - RPC URL: https://rpc-mumbai.matic.today
+  - Chain Id: 80001
+  - Symbol: MATIC
+  - Block Explorer URL: https://mumbai.polygonscan.com
+- Request test matic from the mumbai faucet at https://faucet.polygon.technology/
+
+# Test mintng NFT
+
+- Import the mint NFT component inside the Box component in index.tsx
+- Make sure metamask is on the matic testnet and click mint button
+- Once mint is successful, your NFT will appear in your account at https://testnets.opensea.io/ within 5 - 10 minutes
+
 # Basic Sample Hardhat Project
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
@@ -56,7 +73,7 @@ npx hardhat help
 <!-- Deploying the NFT smart contract  -->
 
 ```shell
- # Test net
+# Test net
 npx hardhat run scripts/deploy.js --network mumbai
 
 # mainnet
