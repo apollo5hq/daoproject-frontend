@@ -1,5 +1,5 @@
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
-import { ConnectButton } from "@/components";
+import { AuthButtons } from "@/components";
 
 export default function MenuAppBar() {
   return (
@@ -9,7 +9,7 @@ export default function MenuAppBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Company Name
           </Typography>
-          <ConnectButton />
+          <AuthButtons />
         </Toolbar>
       </AppBar>
     </Box>

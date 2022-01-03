@@ -13,6 +13,7 @@ interface Web3State {
   loading: boolean;
   error: boolean;
   isMetamask: boolean;
+  isConnected?: boolean;
 }
 
 const initialState: Web3State = {
@@ -45,7 +46,7 @@ export const connectWallet = createAsyncThunk(
     const network = selectNetwork(window.ethereum.chainId);
     const accountData = await getAccounts();
     // The value we return becomes the `fulfilled` action payload
-    return { ...accountData, network };
+    return { ...accountData, network, isConnected: true };
   }
 );
 
@@ -95,6 +96,7 @@ export const web3 = createSlice({
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
       state.data = { ...initialState.data };
+      state.isConnected = false;
     },
     error: (state) => {
       state.error = true;
@@ -118,6 +120,7 @@ export const web3 = createSlice({
           state.loading = false;
           state.data = action.payload;
           state.error = false;
+          state.isConnected = true;
         }
       )
       .addMatcher(
