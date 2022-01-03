@@ -10,6 +10,10 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import copy from "copy-to-clipboard";
+import {
+  walletConnected,
+  walletDisconnected,
+} from "src/redux/features/snackbar/snackbarSlice";
 
 const Container = styled("div")({
   display: "flex",
@@ -62,12 +66,8 @@ export const ConnectButton = () => {
 
 export default () => {
   const dispatch = useAppDispatch();
-  const {
-    address: userAddress,
-    ens,
-    avatar,
-    network,
-  } = useAppSelector((state) => state.web3.data);
+  const { data, isConnected } = useAppSelector((state) => state.web3);
+  const { address: userAddress, ens, avatar, network } = data;
   const [copied, setCopied] = useState<boolean>(false);
   // A fancy function to shorten someones wallet address, no need to show the whole thing.
   const shortenAddress = (str: string) => {
@@ -97,6 +97,15 @@ export default () => {
       setInterval(() => setCopied(false), 500);
     }
   }, [copied]);
+
+  // Handles showing and hiding snackbar for a connected wallet
+  useEffect(() => {
+    if (isConnected) {
+      dispatch(walletConnected());
+    } else if (isConnected === false) {
+      dispatch(walletDisconnected());
+    }
+  }, [isConnected]);
 
   // Sets a listener for when the user changes accounts or disconnects account from the app
   useEffect(() => {

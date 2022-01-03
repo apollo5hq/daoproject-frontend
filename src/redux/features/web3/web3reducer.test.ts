@@ -1,19 +1,8 @@
 import web3reducer, {
   disconnectWallet,
+  initialState,
 } from "src/redux/features/web3/webSlice";
 
-const initialState = {
-  data: {
-    address: null,
-    ens: null,
-    avatar: null,
-    chainId: "",
-    network: "",
-  },
-  loading: false,
-  error: false,
-  isMetamask: false,
-};
 const updatedState = {
   data: {
     address: "0x3048f0h0f8h0f8f9903303",
@@ -25,6 +14,7 @@ const updatedState = {
   loading: false,
   error: false,
   isMetamask: true,
+  isConnected: true,
 };
 
 // Initial render of app
@@ -36,5 +26,6 @@ test("disconnecting wallet should return initial state with isMetamask property 
   expect(web3reducer(updatedState, disconnectWallet())).toEqual({
     ...initialState,
     isMetamask: true,
+    isConnected: false,
   });
 });
