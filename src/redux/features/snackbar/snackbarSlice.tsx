@@ -30,7 +30,7 @@ interface Snackbar {
   key?: any;
 }
 
-const initialState: Snackbar = {
+export const initialState: Snackbar = {
   action: <CloseAction />,
   anchorOrigin: {
     horizontal: "left",
@@ -55,6 +55,7 @@ const handleWalletActions = (state: Snackbar, message: string) => {
   state.message = message;
   state.TransitionComponent = SlideTransition;
   state.snackPack = [{ key: time }];
+  state.severity = "info";
 };
 
 // Snackbar reducer

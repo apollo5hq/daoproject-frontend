@@ -16,7 +16,7 @@ interface Web3State {
   isConnected?: boolean;
 }
 
-const initialState: Web3State = {
+export const initialState: Web3State = {
   data: {
     address: null,
     ens: null,

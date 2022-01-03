@@ -7,7 +7,7 @@ export default function MenuAppBar() {
       <AppBar position="static" data-testid="menu-app-bar">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Company Name
+            DAO
           </Typography>
           <AuthButtons />
         </Toolbar>
