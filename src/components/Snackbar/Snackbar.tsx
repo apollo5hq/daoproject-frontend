@@ -24,20 +24,19 @@ export default () => {
     severity,
     message,
     snackPack,
-    key,
     TransitionComponent,
   } = state;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (snackPack.length && !key) {
+    if (snackPack.length && !message) {
       // Set a new snack when we don't have an active one
       dispatch(setSnackPack());
-    } else if (snackPack.length && key && open) {
+    } else if (snackPack.length && message && open) {
       // Close an active snack when a new one is added
       dispatch(closeSnackbar());
     }
-  }, [snackPack, key, open]);
+  }, [snackPack, message, open]);
 
   const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
@@ -53,7 +52,6 @@ export default () => {
 
   return (
     <Snackbar
-      key={key}
       open={open}
       autoHideDuration={autoHideDuration}
       onClose={handleClose}

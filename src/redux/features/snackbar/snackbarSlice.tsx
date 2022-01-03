@@ -10,7 +10,7 @@ function SlideTransition(props: SlideProps) {
 }
 
 export interface SnackbarMessage {
-  key: number;
+  message: string;
 }
 
 interface Snackbar {
@@ -20,14 +20,13 @@ interface Snackbar {
     vertical: "bottom" | "top";
   };
   autoHideDuration: number | null;
-  message: string;
+  message?: string;
   open: boolean;
   TransitionComponent?: JSXElementConstructor<
     TransitionProps & { children: ReactElement<any, any> }
   >;
   severity: "success" | "error" | "info" | "warning";
   snackPack: readonly SnackbarMessage[];
-  key?: any;
 }
 
 export const initialState: Snackbar = {
@@ -45,16 +44,14 @@ export const initialState: Snackbar = {
 };
 
 const handleWalletActions = (state: Snackbar, message: string) => {
-  const time = new Date().getTime();
   state.action = <CloseAction />;
   state.anchorOrigin = {
     horizontal: "left",
     vertical: "bottom",
   };
   state.autoHideDuration = 6000;
-  state.message = message;
   state.TransitionComponent = SlideTransition;
-  state.snackPack = [{ key: time }];
+  state.snackPack = [{ message }];
   state.severity = "info";
 };
 
@@ -70,12 +67,12 @@ export const snackbar = createSlice({
       state.open = false;
     },
     setSnackPack: (state) => {
-      state.key = state.snackPack[0].key;
+      state.message = state.snackPack[0].message;
       state.snackPack = state.snackPack.slice(1);
       state.open = true;
     },
     exited: (state) => {
-      state.key = undefined;
+      state.message = undefined;
     },
   },
 });
