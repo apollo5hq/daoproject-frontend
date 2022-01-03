@@ -1,6 +1,12 @@
-import { forwardRef, useState, SyntheticEvent } from "react";
+import { forwardRef, SyntheticEvent, useEffect } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
+import {
+  closeSnackbar,
+  setSnackPack,
+  exited,
+} from "src/redux/features/snackbar/snackbarSlice";
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -10,20 +16,53 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 export default () => {
-  const [open, setOpen] = useState(false);
+  const state = useAppSelector((state) => state.snackbar);
+  const {
+    open,
+    autoHideDuration,
+    action,
+    severity,
+    message,
+    snackPack,
+    key,
+    TransitionComponent,
+  } = state;
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (snackPack.length && !key) {
+      // Set a new snack when we don't have an active one
+      dispatch(setSnackPack());
+    } else if (snackPack.length && key && open) {
+      // Close an active snack when a new one is added
+      dispatch(closeSnackbar());
+    }
+  }, [snackPack, key, open]);
 
   const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
 
-    setOpen(false);
+    dispatch(closeSnackbar());
+  };
+
+  const handleExited = () => {
+    dispatch(exited());
   };
 
   return (
-    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-      <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-        This is a success message!
+    <Snackbar
+      key={key}
+      open={open}
+      autoHideDuration={autoHideDuration}
+      onClose={handleClose}
+      action={action}
+      TransitionProps={{ onExited: handleExited }}
+      TransitionComponent={TransitionComponent}
+    >
+      <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
+        {message}
       </Alert>
     </Snackbar>
   );

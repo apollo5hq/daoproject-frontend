@@ -7,7 +7,7 @@ import Head from "next/head";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "../styles/theme";
 import createEmotionCache from "../utils/createEmotionCache";
-import { MenuAppBar } from "@/components";
+import { MenuAppBar, Snackbar } from "@/components";
 import store from "../redux/app/store";
 
 // Globally assign the ethereum typing in the window object
@@ -42,6 +42,7 @@ export default function MyApp(props: MyAppProps) {
             <CssBaseline />
             <MenuAppBar />
             <Component {...pageProps} />
+            <Snackbar />
           </ThemeProvider>
         </CacheProvider>
       </Provider>
