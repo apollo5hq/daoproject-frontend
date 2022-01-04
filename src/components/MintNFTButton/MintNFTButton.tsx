@@ -12,7 +12,7 @@ const CONTRACT_ADDRESS = "0xf0eB85fd9F9C858Cf94F6772c16D95a3582Cd3B4";
 
 export default () => {
   const { isMetamask, data } = useAppSelector((state) => state.web3);
-  const { address: userAddress } = data;
+  const { address: userAddress, network } = data;
   const dispatch = useAppDispatch();
   // State for whether or not the user is minting
   const [minting, setMinting] = useState<boolean>(false);
@@ -69,16 +69,19 @@ export default () => {
     if (ethereum) {
       // User has metamask installed
       dispatch(hasMetamask());
-      // Connect connection to NFT contract
-      connectContract().then(() => setLoader(false));
+      if (network === "Mumbai Testnet") {
+        // Connect connection to NFT contract
+        connectContract().catch((e) => console.log(e));
+      }
     }
+    setLoader(false);
     return () => {
       if (connectedContract) {
         // Unsubscribe from event listener
         connectedContract.off("NewNFTMinted", handleNewMint);
       }
     };
-  }, []);
+  }, [network]);
 
   const askContractToMintNft = async () => {
     try {
@@ -117,6 +120,9 @@ export default () => {
     return <ConnectButton />;
   }
 
+  if (network !== "Mumbai Testnet") {
+    return <div>Make sure you are on the Mumbai Testnet</div>;
+  }
   // Check if user has claimed NFT
   if (hasClaimed) {
     return <div>{claimedMessage}</div>;

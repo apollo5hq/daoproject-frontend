@@ -52,7 +52,7 @@ const handleWalletActions = (state: Snackbar, message: string) => {
   state.autoHideDuration = 6000;
   state.TransitionComponent = SlideTransition;
   state.snackPack = [{ message }];
-  state.severity = "info";
+  state.severity = "success";
 };
 
 // Snackbar reducer
