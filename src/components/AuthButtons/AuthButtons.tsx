@@ -14,6 +14,7 @@ import {
   walletConnected,
   walletDisconnected,
 } from "src/redux/features/snackbar/snackbarSlice";
+import { ChainId } from "src/utils/network";
 
 const Container = styled("div")({
   display: "flex",
@@ -75,13 +76,18 @@ export default () => {
   };
 
   // This function runs when the user disconnects the account from the app in metamask.
-  const handleAccountsChanged = () => {
-    dispatch(changeAccount());
+  const handleAccountsChanged = (addresses: string[]) => {
+    let address: string | null = null;
+    if (addresses.length > 0) {
+      address = addresses[0];
+    }
+    dispatch(changeAccount({ address }));
   };
 
   // This runs when the user switch networks in metamask
-  const handleNetworkChanged = (chainId: string) => {
-    dispatch(changeNetwork(chainId));
+  const handleNetworkChanged = (chainId: ChainId) => {
+    console.log(chainId);
+    dispatch(changeNetwork({ chainId }));
   };
 
   const handleCopyToClipboard = () => {
@@ -98,14 +104,14 @@ export default () => {
     }
   }, [copied]);
 
-  // Handles showing and hiding snackbar for a connected wallet
-  useEffect(() => {
-    if (isConnected) {
-      dispatch(walletConnected());
-    } else if (isConnected === false) {
-      dispatch(walletDisconnected());
-    }
-  }, [isConnected]);
+  // // Handles showing and hiding snackbar for a connected wallet
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     dispatch(walletConnected());
+  //   } else if (isConnected === false) {
+  //     dispatch(walletDisconnected());
+  //   }
+  // }, [isConnected]);
 
   // Sets a listener for when the user changes accounts or disconnects account from the app
   useEffect(() => {
@@ -114,11 +120,13 @@ export default () => {
       // Set listeners for when a user changes network or metamask account
       ethereum.on("accountsChanged", handleAccountsChanged);
       ethereum.on("chainChanged", handleNetworkChanged);
-      return () => {
+    }
+    return () => {
+      if (ethereum) {
         ethereum.removeListener("accountsChanged", handleAccountsChanged);
         ethereum.removeListener("chainChanged", handleNetworkChanged);
-      };
-    }
+      }
+    };
   }, []);
 
   // If user not connected show connect button
