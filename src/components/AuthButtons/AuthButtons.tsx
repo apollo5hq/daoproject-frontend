@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, styled, Typography, Tooltip, Avatar } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "src/redux/app/hooks";
 import {
-  disconnectWallet,
+  disconnectWallet as disconnectMessage,
   connectWallet,
   changeAccount,
   changeNetwork,
@@ -67,8 +67,11 @@ export const ConnectButton = () => {
 
 export default () => {
   const dispatch = useAppDispatch();
-  const { data, isConnected } = useAppSelector((state) => state.web3);
-  const { address: userAddress, ens, avatar, network } = data;
+  // State of the user's web3 instance
+  const {
+    data: { address: userAddress, ens, avatar, network },
+  } = useAppSelector((state) => state.web3);
+  // State for whether or not the user's address is copied
   const [copied, setCopied] = useState<boolean>(false);
   // A fancy function to shorten someones wallet address, no need to show the whole thing.
   const shortenAddress = (str: string) => {
@@ -97,21 +100,20 @@ export default () => {
     }
   };
 
+  // Disconnect wallet and show snackbar message
+  const disconnectWallet = () => {
+    // Dispatch web3 action
+    dispatch(walletDisconnected());
+    // Dispatch snackbar action
+    dispatch(disconnectMessage());
+  };
+
   // Use effect for hiding copy checkmark
   useEffect(() => {
     if (copied) {
       setInterval(() => setCopied(false), 500);
     }
   }, [copied]);
-
-  // // Handles showing and hiding snackbar for a connected wallet
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     dispatch(walletConnected());
-  //   } else if (isConnected === false) {
-  //     dispatch(walletDisconnected());
-  //   }
-  // }, [isConnected]);
 
   // Sets a listener for when the user changes accounts or disconnects account from the app
   useEffect(() => {
@@ -173,7 +175,7 @@ export default () => {
       </div>
       <AuthButton
         data-testid="disconnectButton"
-        onClick={() => dispatch(disconnectWallet())}
+        onClick={disconnectWallet}
         variant="contained"
         size="small"
       >

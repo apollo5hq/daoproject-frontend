@@ -25,11 +25,6 @@ export const requestAccounts = async () => {
 export const getAccounts = async (address: string) => {
   // Get ethereum web3 provider
   const provider = new ethers.providers.Web3Provider(window.ethereum);
-  // Create a signer
-  // const signer = provider.getSigner();
-  // Get wallet address
-  // const address = await signer.getAddress();
-  // Get ens domain name
   let avatar: string | null = null;
   let ens: string | null = null;
   // If user is on ethereum networks

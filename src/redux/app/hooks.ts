@@ -19,7 +19,14 @@ export const useInterval = (callback: Function, delay: number) => {
   }, [delay]);
 };
 
-// Use throughout your app instead of plain `useDispatch` and `useSelector`
-export const useAppDispatch = () => useDispatch();
+/**
+ * Function to dispatch an action to a reducer and update redux store.
+ * Use this throught the application instead of importing 'useDispatch'
+ */
+export const useAppDispatch = useDispatch;
 
+/**
+ * Function to get the state of the redux store.
+ * Use this throughout the application instead of 'useSelector'.
+ */
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;

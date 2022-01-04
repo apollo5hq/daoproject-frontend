@@ -58,7 +58,6 @@ export const connectWallet = createAsyncThunk<
     }
     throw new Error("User denied permission");
   } catch (e: any) {
-    console.log(e);
     return rejectWithValue(e);
   }
 });
@@ -83,7 +82,6 @@ export const changeAccount = createAsyncThunk<
     }
     return { ens, avatar, address };
   } catch (e: any) {
-    console.log(e);
     return rejectWithValue(e);
   }
 });
@@ -114,7 +112,6 @@ export const changeNetwork = createAsyncThunk<
     const network: Network = selectNetwork(chainId);
     return { network, ens, avatar, chainId };
   } catch (e: any) {
-    console.log(e);
     return rejectWithValue(e);
   }
 });
@@ -174,14 +171,6 @@ export const web3 = createSlice({
       })
       .addMatcher(
         isAnyOf(
-          connectWallet.fulfilled,
-          changeNetwork.fulfilled,
-          changeAccount.fulfilled
-        ),
-        (state, action) => {}
-      )
-      .addMatcher(
-        isAnyOf(
           connectWallet.pending,
           changeAccount.pending,
           changeNetwork.pending
@@ -197,6 +186,7 @@ export const web3 = createSlice({
           changeAccount.rejected
         ),
         (state, { payload }) => {
+          console.log(payload);
           state.loading = false;
           state.error = payload?.message;
         }

@@ -28,7 +28,7 @@ export default () => {
   const [claimedMessage, setclaimedMessage] = useState<string>(
     "Congrats you have claimed your NFT :)"
   );
-  console.log(connectedContract);
+
   // Function to handle updating the amount of NFTs minted whenever a new NFT is minted
   const handleNewMint = async (_from: string, tokenId: BigNumber) => {
     const id = tokenId.toNumber();
