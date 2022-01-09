@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "prepare": "husky install",
-    "deploy_contract": "npx hardhat run scripts/deploy.js --network mumbai"
+    "prepare": "husky install"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown",
