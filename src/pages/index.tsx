@@ -1,6 +1,8 @@
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-import { MintNFTButton } from "@/components";
+import { Typography, Box, Button, Container, styled } from "@mui/material";
+
+const GetStartedButton = styled(Button)({
+  textTransform: "none",
+});
 
 export default function Index() {
   return (
@@ -12,10 +14,13 @@ export default function Index() {
         alignItems: "center",
         justifyContent: "center",
       }}
-      maxWidth="sm"
+      maxWidth="lg"
     >
       <Box sx={{ my: 4 }}>
-        <MintNFTButton />
+        <Typography variant="h2">Welcome to DAO Project</Typography>
+      </Box>
+      <Box sx={{ my: 4 }}>
+        <GetStartedButton>Get Started</GetStartedButton>
       </Box>
     </Container>
   );
