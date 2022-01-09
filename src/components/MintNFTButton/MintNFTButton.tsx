@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/app/hooks";
 import { hasMetamask } from "src/redux/features/web3/webSlice";
 import { ConnectButton } from "@/components";
 import Box from "@mui/material/Box";
-import NFT from "../../../artifacts/contracts/ERC721.sol/NFT.json";
+import NFT from "../../../utils/contracts/NFT.json";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
 const CONTRACT_ADDRESS = "0xf0eB85fd9F9C858Cf94F6772c16D95a3582Cd3B4";
