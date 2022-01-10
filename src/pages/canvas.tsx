@@ -1,7 +1,7 @@
 import { useState, useRef, MouseEvent, useEffect } from "react";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 import { v4 } from "uuid";
-import { StreamrClient } from "streamr-client";
+// import { StreamrClient } from "streamr-client";
 
 interface Position {
   offsetX: number;
@@ -18,7 +18,9 @@ interface PainterState {
 }
 
 const Canvas = () => {
+  // Reference to the canvas
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // State of the paint brush
   const [
     { isPainting, userStrokeStyle, guestStrokeStyle, line, userId, prevPos },
     setPainterState,
@@ -33,11 +35,13 @@ const Canvas = () => {
     prevPos: { offsetX: 0, offsetY: 0 },
   });
 
-  const [streamrClient, setStreamrClient] = useState<StreamrClient>();
+  // const [streamrClient, setStreamrClient] = useState<StreamrClient>();
 
+  // Canvas context
   const [canvasContext, setCanvasContext] =
     useState<CanvasRenderingContext2D | null>(null);
 
+  // When user clicks
   const onMouseDown = ({
     nativeEvent,
   }: MouseEvent<HTMLCanvasElement, globalThis.MouseEvent>) => {
@@ -47,6 +51,7 @@ const Canvas = () => {
     });
   };
 
+  // When the user moves the mouse while holding click
   const onMouseMove = ({
     nativeEvent,
   }: MouseEvent<HTMLCanvasElement, globalThis.MouseEvent>) => {
@@ -60,13 +65,12 @@ const Canvas = () => {
       };
       // Add the position to the line array
       setPainterState((prevState) => {
-        // const { line: prevLine } = prevState;
-        const newLine = line.concat(positionData);
-        return { ...prevState, line: newLine };
+        return { ...prevState, line: line.concat(positionData) };
       });
       paint(prevPos, offSetData, userStrokeStyle);
     }
   };
+  // When user releases click
   const endPaintEvent = () => {
     if (isPainting) {
       setPainterState((prevState) => {
@@ -76,24 +80,26 @@ const Canvas = () => {
     }
   };
 
+  // Paint the path of the cursor
   const paint = (prevPos: Position, currPos: Position, strokeStyle: string) => {
     const { offsetX, offsetY } = currPos;
     const { offsetX: x, offsetY: y } = prevPos;
-    if (canvasRef.current) {
-      if (canvasContext) {
-        canvasContext.beginPath();
-        canvasContext.strokeStyle = strokeStyle;
-        // Move the the prevPosition of the mouse
-        canvasContext.moveTo(x, y);
-        // Draw a line to the current position of the mouse
-        canvasContext.lineTo(offsetX, offsetY);
-        // Visualize the line using the strokeStyle
-        canvasContext.stroke();
-      }
+    if (canvasContext) {
+      canvasContext.beginPath();
+      canvasContext.strokeStyle = strokeStyle;
+      // Move the the prevPosition of the mouse
+      canvasContext.moveTo(x, y);
+      // Draw a line to the current position of the mouse
+      canvasContext.lineTo(offsetX, offsetY);
+      // Visualize the line using the strokeStyle
+      canvasContext.stroke();
     }
-    prevPos = { offsetX, offsetY };
+    setPainterState((prevState) => {
+      return { ...prevState, prevPos: { offsetX, offsetY } };
+    });
   };
 
+  // Sends paint data to stream
   const sendPaintData = async () => {
     const body = {
       line,
@@ -115,6 +121,7 @@ const Canvas = () => {
     });
   };
 
+  // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
   useIsomorphicLayoutEffect(() => {
     // Here we set up the properties of the canvas element.
     if (canvasRef.current) {
@@ -130,21 +137,23 @@ const Canvas = () => {
     }
   }, []);
 
-  useEffect(() => {
-    createClient();
-  }, []);
+  // useEffect(() => {
+  //   createClient();
+  // }, []);
 
-  const createClient = () => {
-    const { ethereum } = window;
-    if (ethereum) {
-      const client = new StreamrClient({
-        auth: {
-          ethereum,
-        },
-      });
-      setStreamrClient(client);
-    }
-  };
+  // const createClient = () => {
+  //   const { ethereum } = window;
+  //   if (ethereum) {
+  //     const client = new StreamrClient({
+  //       auth: {
+  //         ethereum,
+  //       },
+  //     });
+  //     setStreamrClient(client);
+  //   }
+  // };
+
+  // console.log(streamrClient);
 
   return (
     <canvas
