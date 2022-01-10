@@ -34,9 +34,5 @@ yarn-error.log*
 # vercel
 .vercel
 
-# smart contracts
-/cache
-/artifacts
-
 # eslint
 .eslintcache
