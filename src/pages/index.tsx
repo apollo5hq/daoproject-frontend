@@ -1,10 +1,13 @@
+import { ConnectButton } from "@/components";
 import { Typography, Box, Button, Container, styled } from "@mui/material";
+import { useAppSelector } from "src/redux/app/hooks";
 
 const GetStartedButton = styled(Button)({
   textTransform: "none",
 });
 
 export default function Index() {
+  const address = useAppSelector((state) => state.web3.data.address);
   return (
     <Container
       style={{
@@ -20,7 +23,11 @@ export default function Index() {
         <Typography variant="h2">Welcome to DAO Project</Typography>
       </Box>
       <Box sx={{ my: 4 }}>
-        <GetStartedButton>Get Started</GetStartedButton>
+        {address ? (
+          <GetStartedButton>Get Started</GetStartedButton>
+        ) : (
+          <ConnectButton />
+        )}
       </Box>
     </Container>
   );
