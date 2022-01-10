@@ -1,6 +1,9 @@
 import { useState, useRef, MouseEvent, useEffect } from "react";
-import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
+import { Container, styled } from "@mui/material";
+import { ConnectButton } from "@/components";
+import { useAppSelector } from "src/redux/app/hooks";
 import { v4 } from "uuid";
+import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 import StreamrClient from "streamr-client";
 
 interface Position {
@@ -17,7 +20,16 @@ interface PainterState {
   prevPos: Position;
 }
 
+const CanvasContainer = styled(Container)({
+  display: "flex",
+  flexDirection: "column",
+  height: "100vh",
+  alignItems: "center",
+  justifyContent: "center",
+});
+
 const Canvas = () => {
+  const address = useAppSelector(({ web3 }) => web3.data.address);
   // Reference to the canvas
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // State of the paint brush
@@ -31,7 +43,7 @@ const Canvas = () => {
     guestStrokeStyle: "#F0C987",
     line: [],
     // v4 creates a unique id for each user. We used this since there's no auth to tell users apart
-    userId: v4(),
+    userId: address ? address : v4(),
     prevPos: { offsetX: 0, offsetY: 0 },
   });
 
@@ -124,7 +136,7 @@ const Canvas = () => {
   // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
   useIsomorphicLayoutEffect(() => {
     // Here we set up the properties of the canvas element.
-    if (canvasRef.current) {
+    if (canvasRef.current && address) {
       canvasRef.current.width = 1000;
       canvasRef.current.height = 800;
       let ctx = canvasRef.current.getContext("2d");
@@ -135,7 +147,7 @@ const Canvas = () => {
       }
       setCanvasContext(ctx);
     }
-  }, []);
+  }, [address]);
 
   const handleStream = (data: any, metadata: any) => {
     // Do something with the data here!
@@ -148,7 +160,7 @@ const Canvas = () => {
   };
 
   useEffect(() => {
-    if (streamrClient) {
+    if (streamrClient && address) {
       // Subscribe to a stream
       streamrClient
         .subscribe(
@@ -163,13 +175,13 @@ const Canvas = () => {
       createClient();
     }
     return () => {
-      if (streamrClient)
+      if (streamrClient && address)
         streamrClient.unsubscribe({
           stream: "0x9bb53e7ecc52dea3498502d1755b2892d30b730e/painter",
         });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streamrClient]);
+  }, [streamrClient, address]);
 
   const createClient = async () => {
     try {
@@ -189,15 +201,21 @@ const Canvas = () => {
   };
 
   return (
-    <canvas
-      // We use the ref attribute to get direct access to the canvas element.
-      ref={canvasRef}
-      style={{ background: "black" }}
-      onMouseDown={onMouseDown}
-      onMouseLeave={endPaintEvent}
-      onMouseUp={endPaintEvent}
-      onMouseMove={onMouseMove}
-    />
+    <CanvasContainer>
+      {address ? (
+        <canvas
+          // We use the ref attribute to get direct access to the canvas element.
+          ref={canvasRef}
+          style={{ background: "black" }}
+          onMouseDown={onMouseDown}
+          onMouseLeave={endPaintEvent}
+          onMouseUp={endPaintEvent}
+          onMouseMove={onMouseMove}
+        />
+      ) : (
+        <ConnectButton />
+      )}
+    </CanvasContainer>
   );
 };
 
