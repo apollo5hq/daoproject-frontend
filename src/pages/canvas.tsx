@@ -28,7 +28,10 @@ const CanvasPage = () => {
     // v4 creates a unique id for each user. We used this since there's no auth to tell users apart
     userId: address ? address : v4(),
     prevPos: { offsetX: 0, offsetY: 0 },
+    isErasing: false,
+    lineWidth: 4,
   });
+  const { isErasing, lineWidth } = painterState;
 
   // Canvas context
   const [canvasContext, setCanvasContext] =
@@ -48,6 +51,8 @@ const CanvasPage = () => {
           <CanvasTools
             setPainterState={setPainterState}
             canvasContext={canvasContext}
+            isErasing={isErasing}
+            lineWidth={lineWidth}
           />
         </div>
       ) : (

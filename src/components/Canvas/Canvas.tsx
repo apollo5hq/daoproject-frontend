@@ -34,6 +34,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
     userStrokeStyle,
     guestStrokeStyle,
     line,
+    lineWidth,
     userId,
     prevPos,
   } = painterState;
@@ -65,7 +66,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
       setPainterState((prevState) => {
         return { ...prevState, line: line.concat(positionData) };
       });
-      paint(prevPos, offSetData, userStrokeStyle);
+      paint(prevPos, offSetData, userStrokeStyle, lineWidth);
     }
   };
   // When user releases click
@@ -79,11 +80,17 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
   };
 
   // Paint the path of the cursor
-  const paint = (prevPos: Position, currPos: Position, strokeStyle: string) => {
+  const paint = (
+    prevPos: Position,
+    currPos: Position,
+    strokeStyle: string,
+    lineWidth: number
+  ) => {
     const { offsetX, offsetY } = currPos;
     const { offsetX: x, offsetY: y } = prevPos;
     if (canvasContext) {
       canvasContext.beginPath();
+      canvasContext.lineWidth = lineWidth;
       canvasContext.strokeStyle = strokeStyle;
       // Move the the prevPosition of the mouse
       canvasContext.moveTo(x, y);
@@ -104,6 +111,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
         const body = {
           line,
           userId,
+          lineWidth,
         };
         // Publish using the stream id only
         await streamrClient.publish(
@@ -129,7 +137,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
       if (ctx) {
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 4;
       }
       setCanvasContext(ctx);
     }
@@ -137,10 +145,10 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
 
   const handleStream = (data: any, metadata: any) => {
     // Do something with the data here!
-    const { line, userId: guestId } = data;
+    const { line, userId: guestId, lineWidth } = data;
     if (guestId !== userId) {
       line.forEach((position: { start: Position; stop: Position }) => {
-        paint(position.start, position.stop, guestStrokeStyle);
+        paint(position.start, position.stop, guestStrokeStyle, lineWidth);
       });
     }
   };

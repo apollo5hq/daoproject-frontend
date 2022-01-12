@@ -10,4 +10,6 @@ export interface PainterState {
   line: { start: Position; stop: Position }[];
   userId: string;
   prevPos: Position;
+  isErasing: boolean;
+  lineWidth: number;
 }
