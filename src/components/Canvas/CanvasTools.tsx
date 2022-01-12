@@ -1,13 +1,14 @@
 import { Dispatch, FunctionComponent, SetStateAction, useState } from "react";
-import { Eraser, Pencil } from "@/components";
-import { styled } from "@mui/system";
-import { Color, ColorResult, RGBColor, SketchPicker } from "react-color";
+import { Eraser, Pencil, Slider } from "@/components";
+import { Color, ColorResult, SketchPicker } from "react-color";
 import { PainterState } from "src/utils/types/canvas";
-import { useTheme } from "@mui/material";
+import { useTheme, styled, Typography } from "@mui/material";
 
 interface Tools {
   canvasContext: CanvasRenderingContext2D | null;
   setPainterState: Dispatch<SetStateAction<PainterState>>;
+  isErasing: boolean;
+  lineWidth: number;
 }
 
 const Container = styled("div")({
@@ -17,6 +18,8 @@ const Container = styled("div")({
 const CanvasTools: FunctionComponent<Tools> = ({
   canvasContext,
   setPainterState,
+  isErasing,
+  lineWidth,
 }) => {
   const {
     palette: { primary },
@@ -38,8 +41,26 @@ const CanvasTools: FunctionComponent<Tools> = ({
         color={colorPickerState}
         onChangeComplete={onChangeComplete}
       />
-      <Pencil canvasContext={canvasContext} />
-      <Eraser canvasContext={canvasContext} />
+      <div style={{ paddingLeft: 10 }}>
+        <Container>
+          <Pencil
+            setPainterState={setPainterState}
+            canvasContext={canvasContext}
+            isErasing={isErasing}
+          />
+          <Eraser
+            setPainterState={setPainterState}
+            canvasContext={canvasContext}
+            isErasing={isErasing}
+          />
+        </Container>
+        <Typography sx={{ paddingTop: 1 }}>Thickness</Typography>
+        <Slider
+          lineWidth={lineWidth}
+          canvasContext={canvasContext}
+          setPainterState={setPainterState}
+        />
+      </div>
     </Container>
   );
 };
