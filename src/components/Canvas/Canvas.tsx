@@ -127,29 +127,55 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
     }
   };
 
+  // // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
+  // useIsomorphicLayoutEffect(() => {
+  //   // Here we set up the properties of the canvas element.
+  //   if (canvasRef.current && address) {
+  //     canvasRef.current.width = 1000;
+  //     canvasRef.current.height = 800;
+  //     let ctx = canvasRef.current.getContext("2d");
+  //     if (ctx) {
+  //       ctx.lineJoin = "round";
+  //       ctx.lineCap = "round";
+  //       ctx.lineWidth = 4;
+  //     }
+  //     setCanvasContext(ctx);
+  //   }
+  // }, [address]);
+
   // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
   useIsomorphicLayoutEffect(() => {
     // Here we set up the properties of the canvas element.
-    if (canvasRef.current && address) {
-      canvasRef.current.width = 1000;
-      canvasRef.current.height = 800;
-      let ctx = canvasRef.current.getContext("2d");
-      if (ctx) {
-        ctx.lineJoin = "round";
-        ctx.lineCap = "round";
-        ctx.lineWidth = 4;
-      }
-      setCanvasContext(ctx);
+    if (canvasRef.current) {
+      setCanvasContext(canvasRef.current.getContext("2d"));
     }
-  }, [address]);
+  }, [canvasRef]);
 
   const handleStream = (data: any, metadata: any) => {
     // Do something with the data here!
-    const { line, userId: guestId, lineWidth } = data;
+    const { userId: guestId } = data;
     if (guestId !== userId) {
-      line.forEach((position: { start: Position; stop: Position }) => {
-        paint(position.start, position.stop, guestStrokeStyle, lineWidth);
+      const worker = new Worker("/canvasworker.js");
+      worker.onmessage = (e: { data: { msg: string; btm: ImageBitmap } }) => {
+        const { msg, btm } = e.data;
+        console.log("got message from worker", e.data.msg);
+        switch (msg) {
+          case "render":
+            console.log(e);
+            const ctx = canvasRef.current?.getContext("bitmaprenderer");
+            ctx?.transferFromImageBitmap(btm);
+            break;
+          default:
+            break;
+        }
+      };
+      worker.postMessage({
+        msg: "start",
+        paintData: data,
       });
+      // line.forEach((position: { start: Position; stop: Position }) => {
+      //   paint(position.start, position.stop, guestStrokeStyle, lineWidth);
+      // });
     }
   };
 
@@ -199,6 +225,8 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
       // We use the ref attribute to get direct access to the canvas element.
       ref={canvasRef}
       style={{ background: "black" }}
+      width={1000}
+      height={800}
       onMouseDown={onMouseDown}
       onMouseLeave={endPaintEvent}
       onMouseUp={endPaintEvent}

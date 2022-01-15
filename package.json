@@ -24,6 +24,7 @@
     "@mui/lab": "^5.0.0-alpha.59",
     "@mui/material": "^5.2.6",
     "@reduxjs/toolkit": "^1.6.2",
+    "@types/offscreencanvas": "^2019.6.4",
     "body-parser": "^1.19.1",
     "copy-to-clipboard": "^3.3.1",
     "dotenv": "^10.0.0",

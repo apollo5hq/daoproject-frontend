@@ -21,6 +21,12 @@
       "@/pages/*": ["src/pages/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/server.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/server.js",
+    "public/canvasworker.js"
+  ],
   "exclude": ["node_modules"]
 }
