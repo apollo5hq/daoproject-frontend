@@ -1,7 +1,5 @@
 import {
-  useState,
   MouseEvent,
-  useEffect,
   FunctionComponent,
   Dispatch,
   useRef,
@@ -9,7 +7,6 @@ import {
 } from "react";
 import { PainterState, Position } from "src/utils/types/canvas";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
-import StreamrClient from "streamr-client";
 
 interface CanvasProps {
   painterState: PainterState;
@@ -29,16 +26,8 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
     canvasContext,
     setCanvasContext,
   } = props;
-  const {
-    isPainting,
-    userStrokeStyle,
-    guestStrokeStyle,
-    line,
-    lineWidth,
-    userId,
-    prevPos,
-  } = painterState;
-  const [streamrClient, setStreamrClient] = useState<StreamrClient>();
+  const { isPainting, userStrokeStyle, line, lineWidth, prevPos } =
+    painterState;
 
   // When user clicks
   const onMouseDown = ({
@@ -75,7 +64,6 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
       setPainterState((prevState) => {
         return { ...prevState, isPainting: false };
       });
-      sendPaintData();
     }
   };
 
@@ -104,29 +92,6 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
     });
   };
 
-  // Sends paint data to stream
-  const sendPaintData = async () => {
-    try {
-      if (streamrClient) {
-        const body = {
-          line,
-          userId,
-          lineWidth,
-        };
-        // Publish using the stream id only
-        await streamrClient.publish(
-          "0x9bb53e7ecc52dea3498502d1755b2892d30b730e/painter",
-          body
-        );
-        setPainterState((prevState) => {
-          return { ...prevState, line: [] };
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
   useIsomorphicLayoutEffect(() => {
     // Here we set up the properties of the canvas element.
@@ -142,57 +107,6 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
       setCanvasContext(ctx);
     }
   }, [address]);
-
-  const handleStream = (data: any, metadata: any) => {
-    // Do something with the data here!
-    const { line, userId: guestId, lineWidth } = data;
-    if (guestId !== userId) {
-      line.forEach((position: { start: Position; stop: Position }) => {
-        paint(position.start, position.stop, guestStrokeStyle, lineWidth);
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (streamrClient && address) {
-      // Subscribe to a stream
-      streamrClient
-        .subscribe(
-          {
-            stream: "0x9bb53e7ecc52dea3498502d1755b2892d30b730e/painter",
-          },
-          handleStream
-        )
-        .catch((e) => console.log(e));
-    } else {
-      // Create client
-      createClient();
-    }
-    return () => {
-      if (streamrClient && address)
-        streamrClient.unsubscribe({
-          stream: "0x9bb53e7ecc52dea3498502d1755b2892d30b730e/painter",
-        });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streamrClient, address]);
-
-  const createClient = async () => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const client = new StreamrClient({
-          auth: {
-            ethereum,
-          },
-          publishWithSignature: "never",
-        });
-        setStreamrClient(client);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   return (
     <canvas
