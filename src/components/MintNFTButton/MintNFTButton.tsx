@@ -1,16 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FunctionComponent } from "react";
 import { Button, CircularProgress } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useAppDispatch, useAppSelector } from "../../redux/app/hooks";
 import { hasMetamask } from "src/redux/features/web3/webSlice";
 import { ConnectButton } from "@/components";
 import Box from "@mui/material/Box";
-import NFT from "../../../utils/contracts/NFT.json";
+import NFT from "../../../nftABI.json";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
-const CONTRACT_ADDRESS = "0xf0eB85fd9F9C858Cf94F6772c16D95a3582Cd3B4";
+const CONTRACT_ADDRESS = "0x70016006e7fA497e0FF0f4ff9Abc0f9B405b687b";
 
-export default () => {
+const MintNFTButton: FunctionComponent<{
+  canvasRef: HTMLCanvasElement | null;
+  canvasContext: CanvasRenderingContext2D | null;
+}> = ({ canvasRef, canvasContext }) => {
   const { isMetamask, data } = useAppSelector((state) => state.web3);
   const { address: userAddress, network } = data;
   const dispatch = useAppDispatch();
@@ -46,17 +49,19 @@ export default () => {
       const signer = provider.getSigner();
       // Create connection to NFT contract
       const contract = new ethers.Contract(CONTRACT_ADDRESS, NFT.abi, signer);
-      // Check if user has already claimed the NFT
-      const balance = await contract.getBalance(walletAddress);
-      // Get total nfts minted so far and set that value
-      const amount = await contract.getTotalNFTsMintedSoFar();
-      if (balance.toNumber() > 0) {
-        setHasClaimed(!hasClaimed);
-        return;
-      }
+      console.log(contract);
+      // // Check if user has already claimed the NFT
+      // const balance = await contract.getBalance(walletAddress);
+      // // Get total nfts minted so far and set that value
+      // const amount: BigNumber = await contract.getTotalNFTsMintedSoFar();
+      // console.log(amount);
+      // if (balance.toNumber() > 0) {
+      //   setHasClaimed(!hasClaimed);
+      //   return;
+      // }
       // Create local state for the contract
       setConnectedContract(contract);
-      setAmountMinted(amount.toNumber());
+      // setAmountMinted(amount.toNumber());
       // Set event listener for when a nft is minted to constantly keep updating the number of nfts minted
       contract.on("NewNFTMinted", handleNewMint);
     } catch (e) {
@@ -88,13 +93,19 @@ export default () => {
       if (connectedContract) {
         console.log("Going to pop wallet now to pay gas...");
         // Begin mint
-        let nftTxn = await connectedContract.mint();
+        const url = canvasRef?.toDataURL();
+        const metadata = JSON.stringify({
+          name: "My Art",
+          description: "Custom drawing I made",
+          image: url,
+        });
+        const base64string = Buffer.from(metadata).toString("base64");
+        const base64url = `data:application/json;base64,${base64string}`;
+        let nftTxn = await connectedContract.mint(base64url);
         setMinting(true);
-
         // Wait for mint to finish
         await nftTxn.wait();
         setMinting(false);
-
         // We can return an opensea link to the NFT here or a link to the transaction on a blockchain explorer
         console.log(
           `Mined, see transaction: https://mumbai.polygonscan.com/tx/${nftTxn.hash}`
@@ -143,3 +154,5 @@ export default () => {
     </Box>
   );
 };
+
+export default MintNFTButton;

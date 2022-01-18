@@ -2,8 +2,9 @@ import {
   MouseEvent,
   FunctionComponent,
   Dispatch,
-  useRef,
   SetStateAction,
+  useState,
+  RefObject,
 } from "react";
 import { PainterState, Position } from "src/utils/types/canvas";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
@@ -14,17 +15,17 @@ interface CanvasProps {
   address: string | null;
   canvasContext: CanvasRenderingContext2D | null;
   setCanvasContext: Dispatch<SetStateAction<CanvasRenderingContext2D | null>>;
+  canvasRef: RefObject<HTMLCanvasElement>;
 }
 
 const Canvas: FunctionComponent<CanvasProps> = (props) => {
-  // Reference to the canvas
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const {
     painterState,
     setPainterState,
     address,
     canvasContext,
     setCanvasContext,
+    canvasRef,
   } = props;
   const { isPainting, userStrokeStyle, line, lineWidth, prevPos } =
     painterState;
@@ -59,7 +60,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
     }
   };
   // When user releases click
-  const endPaintEvent = () => {
+  const endPaintEvent = async () => {
     if (isPainting) {
       setPainterState((prevState) => {
         return { ...prevState, isPainting: false };
