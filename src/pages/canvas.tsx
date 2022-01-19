@@ -8,6 +8,7 @@ import {
 } from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
 import { PainterState } from "src/utils/types/canvas";
+import { fabric } from "fabric";
 
 const CanvasContainer = styled(Container)({
   display: "flex",
@@ -36,15 +37,23 @@ const CanvasPage = () => {
   // Reference to the canvas
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const createActualCanvas = () => {
+    return new fabric.Canvas("canvas", { isDrawingMode: true });
+  };
+
   // Canvas context
   const [canvasContext, setCanvasContext] =
     useState<CanvasRenderingContext2D | null>(null);
+
+  const [fabricCanvas, setFabricCanvas] = useState(createActualCanvas());
 
   return (
     <CanvasContainer>
       {address ? (
         <div>
           <Canvas
+            fabricCanvas={fabricCanvas}
+            setFabricCanvas={setFabricCanvas}
             canvasRef={canvasRef}
             painterState={painterState}
             setPainterState={setPainterState}
@@ -53,8 +62,8 @@ const CanvasPage = () => {
             setCanvasContext={setCanvasContext}
           />
           <MintNFTButton
+            fabricCanvas={fabricCanvas}
             canvasRef={canvasRef.current}
-            canvasContext={canvasContext}
           />
           <CanvasTools
             setPainterState={setPainterState}
