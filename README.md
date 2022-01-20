@@ -1,4 +1,4 @@
-# Website starter With Next.js
+# Frontend for DAOProject
 
 ## <!-- #default-branch-switch -->
 
@@ -26,7 +26,7 @@ Automated Formatting:
 - husky
 - lint-staged
 
-# Setting up metamask for development
+# Setting up metamask for development (Mumbai Testnet)
 
 - Create a test account in your metamask if you haven't already
 - Add the mumbai test net to your metamask
@@ -37,10 +37,22 @@ Automated Formatting:
   - Block Explorer URL: https://mumbai.polygonscan.com
 - Request test matic from the mumbai faucet at https://faucet.polygon.technology/
 
+# Setting up metamask for development (Rinkeby Testnet)
+
+- Create a test account in your metamask if you haven't already
+- Request test ether from https://faucets.chain.link/rinkeby
+
+# YOU MUST DEPLOY THE SMART CONTRACT FROM DAOPROJECT-CONTRACTS FIRST BEFORE GOING ANY FURTHER
+
+# Setting up frontend
+
+- Copy the entire contents of the abi file in artifacts/contracts/ERC721.sol/NFT.json from daoprojects-contracts
+- In the root directory here, create a file named nftABI.json and paste the abi inside of it
+- Copy the contract address logged in your terminal from deploying the smart contract and set it inside the CONTRACT_ADDRESS variable inside of the MintNFTButton file.
+
 # Test minting NFT
 
-- Deploy contract
-- Once deployed, set the address of the NFT contract from the terminal to the CONTRACT_ADDRESS variable in the MintNFTButton comp
-- Copy and paste the private key of your test account inside the .secret file
-- Make sure metamask is on the mumbai testnet
+- Make sure your metamask is on the Rinkeby testnet
+- Click mint button
+- Once deployed, set the address of the NFT contract returned in the terminal to the CONTRACT_ADDRESS variable in the MintNFTButton comp
 - Once mint is successful, your NFT will appear in your account at https://testnets.opensea.io/ within 5 - 10 minutes
