@@ -65,7 +65,7 @@ export const ConnectButton = () => {
   );
 };
 
-export default () => {
+export default function () {
   const dispatch = useAppDispatch();
   // State of the user's web3 instance
   const {
@@ -183,4 +183,4 @@ export default () => {
       </AuthButton>
     </Container>
   );
-};
+}
