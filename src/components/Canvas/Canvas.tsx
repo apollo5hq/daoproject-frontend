@@ -3,11 +3,9 @@ import {
   FunctionComponent,
   Dispatch,
   SetStateAction,
-  useState,
   RefObject,
 } from "react";
 import { PainterState, Position } from "src/utils/types/canvas";
-import { fabric } from "fabric";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
 interface CanvasProps {
@@ -17,8 +15,6 @@ interface CanvasProps {
   canvasContext: CanvasRenderingContext2D | null;
   setCanvasContext: Dispatch<SetStateAction<CanvasRenderingContext2D | null>>;
   canvasRef: RefObject<HTMLCanvasElement>;
-  fabricCanvas: fabric.Canvas;
-  setFabricCanvas: Dispatch<SetStateAction<fabric.Canvas>>;
 }
 
 const Canvas: FunctionComponent<CanvasProps> = (props) => {
@@ -29,8 +25,6 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
     canvasContext,
     setCanvasContext,
     canvasRef,
-    fabricCanvas,
-    setFabricCanvas,
   } = props;
   const { isPainting, userStrokeStyle, line, lineWidth, prevPos } =
     painterState;
@@ -110,7 +104,8 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
         ctx.lineWidth = 4;
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       }
       setCanvasContext(ctx);
     }
@@ -121,7 +116,7 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
       id="canvas"
       // We use the ref attribute to get direct access to the canvas element.
       ref={canvasRef}
-      style={{ background: "red" }}
+      style={{ background: "black" }}
       onMouseDown={onMouseDown}
       onMouseLeave={endPaintEvent}
       onMouseUp={endPaintEvent}

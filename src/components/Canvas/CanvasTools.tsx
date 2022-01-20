@@ -14,6 +14,7 @@ interface Tools {
 const Container = styled("div")({
   display: "flex",
   flexDirection: "row",
+  flexGrow: 1,
 });
 const CanvasTools: FunctionComponent<Tools> = ({
   canvasContext,
