@@ -3,7 +3,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useAppDispatch } from "src/redux/app/hooks";
 import { closeSnackbar } from "src/redux/features/snackbar/snackbarSlice";
 
-export default () => {
+export default function () {
   const dispatch = useAppDispatch();
 
   const onClick = () => {
@@ -20,4 +20,4 @@ export default () => {
       <CloseIcon fontSize="small" />
     </IconButton>
   );
-};
+}

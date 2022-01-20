@@ -41,7 +41,7 @@ export const connectWallet = createAsyncThunk<
   Web3Data,
   undefined,
   AsyncThunkConfig
->("web3/connectWallet", async (undefined, { dispatch, rejectWithValue }) => {
+>("web3/connectWallet", async (_undefined, { dispatch, rejectWithValue }) => {
   try {
     const { ethereum } = window;
     if (!ethereum) {
@@ -130,11 +130,6 @@ export const web3 = createSlice({
       state.data = { ...initialState.data };
       state.isConnected = false;
     },
-    // error: (state) => {
-    //   state.error = true;
-    //   state.data = { ...initialState.data };
-    //   state.isConnected = false;
-    // },
     hasMetamask: (state) => {
       state.isMetamask = true;
     },

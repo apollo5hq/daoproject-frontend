@@ -15,7 +15,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export default () => {
+export default function () {
   const state = useAppSelector((state) => state.snackbar);
   const {
     open,
@@ -64,4 +64,4 @@ export default () => {
       </Alert>
     </Snackbar>
   );
-};
+}

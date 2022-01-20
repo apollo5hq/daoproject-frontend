@@ -1,8 +1,12 @@
-import { useState } from "react";
-import { Container, styled, useTheme } from "@mui/material";
-import { Canvas, ConnectButton, CanvasTools } from "@/components";
+import { useState, useRef } from "react";
+import { Container, styled, Toolbar, useTheme } from "@mui/material";
+import {
+  Canvas,
+  ConnectButton,
+  CanvasTools,
+  MintNFTButton,
+} from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
-import { v4 } from "uuid";
 import { PainterState } from "src/utils/types/canvas";
 
 const CanvasContainer = styled(Container)({
@@ -15,23 +19,22 @@ const CanvasContainer = styled(Container)({
 
 const CanvasPage = () => {
   const {
-    palette: { primary, secondary },
+    palette: { primary },
   } = useTheme();
   const address = useAppSelector(({ web3 }) => web3.data.address);
   // State of the paint brush
   const [painterState, setPainterState] = useState<PainterState>({
     isPainting: false,
-    // Different stroke styles to be used for user and guest
     userStrokeStyle: primary.main,
-    guestStrokeStyle: secondary.main,
     line: [],
-    // v4 creates a unique id for each user. We used this since there's no auth to tell users apart
-    userId: address ? address : v4(),
     prevPos: { offsetX: 0, offsetY: 0 },
     isErasing: false,
     lineWidth: 4,
   });
   const { isErasing, lineWidth } = painterState;
+
+  // Reference to the canvas
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Canvas context
   const [canvasContext, setCanvasContext] =
@@ -42,18 +45,22 @@ const CanvasPage = () => {
       {address ? (
         <div>
           <Canvas
+            canvasRef={canvasRef}
             painterState={painterState}
             setPainterState={setPainterState}
             address={address}
             canvasContext={canvasContext}
             setCanvasContext={setCanvasContext}
           />
-          <CanvasTools
-            setPainterState={setPainterState}
-            canvasContext={canvasContext}
-            isErasing={isErasing}
-            lineWidth={lineWidth}
-          />
+          <Toolbar sx={{ alignItems: "flex-start" }}>
+            <CanvasTools
+              setPainterState={setPainterState}
+              canvasContext={canvasContext}
+              isErasing={isErasing}
+              lineWidth={lineWidth}
+            />
+            <MintNFTButton canvasRef={canvasRef.current} />
+          </Toolbar>
         </div>
       ) : (
         <ConnectButton />

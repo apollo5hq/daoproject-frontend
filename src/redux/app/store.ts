@@ -7,7 +7,6 @@ import {
 import thunk from "redux-thunk";
 import web3Reducer from "../features/web3/webSlice";
 import snackbarReducer from "../features/snackbar/snackbarSlice";
-import { Web3ActionTypes } from "../features/web3/actions";
 
 export function makeStore() {
   return configureStore({
@@ -22,7 +21,7 @@ export type AppState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
 
-export type StoreActions = Action<Web3ActionTypes>;
+export type StoreActions = Action<any>;
 
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
