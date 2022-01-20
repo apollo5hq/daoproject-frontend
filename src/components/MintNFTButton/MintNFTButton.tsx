@@ -1,7 +1,7 @@
-import { useState, FunctionComponent, useCallback, memo } from "react";
+import { useState, FunctionComponent } from "react";
 import { Button } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
-import { useAppDispatch, useAppSelector } from "../../redux/app/hooks";
+import { useAppSelector } from "../../redux/app/hooks";
 import { ConnectButton } from "@/components";
 import Box from "@mui/material/Box";
 import NFT from "../../../nftABI.json";
@@ -35,7 +35,6 @@ const MintNFTButton: FunctionComponent<{
     try {
       // Turn canvas into base64url
       const url = canvasRef?.toDataURL();
-
       // Create metadata
       const metadata = JSON.stringify({
         name: "My Art",
@@ -53,7 +52,10 @@ const MintNFTButton: FunctionComponent<{
       contract.on("NewNFTMinted", handleNewMint);
       console.log("Going to pop wallet now to pay gas...");
       // Begin mint
-      let { hash, wait } = await contract.mint(base64url);
+      let { hash, wait } = (await contract.mint(base64url)) as {
+        hash: string;
+        wait: () => Promise<void>;
+      };
       setMinting(true);
       // Wait for mint to finish
       await wait();
