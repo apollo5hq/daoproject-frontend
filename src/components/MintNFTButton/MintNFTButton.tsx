@@ -3,11 +3,15 @@ import { Button } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useAppSelector } from "../../redux/app/hooks";
 import { ConnectButton } from "@/components";
+import { create as ipfsHttpClient } from "ipfs-http-client";
 import Box from "@mui/material/Box";
 import NFT from "../../../nftABI.json";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
-const CONTRACT_ADDRESS = "0x7c31Cc8609BA54E7E2549AC934cF98b833B823eC";
+const CONTRACT_ADDRESS = "0x689286e2D9265a237c7eAD7D8706CE158dBd2714";
+const ipfsClient = ipfsHttpClient({
+  url: "https://ipfs.infura.io:5001/api/v0",
+});
 
 const MintNFTButton: FunctionComponent<{
   canvasRef: HTMLCanvasElement | null;
@@ -22,55 +26,79 @@ const MintNFTButton: FunctionComponent<{
   const [claimedMessage, setclaimedMessage] = useState<string>(
     "Congrats you have claimed your NFT :)"
   );
-  // Function to handle updating the amount of NFTs minted whenever a new NFT is minted
-  const handleNewMint = async (from: string, tokenId: BigNumber) => {
-    const id = tokenId.toNumber();
-    console.log(from);
-    setclaimedMessage(
-      `Congrats you have claimed your NFT :)\n\nIt can take up to 10 min to see your NFT on OpenSea! Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${id}`
-    );
+
+  // Upload art and metadata to ipfs
+  const createMetadata = async (blob: Blob) => {
+    // Create file from blob
+    const file = new File([blob], "testart.png", { type: "image/png" });
+    // Upload file to ipfs
+    const added = await ipfsClient.add(file);
+    const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+    console.log(url);
+    // Create metadata
+    const metadata = JSON.stringify({
+      name: "Test Art",
+      description: "Custom drawing I made",
+      image: url,
+    });
+    // Upload metadata to ipfs
+    const uploadMetadata = await ipfsClient.add(metadata);
+    const metadataURL = `https://ipfs.infura.io/ipfs/${uploadMetadata.path}`;
+    console.log(metadataURL);
+    return metadataURL;
   };
 
-  const askContractToMintNft = async () => {
-    try {
-      // Turn canvas into base64url
-      const url = canvasRef?.toDataURL();
-      // Create metadata
-      const metadata = JSON.stringify({
-        name: "My Art",
-        description: "Custom drawing I made",
-        image: url,
-      });
-      // Turn metadata into base64string
-      const base64string = Buffer.from(metadata).toString("base64");
-      const base64url = `data:application/json;base64,${base64string}`;
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      // Create connection to NFT contract
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, NFT.abi, signer);
-      // Set event listener for when a nft is minted
-      contract.on("NewNFTMinted", handleNewMint);
-      console.log("Going to pop wallet now to pay gas...");
-      // Begin mint
-      let { hash, wait } = (await contract.mint(base64url)) as {
-        hash: string;
-        wait: () => Promise<void>;
-      };
-      setMinting(true);
-      // Wait for mint to finish
-      await wait();
-      setMinting(false);
-      // We can return an opensea link to the NFT here or a link to the transaction on a blockchain explorer
+  const logTransaction = (hash: string) => {
+    if (process.env.NODE_ENV === "development") {
       console.log(
         `Mined, see transaction: https://rinkeby.etherscan.io/tx/${hash}`
       );
-
-      setHasClaimed(!hasClaimed);
-      // Remove event listener
-      contract.off("NewNFTMinted", handleNewMint);
-    } catch (error) {
-      console.log(error);
+    } else {
+      console.log(`Mined, see transaction: https://etherscan.io/tx/${hash}`);
     }
+  };
+
+  const askContractToMintNft = async () => {
+    canvasRef?.toBlob(
+      async (blob) => {
+        // TODO: Handle error message for when blob is null
+        if (!blob) return;
+        try {
+          // Create metadata
+          const url = await createMetadata(blob);
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner();
+          // Create connection to NFT contract
+          const contract = new ethers.Contract(
+            CONTRACT_ADDRESS,
+            NFT.abi,
+            signer
+          );
+          console.log("Going to pop wallet now to pay gas...");
+          // Begin mint
+          let { hash, wait } = await contract.mint(url);
+          setMinting(true);
+          // Wait for mint to finish
+          const tx = await wait();
+          setMinting(false);
+          // Log link to the transaction hash on etherscan
+          logTransaction(hash);
+          setHasClaimed(!hasClaimed);
+          // Get tokenId
+          const event = tx.events[0];
+          const value: BigNumber = event.args[2];
+          const tokenId = value.toNumber();
+          // Return a link to the nft on opensea
+          setclaimedMessage(
+            `Congrats you have claimed your NFT :)\n\nIt can take up to 10 min to see your NFT on OpenSea! Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId}`
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      "image/png",
+      1
+    );
   };
 
   if (!userAddress) {
