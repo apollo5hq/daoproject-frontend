@@ -34,18 +34,14 @@ const MintNFTButton: FunctionComponent<{
     // Upload file to ipfs
     const added = await ipfsClient.add(file);
     const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-    console.log(url);
     // Create metadata
     const metadata = JSON.stringify({
       name: "Test Art",
       description: "Custom drawing I made",
       image: url,
     });
-    // Upload metadata to ipfs
-    const uploadMetadata = await ipfsClient.add(metadata);
-    const metadataURL = `https://ipfs.infura.io/ipfs/${uploadMetadata.path}`;
-    console.log(metadataURL);
-    return metadataURL;
+    const base64string = Buffer.from(metadata).toString("base64");
+    return `data:application/json;base64,${base64string}`;
   };
 
   const logTransaction = (hash: string) => {
