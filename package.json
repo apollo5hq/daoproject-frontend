@@ -26,6 +26,7 @@
     "@reduxjs/toolkit": "^1.6.2",
     "copy-to-clipboard": "^3.3.1",
     "ethers": "^5.5.2",
+    "fabric": "^4.6.0",
     "formik": "^2.2.9",
     "formik-mui": "^4.0.0-alpha.3",
     "formik-mui-lab": "^1.0.0-alpha.3",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
+    "@types/fabric": "^4.5.6",
     "@types/react": "^17.0.38",
     "@types/react-color": "^3.0.6",
     "eslint": "^8.5.0",
