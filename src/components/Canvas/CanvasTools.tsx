@@ -1,7 +1,7 @@
 import { Dispatch, RefObject, SetStateAction, useState } from "react";
 import { Slider, DrawingTool } from "@/components";
 import { Color, ColorResult, SketchPicker } from "react-color";
-import { PainterState } from "src/utils/types/canvas";
+import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useTheme, styled, Button } from "@mui/material";
 
 interface Tools {
@@ -10,6 +10,8 @@ interface Tools {
   isErasing: boolean;
   lineWidth: number;
   canvasRef: RefObject<HTMLCanvasElement>;
+  restoreState: RestoreState;
+  setRestoreState: Dispatch<SetStateAction<RestoreState>>;
 }
 
 const Container = styled("div")({
@@ -26,7 +28,7 @@ const ToolsWrapper = styled("div")({
   width: 300,
 });
 
-const ClearButton = styled(Button)({
+const DrawingToolButton = styled(Button)({
   textTransform: "none",
   height: 35,
 });
@@ -37,13 +39,16 @@ export default function ({
   isErasing,
   lineWidth,
   canvasRef,
+  restoreState,
+  setRestoreState,
 }: Tools) {
   const {
     palette: { primary },
   } = useTheme();
   // State for color picker
   const [colorPickerState, setColorPickerState] = useState<Color>(primary.main);
-
+  // State for undoing last draw
+  const { index: restoreIndex, array: restoreArray } = restoreState;
   // Sets color of the pencil and changes the color of the picker
   const onChangeComplete = (value: ColorResult) => {
     setPainterState((prevState) => {
@@ -52,15 +57,42 @@ export default function ({
     setColorPickerState(value.rgb);
   };
 
-  const onClick = () => {
+  // Clear the entire canvas
+  const clearCanvas = () => {
     if (!canvasContext || !canvasRef.current) return;
     canvasContext.fillStyle = "black";
+    canvasContext.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
     canvasContext.fillRect(
       0,
       0,
       canvasRef.current.width,
       canvasRef.current.height
     );
+    // Need to reset the restore state as well
+    setRestoreState(() => {
+      return { array: [], index: -1 };
+    });
+  };
+
+  // Undo last draw
+  const onUndoLast = () => {
+    if (!canvasContext) return;
+    if (restoreIndex <= 0) {
+      clearCanvas();
+    } else {
+      setRestoreState(({ index, array }) => {
+        const newIndex = index - 1;
+        const newArray = [...array];
+        newArray.pop();
+        canvasContext.putImageData(newArray[newIndex], 0, 0);
+        return { index: newIndex, array: newArray };
+      });
+    }
   };
 
   return (
@@ -84,9 +116,14 @@ export default function ({
             name="Eraser"
           />
           <div style={{ padding: 5 }}>
-            <ClearButton variant="outlined" onClick={onClick}>
+            <DrawingToolButton variant="outlined" onClick={clearCanvas}>
               Clear
-            </ClearButton>
+            </DrawingToolButton>
+          </div>
+          <div style={{ padding: 5 }}>
+            <DrawingToolButton variant="outlined" onClick={onUndoLast}>
+              Undo
+            </DrawingToolButton>
           </div>
         </Container>
         <div style={{ width: 225 }}>

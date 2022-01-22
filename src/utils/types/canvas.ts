@@ -11,3 +11,8 @@ export interface PainterState {
   isErasing: boolean;
   lineWidth: number;
 }
+
+export interface RestoreState {
+  array: ImageData[];
+  index: number;
+}
