@@ -1,11 +1,13 @@
-import { Button, styled } from "@mui/material";
+import { Button, Container as ContainerComp, styled } from "@mui/material";
 import { Dispatch, FunctionComponent, SetStateAction } from "react";
 import { PainterState } from "src/utils/types/canvas";
+import { Slider } from "@/components";
 
 interface PencilProps {
   canvasContext: CanvasRenderingContext2D | null;
   isErasing: boolean;
   setPainterState: Dispatch<SetStateAction<PainterState>>;
+  lineWidth: number;
 }
 
 const PencilButton = styled(Button)({
@@ -13,10 +15,13 @@ const PencilButton = styled(Button)({
   height: 35,
 });
 
+const Container = styled(ContainerComp)({});
+
 const Pencil: FunctionComponent<PencilProps> = ({
   canvasContext,
   isErasing,
   setPainterState,
+  lineWidth,
 }) => {
   const onClick = () => {
     if (canvasContext) {
@@ -28,12 +33,19 @@ const Pencil: FunctionComponent<PencilProps> = ({
   };
 
   return (
-    <PencilButton
-      variant={isErasing ? "outlined" : "contained"}
-      onClick={onClick}
-    >
-      Pencil
-    </PencilButton>
+    <Container>
+      <PencilButton
+        variant={isErasing ? "outlined" : "contained"}
+        onClick={onClick}
+      >
+        Pencil
+      </PencilButton>
+      <Slider
+        lineWidth={lineWidth}
+        canvasContext={canvasContext}
+        setPainterState={setPainterState}
+      />
+    </Container>
   );
 };
 

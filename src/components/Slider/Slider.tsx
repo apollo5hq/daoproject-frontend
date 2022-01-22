@@ -1,5 +1,4 @@
-import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
+import { Box as BoxComp, Slider, styled } from "@mui/material";
 import { Dispatch, SetStateAction, SyntheticEvent } from "react";
 import { PainterState } from "src/utils/types/canvas";
 
@@ -13,7 +12,14 @@ function valuetext(value: number) {
   return value.toString();
 }
 
-export default function DiscreteSlider({
+const Box = styled(BoxComp)({
+  height: 250,
+  justifyContent: "center",
+  display: "flex",
+  alignItems: "center",
+});
+
+export default function ({
   lineWidth,
   canvasContext,
   setPainterState,
@@ -35,9 +41,10 @@ export default function DiscreteSlider({
   };
 
   return (
-    <Box sx={{ width: 300 }}>
+    <Box sx={{ paddingTop: 2 }}>
       <Slider
-        size="small"
+        orientation="vertical"
+        size="medium"
         aria-label="Slider"
         defaultValue={4}
         value={lineWidth}

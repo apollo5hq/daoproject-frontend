@@ -48,6 +48,7 @@ const CanvasTools: FunctionComponent<Tools> = ({
             setPainterState={setPainterState}
             canvasContext={canvasContext}
             isErasing={isErasing}
+            lineWidth={lineWidth}
           />
           <Eraser
             setPainterState={setPainterState}
@@ -55,12 +56,12 @@ const CanvasTools: FunctionComponent<Tools> = ({
             isErasing={isErasing}
           />
         </Container>
-        <Typography sx={{ paddingTop: 1 }}>Thickness</Typography>
-        <Slider
+        {/* <Typography sx={{ paddingTop: 1 }}>Thickness</Typography> */}
+        {/* <Slider
           lineWidth={lineWidth}
           canvasContext={canvasContext}
           setPainterState={setPainterState}
-        />
+        /> */}
       </div>
     </Container>
   );
