@@ -1,5 +1,5 @@
 import { MouseEvent, Dispatch, SetStateAction, RefObject } from "react";
-import { PainterState, Position, RestoreState } from "src/utils/types/canvas";
+import { PainterState, RestoreState, Position } from "src/utils/types/canvas";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
 interface CanvasProps {
@@ -22,7 +22,7 @@ export default function (props: CanvasProps) {
     canvasRef,
     setRestoreState,
   } = props;
-  const { isPainting, userStrokeStyle, line, lineWidth, prevPos } =
+  const { isPainting, userStrokeStyle, prevPos, lineWidth, isErasing } =
     painterState;
 
   // When user clicks
@@ -39,21 +39,10 @@ export default function (props: CanvasProps) {
   const onMouseMove = ({
     nativeEvent,
   }: MouseEvent<HTMLCanvasElement, globalThis.MouseEvent>) => {
-    if (isPainting) {
-      const { offsetX, offsetY } = nativeEvent;
-      const offSetData = { offsetX, offsetY };
-      // Set the start and stop position of the paint event.
-      const positionData = {
-        start: { ...prevPos },
-        stop: { ...offSetData },
-      };
-      // Add the position to the line array
-      setPainterState((prevState) => {
-        return { ...prevState, line: line.concat(positionData) };
-      });
-      paint(prevPos, offSetData, userStrokeStyle, lineWidth);
-    }
-    // preventDefault();
+    if (!isPainting) return;
+    const { offsetX, offsetY } = nativeEvent;
+    const offSetData = { offsetX, offsetY };
+    paint(prevPos, offSetData, userStrokeStyle, lineWidth);
   };
   // When user releases click
   const endPaintEvent = async ({
@@ -89,20 +78,24 @@ export default function (props: CanvasProps) {
     strokeStyle: string,
     lineWidth: number
   ) => {
+    if (!canvasContext) return;
     const { offsetX, offsetY } = currPos;
     const { offsetX: x, offsetY: y } = prevPos;
-    if (canvasContext) {
-      canvasContext.beginPath();
-      canvasContext.lineWidth = lineWidth;
-      canvasContext.strokeStyle = strokeStyle;
-      // Move the the prevPosition of the mouse
-      canvasContext.moveTo(x, y);
-      // Draw a line to the current position of the mouse
-      canvasContext.lineTo(offsetX, offsetY);
-      // Visualize the line using the strokeStyle
-      canvasContext.stroke();
-    }
-
+    canvasContext.beginPath();
+    // if (isErasing) {
+    //   canvasContext.globalCompositeOperation = "destination-out";
+    //   canvasContext.arc(offsetX, offsetY, 8, 0, Math.PI * 2);
+    //   canvasContext.fill();
+    // } else {
+    canvasContext.strokeStyle = strokeStyle;
+    canvasContext.lineWidth = lineWidth;
+    // Move the the prevPosition of the mouse
+    canvasContext.moveTo(x, y);
+    // Draw a line to the current position of the mouse
+    canvasContext.lineTo(offsetX, offsetY);
+    // Visualize the line using the strokeStyle
+    canvasContext.stroke();
+    // }
     setPainterState((prevState) => {
       return { ...prevState, prevPos: { offsetX, offsetY } };
     });
@@ -124,13 +117,14 @@ export default function (props: CanvasProps) {
       }
       setCanvasContext(ctx);
     }
-  }, [address]);
+  }, []);
 
   return (
     <canvas
       data-testid="canvas"
       // We use the ref attribute to get direct access to the canvas element.
       ref={canvasRef}
+      style={{ background: "transparent" }}
       onMouseDown={onMouseDown}
       onMouseLeave={endPaintEvent}
       onMouseUp={endPaintEvent}

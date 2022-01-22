@@ -110,12 +110,12 @@ export default function ({
             isErasing={isErasing}
             name="Pencil"
           />
-          <DrawingTool
+          {/* <DrawingTool
             setPainterState={setPainterState}
             canvasContext={canvasContext}
             isErasing={isErasing}
             name="Eraser"
-          />
+          /> */}
           <div style={{ padding: 5 }}>
             <DrawingToolButton variant="outlined" onClick={clearCanvas}>
               Clear

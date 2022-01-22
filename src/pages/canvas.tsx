@@ -26,7 +26,6 @@ const CanvasPage = () => {
   const [painterState, setPainterState] = useState<PainterState>({
     isPainting: false,
     userStrokeStyle: primary.main,
-    line: [],
     prevPos: { offsetX: 0, offsetY: 0 },
     isErasing: false,
     lineWidth: 4,
