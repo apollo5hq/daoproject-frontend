@@ -1,5 +1,5 @@
 import { MouseEvent, Dispatch, SetStateAction, RefObject } from "react";
-import { PainterState, Position } from "src/utils/types/canvas";
+import { PainterState, Position, RestoreState } from "src/utils/types/canvas";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
 interface CanvasProps {
@@ -9,6 +9,8 @@ interface CanvasProps {
   canvasContext: CanvasRenderingContext2D | null;
   setCanvasContext: Dispatch<SetStateAction<CanvasRenderingContext2D | null>>;
   canvasRef: RefObject<HTMLCanvasElement>;
+  restoreState: RestoreState;
+  setRestoreState: Dispatch<SetStateAction<RestoreState>>;
 }
 
 export default function (props: CanvasProps) {
@@ -19,6 +21,8 @@ export default function (props: CanvasProps) {
     canvasContext,
     setCanvasContext,
     canvasRef,
+    restoreState,
+    setRestoreState,
   } = props;
   const { isPainting, userStrokeStyle, line, lineWidth, prevPos } =
     painterState;
@@ -36,6 +40,7 @@ export default function (props: CanvasProps) {
   // When the user moves the mouse while holding click
   const onMouseMove = ({
     nativeEvent,
+    preventDefault,
   }: MouseEvent<HTMLCanvasElement, globalThis.MouseEvent>) => {
     if (isPainting) {
       const { offsetX, offsetY } = nativeEvent;
@@ -51,12 +56,33 @@ export default function (props: CanvasProps) {
       });
       paint(prevPos, offSetData, userStrokeStyle, lineWidth);
     }
+    // preventDefault();
   };
   // When user releases click
-  const endPaintEvent = async () => {
-    if (isPainting) {
-      setPainterState((prevState) => {
-        return { ...prevState, isPainting: false };
+  const endPaintEvent = async ({
+    preventDefault,
+    type,
+    nativeEvent,
+  }: MouseEvent<HTMLCanvasElement, globalThis.MouseEvent>) => {
+    if (!isPainting) return;
+    setPainterState((prevState) => {
+      return { ...prevState, isPainting: false };
+    });
+    if (type === "mouseup") {
+      setRestoreState((prevState) => {
+        const array = [...prevState.array];
+        if (canvasRef.current && canvasContext) {
+          array.push(
+            canvasContext.getImageData(
+              0,
+              0,
+              canvasRef.current.width,
+              canvasRef.current.height
+            )
+          );
+        }
+        const index = prevState.index + 1;
+        return { array, index };
       });
     }
   };
