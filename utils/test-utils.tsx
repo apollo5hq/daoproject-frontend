@@ -5,13 +5,14 @@ import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 // Import your own reducer
 import web3reducer from "../src/redux/features/web3/webSlice";
+import snackbarReducer from "../src/redux/features/snackbar/snackbarSlice";
 
 function render(
   ui: ReactElement<any, string | JSXElementConstructor<any>>,
   {
     preloadedState,
     store = configureStore({
-      reducer: { web3: web3reducer },
+      reducer: { web3: web3reducer, snackbar: snackbarReducer },
       middleware: new MiddlewareArray(thunk),
       preloadedState,
     }),

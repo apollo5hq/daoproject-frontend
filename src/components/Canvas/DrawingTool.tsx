@@ -46,7 +46,7 @@ export default function ({
 
   return (
     <div style={{ padding: 5, paddingBottom: 0 }}>
-      <ToolButton variant={variant} onClick={onClick}>
+      <ToolButton data-testid="drawingTool" variant={variant} onClick={onClick}>
         {name}
       </ToolButton>
     </div>
