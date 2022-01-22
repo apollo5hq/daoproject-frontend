@@ -1,18 +1,18 @@
 import web3reducer, {
   disconnectWallet,
   initialState,
+  Web3State,
 } from "src/redux/features/web3/webSlice";
 
-const updatedState = {
+const updatedState: Web3State = {
   data: {
     address: "0x3048f0h0f8h0f8f9903303",
     ens: "dao.eth",
     avatar: null,
     chainId: "0x1",
-    network: "Ethereum Main Network",
+    network: "Ethereum Mainnet",
   },
   loading: false,
-  error: false,
   isMetamask: true,
   isConnected: true,
 };

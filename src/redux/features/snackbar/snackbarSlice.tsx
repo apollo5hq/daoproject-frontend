@@ -39,7 +39,7 @@ export const initialState: Snackbar = {
   message: "",
   open: false,
   TransitionComponent: SlideTransition,
-  severity: "info",
+  severity: "success",
   snackPack: [],
 };
 
