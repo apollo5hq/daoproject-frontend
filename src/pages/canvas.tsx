@@ -58,7 +58,6 @@ const CanvasPage = () => {
             address={address}
             canvasContext={canvasContext}
             setCanvasContext={setCanvasContext}
-            restoreState={restoreState}
             setRestoreState={setRestoreState}
           />
           <Toolbar sx={{ alignItems: "flex-start" }}>
