@@ -66,6 +66,7 @@ export default function ({
       canvasRef.current.width,
       canvasRef.current.height
     );
+    canvasContext.globalCompositeOperation = "source-over";
     canvasContext.fillStyle = "white";
     canvasContext.fillRect(
       0,
