@@ -58,6 +58,7 @@ const CanvasPage = () => {
               canvasContext={canvasContext}
               isErasing={isErasing}
               lineWidth={lineWidth}
+              canvasRef={canvasRef}
             />
             <MintNFTButton canvasRef={canvasRef.current} />
           </Toolbar>
