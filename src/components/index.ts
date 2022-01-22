@@ -1,5 +1,5 @@
 import { AuthButtons, ConnectButton } from "./AuthButtons";
-import { Canvas, Eraser, Pencil, CanvasTools } from "./Canvas";
+import { Canvas, CanvasTools, DrawingTool } from "./Canvas";
 import Copyright from "./Copyright";
 import Link from "./Link";
 import MenuAppBar from "./MenuAppBar";
@@ -16,8 +16,7 @@ export {
   AuthButtons,
   Snackbar,
   Canvas,
-  Eraser,
-  Pencil,
   CanvasTools,
   Slider,
+  DrawingTool,
 };
