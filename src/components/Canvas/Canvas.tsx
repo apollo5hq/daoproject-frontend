@@ -110,7 +110,6 @@ export default function (props: CanvasProps) {
       id="canvas"
       // We use the ref attribute to get direct access to the canvas element.
       ref={canvasRef}
-      style={{ background: "black" }}
       onMouseDown={onMouseDown}
       onMouseLeave={endPaintEvent}
       onMouseUp={endPaintEvent}

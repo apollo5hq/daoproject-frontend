@@ -1,14 +1,15 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, RefObject, SetStateAction, useState } from "react";
 import { Slider, DrawingTool } from "@/components";
 import { Color, ColorResult, SketchPicker } from "react-color";
 import { PainterState } from "src/utils/types/canvas";
-import { useTheme, styled } from "@mui/material";
+import { useTheme, styled, Button } from "@mui/material";
 
 interface Tools {
   canvasContext: CanvasRenderingContext2D | null;
   setPainterState: Dispatch<SetStateAction<PainterState>>;
   isErasing: boolean;
   lineWidth: number;
+  canvasRef: RefObject<HTMLCanvasElement>;
 }
 
 const Container = styled("div")({
@@ -22,7 +23,12 @@ const ToolsWrapper = styled("div")({
   alignItems: "center",
   flexDirection: "column",
   height: 0,
-  width: 200,
+  width: 300,
+});
+
+const ClearButton = styled(Button)({
+  textTransform: "none",
+  height: 35,
 });
 
 export default function ({
@@ -30,6 +36,7 @@ export default function ({
   setPainterState,
   isErasing,
   lineWidth,
+  canvasRef,
 }: Tools) {
   const {
     palette: { primary },
@@ -43,6 +50,17 @@ export default function ({
       return { ...prevState, userStrokeStyle: value.hex };
     });
     setColorPickerState(value.rgb);
+  };
+
+  const onClick = () => {
+    if (!canvasContext || !canvasRef.current) return;
+    canvasContext.fillStyle = "black";
+    canvasContext.fillRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
   };
 
   return (
@@ -65,12 +83,19 @@ export default function ({
             isErasing={isErasing}
             name="Eraser"
           />
+          <div style={{ padding: 5 }}>
+            <ClearButton variant="outlined" onClick={onClick}>
+              Clear
+            </ClearButton>
+          </div>
         </Container>
-        <Slider
-          lineWidth={lineWidth}
-          canvasContext={canvasContext}
-          setPainterState={setPainterState}
-        />
+        <div style={{ width: 225 }}>
+          <Slider
+            lineWidth={lineWidth}
+            canvasContext={canvasContext}
+            setPainterState={setPainterState}
+          />
+        </div>
       </ToolsWrapper>
     </Container>
   );
