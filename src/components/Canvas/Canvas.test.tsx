@@ -10,13 +10,13 @@ describe("Canvas", () => {
       painterState={{
         isPainting: false,
         userStrokeStyle: "",
-        line: [],
         lineWidth: 4,
         prevPos: { offsetX: 0, offsetY: 0 },
         isErasing: false,
       }}
       canvasContext={null}
       canvasRef={{ current: null }}
+      setRestoreState={() => {}}
     />
   );
 

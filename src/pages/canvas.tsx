@@ -7,7 +7,7 @@ import {
   MintNFTButton,
 } from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
-import { PainterState } from "src/utils/types/canvas";
+import { PainterState, RestoreState } from "src/utils/types/canvas";
 
 const CanvasContainer = styled(Container)({
   display: "flex",
@@ -26,7 +26,6 @@ const CanvasPage = () => {
   const [painterState, setPainterState] = useState<PainterState>({
     isPainting: false,
     userStrokeStyle: primary.main,
-    line: [],
     prevPos: { offsetX: 0, offsetY: 0 },
     isErasing: false,
     lineWidth: 4,
@@ -40,6 +39,13 @@ const CanvasPage = () => {
   const [canvasContext, setCanvasContext] =
     useState<CanvasRenderingContext2D | null>(null);
 
+  const [restoreState, setRestoreState] = useState<RestoreState>({
+    // Array of image data to undo
+    array: [],
+    // The index of the image data we want to undo
+    index: -1,
+  });
+
   return (
     <CanvasContainer>
       {address ? (
@@ -51,6 +57,7 @@ const CanvasPage = () => {
             address={address}
             canvasContext={canvasContext}
             setCanvasContext={setCanvasContext}
+            setRestoreState={setRestoreState}
           />
           <Toolbar sx={{ alignItems: "flex-start" }}>
             <CanvasTools
@@ -59,6 +66,8 @@ const CanvasPage = () => {
               isErasing={isErasing}
               lineWidth={lineWidth}
               canvasRef={canvasRef}
+              restoreState={restoreState}
+              setRestoreState={setRestoreState}
             />
             <MintNFTButton canvasRef={canvasRef.current} />
           </Toolbar>
