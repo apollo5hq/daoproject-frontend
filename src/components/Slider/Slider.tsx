@@ -1,4 +1,4 @@
-import { Box as BoxComp, Slider, styled } from "@mui/material";
+import { Box, Slider } from "@mui/material";
 import { Dispatch, SetStateAction, SyntheticEvent } from "react";
 import { PainterState } from "src/utils/types/canvas";
 
@@ -11,13 +11,6 @@ interface SliderProps {
 function valuetext(value: number) {
   return value.toString();
 }
-
-const Box = styled(BoxComp)({
-  height: 250,
-  justifyContent: "center",
-  display: "flex",
-  alignItems: "center",
-});
 
 export default function ({
   lineWidth,
@@ -41,20 +34,17 @@ export default function ({
   };
 
   return (
-    <Box sx={{ paddingTop: 2 }}>
+    <Box sx={{ paddingTop: 2, width: 150 }}>
       <Slider
-        orientation="vertical"
         size="medium"
         aria-label="Slider"
         defaultValue={4}
         value={lineWidth}
         getAriaValueText={valuetext}
         valueLabelDisplay="auto"
-        step={1}
-        marks
         min={1}
-        max={10}
-        onChangeCommitted={onChange}
+        max={50}
+        onChange={onChange}
       />
     </Box>
   );

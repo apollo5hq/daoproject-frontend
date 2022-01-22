@@ -1,10 +1,4 @@
-import {
-  MouseEvent,
-  FunctionComponent,
-  Dispatch,
-  SetStateAction,
-  RefObject,
-} from "react";
+import { MouseEvent, Dispatch, SetStateAction, RefObject } from "react";
 import { PainterState, Position } from "src/utils/types/canvas";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
@@ -17,7 +11,7 @@ interface CanvasProps {
   canvasRef: RefObject<HTMLCanvasElement>;
 }
 
-const Canvas: FunctionComponent<CanvasProps> = (props) => {
+export default function (props: CanvasProps) {
   const {
     painterState,
     setPainterState,
@@ -123,6 +117,4 @@ const Canvas: FunctionComponent<CanvasProps> = (props) => {
       onMouseMove={onMouseMove}
     />
   );
-};
-
-export default Canvas;
+}
