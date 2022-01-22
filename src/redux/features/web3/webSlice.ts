@@ -14,7 +14,7 @@ interface Web3Data {
   network?: Network;
 }
 
-interface Web3State {
+export interface Web3State {
   data: Web3Data;
   loading: boolean;
   error?: string;

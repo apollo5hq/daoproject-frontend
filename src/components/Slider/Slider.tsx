@@ -36,6 +36,7 @@ export default function ({
   return (
     <Box sx={{ paddingTop: 2, width: 150 }}>
       <Slider
+        data-testid="slider"
         size="medium"
         aria-label="Slider"
         defaultValue={4}

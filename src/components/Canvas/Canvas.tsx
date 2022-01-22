@@ -107,7 +107,7 @@ export default function (props: CanvasProps) {
 
   return (
     <canvas
-      id="canvas"
+      data-testid="canvas"
       // We use the ref attribute to get direct access to the canvas element.
       ref={canvasRef}
       onMouseDown={onMouseDown}

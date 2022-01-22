@@ -98,7 +98,7 @@ const MintNFTButton: FunctionComponent<{
   };
 
   if (!userAddress) {
-    return <ConnectButton />;
+    return <ConnectButton data-testid="connectButton" />;
   }
 
   if (network !== "Rinkeby Testnet") {
@@ -115,6 +115,7 @@ const MintNFTButton: FunctionComponent<{
         <div>Minting...</div>
       ) : (
         <Button
+          data-testid="mint"
           variant="contained"
           color="secondary"
           sx={{ color: "black" }}
