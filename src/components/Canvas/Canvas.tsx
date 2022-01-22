@@ -9,7 +9,6 @@ interface CanvasProps {
   canvasContext: CanvasRenderingContext2D | null;
   setCanvasContext: Dispatch<SetStateAction<CanvasRenderingContext2D | null>>;
   canvasRef: RefObject<HTMLCanvasElement>;
-  restoreState: RestoreState;
   setRestoreState: Dispatch<SetStateAction<RestoreState>>;
 }
 
@@ -54,6 +53,7 @@ export default function (props: CanvasProps) {
       });
       paint(prevPos, offSetData, userStrokeStyle, lineWidth);
     }
+    // preventDefault();
   };
   // When user releases click
   const endPaintEvent = async ({
