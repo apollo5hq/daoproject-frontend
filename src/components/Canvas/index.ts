@@ -1,6 +1,5 @@
 import Canvas from "./Canvas";
-import Eraser from "./Eraser";
-import Pencil from "./Pencil";
 import CanvasTools from "./CanvasTools";
+import DrawingTool from "./DrawingTool";
 
-export { Canvas, Eraser, Pencil, CanvasTools };
+export { Canvas, CanvasTools, DrawingTool };

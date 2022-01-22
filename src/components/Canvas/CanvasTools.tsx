@@ -1,8 +1,8 @@
-import { Dispatch, FunctionComponent, SetStateAction, useState } from "react";
-import { Eraser, Pencil, Slider } from "@/components";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Slider, DrawingTool } from "@/components";
 import { Color, ColorResult, SketchPicker } from "react-color";
 import { PainterState } from "src/utils/types/canvas";
-import { useTheme, styled, Typography } from "@mui/material";
+import { useTheme, styled } from "@mui/material";
 
 interface Tools {
   canvasContext: CanvasRenderingContext2D | null;
@@ -16,12 +16,21 @@ const Container = styled("div")({
   flexDirection: "row",
   flexGrow: 1,
 });
-const CanvasTools: FunctionComponent<Tools> = ({
+
+const ToolsWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "column",
+  height: 0,
+  width: 200,
+});
+
+export default function ({
   canvasContext,
   setPainterState,
   isErasing,
   lineWidth,
-}) => {
+}: Tools) {
   const {
     palette: { primary },
   } = useTheme();
@@ -42,28 +51,27 @@ const CanvasTools: FunctionComponent<Tools> = ({
         color={colorPickerState}
         onChangeComplete={onChangeComplete}
       />
-      <div style={{ paddingLeft: 10 }}>
+      <ToolsWrapper>
         <Container>
-          <Pencil
+          <DrawingTool
             setPainterState={setPainterState}
             canvasContext={canvasContext}
             isErasing={isErasing}
+            name="Pencil"
           />
-          <Eraser
+          <DrawingTool
             setPainterState={setPainterState}
             canvasContext={canvasContext}
             isErasing={isErasing}
+            name="Eraser"
           />
         </Container>
-        <Typography sx={{ paddingTop: 1 }}>Thickness</Typography>
         <Slider
           lineWidth={lineWidth}
           canvasContext={canvasContext}
           setPainterState={setPainterState}
         />
-      </div>
+      </ToolsWrapper>
     </Container>
   );
-};
-
-export default CanvasTools;
+}
