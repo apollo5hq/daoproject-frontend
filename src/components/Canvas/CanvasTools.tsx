@@ -60,13 +60,13 @@ export default function ({
   // Clear the entire canvas
   const clearCanvas = () => {
     if (!canvasContext || !canvasRef.current) return;
-    canvasContext.fillStyle = "black";
     canvasContext.clearRect(
       0,
       0,
       canvasRef.current.width,
       canvasRef.current.height
     );
+    canvasContext.fillStyle = "white";
     canvasContext.fillRect(
       0,
       0,

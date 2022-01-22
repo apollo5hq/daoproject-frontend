@@ -23,6 +23,7 @@ export default function ({
   const onClick = () => {
     if (!canvasContext) return;
     if (name === "Eraser") {
+      canvasContext.strokeStyle = "white";
       canvasContext.globalCompositeOperation = "destination-out";
       setPainterState((prevState) => {
         return { ...prevState, isErasing: true };

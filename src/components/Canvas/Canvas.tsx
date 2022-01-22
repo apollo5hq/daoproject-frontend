@@ -119,7 +119,7 @@ export default function (props: CanvasProps) {
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
         ctx.lineWidth = 4;
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "white";
         ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       }
       setCanvasContext(ctx);
