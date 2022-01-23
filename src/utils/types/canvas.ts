@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, RefObject } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 export interface Position {
   offsetX: number;
@@ -23,7 +23,4 @@ export interface Tools {
   setPainterState: Dispatch<SetStateAction<PainterState>>;
   isErasing: boolean;
   lineWidth: number;
-  canvasRef: RefObject<HTMLCanvasElement>;
-  restoreState: RestoreState;
-  setRestoreState: Dispatch<SetStateAction<RestoreState>>;
 }

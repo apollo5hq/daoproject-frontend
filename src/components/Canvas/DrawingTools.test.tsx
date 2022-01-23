@@ -2,14 +2,7 @@ import { render, screen } from "utils/test-utils";
 import { DrawingTool } from "@/components";
 
 describe("DrawingTool", () => {
-  render(
-    <DrawingTool
-      isErasing={true}
-      setPainterState={() => {}}
-      name="Eraser"
-      canvasContext={null}
-    />
-  );
+  render(<DrawingTool name="Eraser" variant="outlined" onClick={() => {}} />);
 
   it("renders the drawing tool", async () => {
     await screen.findByTestId("drawingTool");

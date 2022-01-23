@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, RefObject, Dispatch, SetStateAction } from "react";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import {
   Stack,
@@ -10,12 +10,18 @@ import {
 } from "@mui/material";
 import { Color, ColorResult, HuePicker } from "react-color";
 import { CanvasTools } from "@/components";
-import { Tools } from "src/utils/types/canvas";
+import { RestoreState, Tools } from "src/utils/types/canvas";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import EditIcon from "@mui/icons-material/Edit";
 import UndoIcon from "@mui/icons-material/Undo";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
+
+interface DrawerProps extends Tools {
+  canvasRef: RefObject<HTMLCanvasElement>;
+  restoreState: RestoreState;
+  setRestoreState: Dispatch<SetStateAction<RestoreState>>;
+}
 
 const drawerWidth = 400;
 
@@ -58,7 +64,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function (props: Tools) {
+export default function (props: DrawerProps) {
   const {
     canvasContext,
     setPainterState,
@@ -86,6 +92,64 @@ export default function (props: Tools) {
     setColorPickerState(value.rgb);
   };
 
+  // State for undoing last draw
+  const { index: restoreIndex } = restoreState;
+
+  // Clear the entire canvas
+  const clearCanvas = () => {
+    if (!canvasContext || !canvasRef.current) return;
+    canvasContext.clearRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    canvasContext.globalCompositeOperation = "source-over";
+    canvasContext.fillStyle = "white";
+    canvasContext.fillRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    // Need to reset the restore state as well
+    setRestoreState(() => {
+      return { array: [], index: -1 };
+    });
+  };
+
+  // Undo last draw
+  const onUndoLast = () => {
+    if (!canvasContext) return;
+    if (restoreIndex <= 0) {
+      clearCanvas();
+    } else {
+      setRestoreState(({ index, array }) => {
+        const newIndex = index - 1;
+        const newArray = [...array];
+        newArray.pop();
+        canvasContext.putImageData(newArray[newIndex], 0, 0);
+        return { index: newIndex, array: newArray };
+      });
+    }
+  };
+
+  const clickPencil = () => {
+    if (!canvasContext) return;
+    canvasContext.globalCompositeOperation = "source-over";
+    setPainterState((prevState) => {
+      return { ...prevState, isErasing: false };
+    });
+  };
+
+  const clickEraser = () => {
+    if (!canvasContext) return;
+    canvasContext.globalCompositeOperation = "destination-out";
+    setPainterState((prevState) => {
+      return { ...prevState, isErasing: true };
+    });
+  };
+
   return (
     <Drawer variant="permanent" anchor="bottom" open={open}>
       <Toolbar>
@@ -103,17 +167,17 @@ export default function (props: Tools) {
               onChangeComplete={onChangeComplete}
             />
             <Tooltip title="Pen">
-              <IconButton>
+              <IconButton onClick={clickPencil}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Undo">
-              <IconButton>
+              <IconButton onClick={onUndoLast}>
                 <UndoIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Clear canvas">
-              <IconButton>
+              <IconButton onClick={clearCanvas}>
                 <ClearAllIcon />
               </IconButton>
             </Tooltip>
@@ -137,11 +201,12 @@ export default function (props: Tools) {
               canvasContext={canvasContext}
               isErasing={isErasing}
               lineWidth={lineWidth}
-              canvasRef={canvasRef}
-              restoreState={restoreState}
-              setRestoreState={setRestoreState}
               onChangeComplete={onChangeComplete}
               colorPickerState={colorPickerState}
+              onUndoLast={onUndoLast}
+              clearCanvas={clearCanvas}
+              clickPencil={clickPencil}
+              clickEraser={clickEraser}
             />
           </Toolbar>
         </Fade>
