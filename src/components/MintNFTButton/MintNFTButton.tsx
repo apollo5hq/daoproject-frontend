@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import NFT from "../../../nftABI.json";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
-const CONTRACT_ADDRESS = "0x689286e2D9265a237c7eAD7D8706CE158dBd2714";
+const CONTRACT_ADDRESS = "0x65da3f4Eca173B4a4A092C4ea3D6d401dBBf3ADf";
 const ipfsClient = ipfsHttpClient({
   url: "https://ipfs.infura.io:5001/api/v0",
 });

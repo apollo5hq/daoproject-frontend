@@ -4,6 +4,7 @@ import MenuAppBar from "./MenuAppBar";
 import MintNFTButton from "./MintNFTButton";
 import Snackbar from "./Snackbar";
 import Slider from "./Slider";
+import Drawer from "./Drawer";
 
 export {
   ConnectButton,
@@ -15,4 +16,5 @@ export {
   CanvasTools,
   Slider,
   DrawingTool,
+  Drawer,
 };

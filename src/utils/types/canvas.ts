@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export interface Position {
   offsetX: number;
   offsetY: number;
@@ -14,4 +16,11 @@ export interface PainterState {
 export interface RestoreState {
   array: ImageData[];
   index: number;
+}
+
+export interface Tools {
+  canvasContext: CanvasRenderingContext2D | null;
+  setPainterState: Dispatch<SetStateAction<PainterState>>;
+  isErasing: boolean;
+  lineWidth: number;
 }

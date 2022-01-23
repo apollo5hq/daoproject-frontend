@@ -1,11 +1,6 @@
 import { useState, useRef } from "react";
-import { Container, styled, Toolbar, useTheme } from "@mui/material";
-import {
-  Canvas,
-  ConnectButton,
-  CanvasTools,
-  MintNFTButton,
-} from "@/components";
+import { Container, styled, useTheme } from "@mui/material";
+import { Canvas, ConnectButton, MintNFTButton, Drawer } from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 
@@ -14,7 +9,8 @@ const CanvasContainer = styled(Container)({
   flexDirection: "column",
   height: "100vh",
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "flex-start",
+  padding: 10,
 });
 
 const CanvasPage = () => {
@@ -49,7 +45,7 @@ const CanvasPage = () => {
   return (
     <CanvasContainer>
       {address ? (
-        <div>
+        <>
           <Canvas
             canvasRef={canvasRef}
             painterState={painterState}
@@ -59,19 +55,17 @@ const CanvasPage = () => {
             setCanvasContext={setCanvasContext}
             setRestoreState={setRestoreState}
           />
-          <Toolbar sx={{ alignItems: "flex-start" }}>
-            <CanvasTools
-              setPainterState={setPainterState}
-              canvasContext={canvasContext}
-              isErasing={isErasing}
-              lineWidth={lineWidth}
-              canvasRef={canvasRef}
-              restoreState={restoreState}
-              setRestoreState={setRestoreState}
-            />
-            <MintNFTButton canvasRef={canvasRef.current} />
-          </Toolbar>
-        </div>
+          <MintNFTButton canvasRef={canvasRef.current} />
+          <Drawer
+            setPainterState={setPainterState}
+            canvasContext={canvasContext}
+            isErasing={isErasing}
+            lineWidth={lineWidth}
+            canvasRef={canvasRef}
+            restoreState={restoreState}
+            setRestoreState={setRestoreState}
+          />
+        </>
       ) : (
         <ConnectButton />
       )}
