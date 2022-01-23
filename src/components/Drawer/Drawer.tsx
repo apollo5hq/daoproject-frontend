@@ -151,10 +151,16 @@ export default function (props: DrawerProps) {
   };
 
   return (
-    <Drawer variant="permanent" anchor="bottom" open={open}>
+    <Drawer
+      data-testid="drawer"
+      variant="permanent"
+      anchor="bottom"
+      open={open}
+    >
       <Toolbar>
         <Fade in={!open}>
           <Stack
+            data-testid="drawerStack"
             sx={{ flexGrow: 1, alignItems: "center" }}
             direction="row"
             alignItems="flex-start"
