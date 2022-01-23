@@ -1,16 +1,16 @@
 import { useState, RefObject, Dispatch, SetStateAction } from "react";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import {
-  Stack,
-  Toolbar,
-  Tooltip,
-  Fade,
-  Drawer as MuiDrawer,
-  IconButton,
-} from "@mui/material";
+import { RestoreState, Tools } from "src/utils/types/canvas";
 import { Color, ColorResult, HuePicker } from "react-color";
 import { CanvasTools } from "@/components";
-import { RestoreState, Tools } from "src/utils/types/canvas";
+import { mdiEraserVariant } from "@mdi/js";
+import Stack from "@mui/material/Stack";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Fade from "@mui/material/Fade";
+import MuiDrawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import SvgIcon from "@mui/material/SvgIcon";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import EditIcon from "@mui/icons-material/Edit";
@@ -175,6 +175,13 @@ export default function (props: DrawerProps) {
             <Tooltip title="Pen">
               <IconButton onClick={clickPencil}>
                 <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Eraser">
+              <IconButton onClick={clickEraser}>
+                <SvgIcon>
+                  <path d={mdiEraserVariant} />
+                </SvgIcon>
               </IconButton>
             </Tooltip>
             <Tooltip title="Undo">
