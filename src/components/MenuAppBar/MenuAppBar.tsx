@@ -6,9 +6,7 @@ export default function MenuAppBar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" data-testid="menu-app-bar">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            DAO
-          </Typography>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} />
           <AuthButtons />
         </Toolbar>
       </AppBar>

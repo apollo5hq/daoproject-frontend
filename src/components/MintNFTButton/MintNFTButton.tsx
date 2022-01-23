@@ -1,9 +1,10 @@
-import { useState, FunctionComponent } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import { Button } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useAppSelector } from "../../redux/app/hooks";
 import { ConnectButton } from "@/components";
 import { create as ipfsHttpClient } from "ipfs-http-client";
+import { Typography, Link } from "@mui/material";
 import Box from "@mui/material/Box";
 import NFT from "../../../nftABI.json";
 
@@ -13,20 +14,18 @@ const ipfsClient = ipfsHttpClient({
   url: "https://ipfs.infura.io:5001/api/v0",
 });
 
-const MintNFTButton: FunctionComponent<{
+interface MintNFTProps {
   canvasRef: HTMLCanvasElement | null;
-}> = ({ canvasRef }) => {
+  hasMinted: boolean;
+  setHasMinted: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function ({ canvasRef, hasMinted, setHasMinted }: MintNFTProps) {
   const { data } = useAppSelector((state) => state.web3);
   const { address: userAddress, network } = data;
   // State for whether or not the user is minting
   const [minting, setMinting] = useState<boolean>(false);
-  // State for whether the user has claimed the NFT or not
-  const [hasClaimed, setHasClaimed] = useState<boolean>(false);
-  // State for the message when a user claims the NFT
-  const [claimedMessage, setclaimedMessage] = useState<string>(
-    "Congrats you have claimed your NFT :)"
-  );
-
+  const [link, setLink] = useState("");
   // Upload art and metadata to ipfs
   const createMetadata = async (blob: Blob) => {
     // Create file from blob
@@ -79,14 +78,14 @@ const MintNFTButton: FunctionComponent<{
           setMinting(false);
           // Log link to the transaction hash on etherscan
           logTransaction(hash);
-          setHasClaimed(!hasClaimed);
           // Get tokenId
           const event = tx.events[0];
           const value: BigNumber = event.args[2];
           const tokenId = value.toNumber();
           // Return a link to the nft on opensea
-          setclaimedMessage(
-            `Congrats you have claimed your NFT :)\n\nIt can take up to 10 min to see your NFT on OpenSea! Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId}`
+          setHasMinted(true);
+          setLink(
+            `https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId}`
           );
         } catch (error) {
           console.log(error);
@@ -102,17 +101,37 @@ const MintNFTButton: FunctionComponent<{
   }
 
   if (network !== "Rinkeby Testnet") {
-    return <div>Make sure you are on the Rinkeby Testnet</div>;
+    return (
+      <div style={{ paddingTop: 50 }}>
+        <Typography variant="h6" align="center">
+          Make sure you are on the Rinkeby Testnet
+        </Typography>
+      </div>
+    );
   }
   // Check if user has claimed NFT
-  if (hasClaimed) {
-    return <div>{claimedMessage}</div>;
+  if (hasMinted) {
+    return (
+      <div style={{ padding: 50 }}>
+        <Typography gutterBottom variant="h6" align="center">
+          Congrats you have minted your NFT!🥳
+        </Typography>
+        <Typography gutterBottom variant="h6" align="center">
+          It can take up to 10 min to see your NFT on OpenSea. Here's the link:
+        </Typography>
+        <Typography gutterBottom variant="subtitle1" align="center">
+          <Link href={link} target="_blank" underline="hover">
+            {link}
+          </Link>
+        </Typography>
+      </div>
+    );
   }
 
   return (
     <Box sx={{ my: 4 }}>
       {minting ? (
-        <div>Minting...</div>
+        <div style={{ paddingTop: 20 }}>Minting...</div>
       ) : (
         <Button
           data-testid="mint"
@@ -121,11 +140,9 @@ const MintNFTButton: FunctionComponent<{
           sx={{ color: "black" }}
           onClick={askContractToMintNft}
         >
-          Mint NFT
+          Mint
         </Button>
       )}
     </Box>
   );
-};
-
-export default MintNFTButton;
+}
