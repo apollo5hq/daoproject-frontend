@@ -11,6 +11,7 @@ export interface PainterState {
   prevPos: Position;
   isErasing: boolean;
   lineWidth: number;
+  eraserRadius: number;
 }
 
 export interface RestoreState {
@@ -23,4 +24,5 @@ export interface Tools {
   setPainterState: Dispatch<SetStateAction<PainterState>>;
   isErasing: boolean;
   lineWidth: number;
+  eraserRadius: number;
 }

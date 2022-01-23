@@ -70,6 +70,7 @@ export default function (props: DrawerProps) {
     setPainterState,
     isErasing,
     lineWidth,
+    eraserRadius,
     canvasRef,
     restoreState,
     setRestoreState,
@@ -135,16 +136,12 @@ export default function (props: DrawerProps) {
   };
 
   const clickPencil = () => {
-    if (!canvasContext) return;
-    canvasContext.globalCompositeOperation = "source-over";
     setPainterState((prevState) => {
       return { ...prevState, isErasing: false };
     });
   };
 
   const clickEraser = () => {
-    if (!canvasContext) return;
-    canvasContext.globalCompositeOperation = "destination-out";
     setPainterState((prevState) => {
       return { ...prevState, isErasing: true };
     });
@@ -223,6 +220,7 @@ export default function (props: DrawerProps) {
               clearCanvas={clearCanvas}
               clickPencil={clickPencil}
               clickEraser={clickEraser}
+              eraserRadius={eraserRadius}
             />
           </Toolbar>
         </Fade>

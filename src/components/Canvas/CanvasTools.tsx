@@ -30,6 +30,7 @@ export default function (props: DrawingTools) {
     canvasContext,
     setPainterState,
     isErasing,
+    eraserRadius,
     lineWidth,
     colorPickerState,
     onChangeComplete,
@@ -64,6 +65,8 @@ export default function (props: DrawingTools) {
             lineWidth={lineWidth}
             canvasContext={canvasContext}
             setPainterState={setPainterState}
+            isErasing={isErasing}
+            eraserRadius={eraserRadius}
           />
         </div>
       </ToolsWrapper>
