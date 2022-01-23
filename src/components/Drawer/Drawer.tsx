@@ -21,6 +21,7 @@ interface DrawerProps extends Tools {
   canvasRef: RefObject<HTMLCanvasElement>;
   restoreState: RestoreState;
   setRestoreState: Dispatch<SetStateAction<RestoreState>>;
+  nftCanvasRef: RefObject<HTMLCanvasElement>;
 }
 
 const drawerWidth = 400;
@@ -74,6 +75,7 @@ export default function (props: DrawerProps) {
     canvasRef,
     restoreState,
     setRestoreState,
+    nftCanvasRef,
   } = props;
   const [open, setOpen] = useState(false);
   const {
@@ -96,18 +98,28 @@ export default function (props: DrawerProps) {
   // State for undoing last draw
   const { index: restoreIndex } = restoreState;
 
-  // Clear the entire canvas
+  // Clear both canvas
   const clearCanvas = () => {
-    if (!canvasContext || !canvasRef.current) return;
-    canvasContext.clearRect(
+    if (!canvasContext || !canvasRef.current || !nftCanvasRef.current) return;
+    const nftCanvasContext = nftCanvasRef.current.getContext("2d");
+    if (!nftCanvasContext) return;
+    //Clear the 2nd canvas
+    nftCanvasContext.clearRect(
       0,
       0,
-      canvasRef.current.width,
-      canvasRef.current.height
+      nftCanvasRef.current.width,
+      nftCanvasRef.current.height
     );
-    canvasContext.globalCompositeOperation = "source-over";
-    canvasContext.fillStyle = "white";
-    canvasContext.fillRect(
+    // Need to refill the 2nd canvas
+    nftCanvasContext.fillStyle = "white";
+    nftCanvasContext.fillRect(
+      0,
+      0,
+      nftCanvasRef.current.width,
+      nftCanvasRef.current.height
+    );
+    // Clear the visual canvas
+    canvasContext.clearRect(
       0,
       0,
       canvasRef.current.width,

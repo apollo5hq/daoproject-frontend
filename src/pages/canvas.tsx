@@ -98,6 +98,7 @@ export default function () {
         restoreState={restoreState}
         setRestoreState={setRestoreState}
         eraserRadius={eraserRadius}
+        nftCanvasRef={nftCanvasRef}
       />
       <Confetti active={hasMinted} config={config} />
     </CanvasContainer>

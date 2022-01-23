@@ -57,8 +57,8 @@ export default function (props: DrawingTools) {
             name="Eraser"
             onClick={clickEraser}
           />
-          <DrawingTool variant="outlined" name="Clear" onClick={clearCanvas} />
           <DrawingTool variant="outlined" name="Undo" onClick={onUndoLast} />
+          <DrawingTool variant="outlined" name="Clear" onClick={clearCanvas} />
         </Container>
         <div style={{ width: 300 }}>
           <Slider
