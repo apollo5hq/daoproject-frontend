@@ -1,23 +1,11 @@
-import { Dispatch, RefObject, SetStateAction, useState } from "react";
 import { Slider, DrawingTool } from "@/components";
 import { Color, ColorResult, SketchPicker } from "react-color";
-import { PainterState, RestoreState } from "src/utils/types/canvas";
-import { useTheme, styled, Button } from "@mui/material";
-
-interface Tools {
-  canvasContext: CanvasRenderingContext2D | null;
-  setPainterState: Dispatch<SetStateAction<PainterState>>;
-  isErasing: boolean;
-  lineWidth: number;
-  canvasRef: RefObject<HTMLCanvasElement>;
-  restoreState: RestoreState;
-  setRestoreState: Dispatch<SetStateAction<RestoreState>>;
-}
+import { Tools } from "src/utils/types/canvas";
+import { styled, Button } from "@mui/material";
 
 const Container = styled("div")({
   display: "flex",
   flexDirection: "row",
-  flexGrow: 1,
 });
 
 const ToolsWrapper = styled("div")({
@@ -41,21 +29,14 @@ export default function ({
   canvasRef,
   restoreState,
   setRestoreState,
-}: Tools) {
-  const {
-    palette: { primary },
-  } = useTheme();
-  // State for color picker
-  const [colorPickerState, setColorPickerState] = useState<Color>(primary.main);
+  colorPickerState,
+  onChangeComplete,
+}: Tools & {
+  onChangeComplete: (value: ColorResult) => void;
+  colorPickerState: Color;
+}) {
   // State for undoing last draw
   const { index: restoreIndex, array: restoreArray } = restoreState;
-  // Sets color of the pencil and changes the color of the picker
-  const onChangeComplete = (value: ColorResult) => {
-    setPainterState((prevState) => {
-      return { ...prevState, userStrokeStyle: value.hex };
-    });
-    setColorPickerState(value.rgb);
-  };
 
   // Clear the entire canvas
   const clearCanvas = () => {

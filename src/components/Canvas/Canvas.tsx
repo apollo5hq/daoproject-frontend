@@ -105,8 +105,8 @@ export default function (props: CanvasProps) {
   useIsomorphicLayoutEffect(() => {
     // Here we set up the properties of the canvas element.
     if (canvasRef.current && address) {
-      canvasRef.current.width = 1000;
-      canvasRef.current.height = 800;
+      canvasRef.current.width = 700;
+      canvasRef.current.height = 700;
       let ctx = canvasRef.current.getContext("2d");
       if (ctx) {
         ctx.lineJoin = "round";
@@ -124,7 +124,6 @@ export default function (props: CanvasProps) {
       data-testid="canvas"
       // We use the ref attribute to get direct access to the canvas element.
       ref={canvasRef}
-      style={{ background: "transparent" }}
       onMouseDown={onMouseDown}
       onMouseLeave={endPaintEvent}
       onMouseUp={endPaintEvent}
