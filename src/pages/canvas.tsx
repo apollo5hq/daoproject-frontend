@@ -1,14 +1,9 @@
 import { useState, useRef } from "react";
 import { Container, styled, useTheme } from "@mui/material";
-import {
-  Canvas,
-  ConnectButton,
-  MintNFTButton,
-  Drawer,
-  Dialog,
-} from "@/components";
+import { Canvas, ConnectButton, MintNFTButton, Drawer } from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
+import Confetti from "react-dom-confetti";
 
 const CanvasContainer = styled(Container)({
   display: "flex",
@@ -19,7 +14,7 @@ const CanvasContainer = styled(Container)({
   padding: 10,
 });
 
-const CanvasPage = () => {
+export default function () {
   const {
     palette: { primary },
   } = useTheme();
@@ -49,9 +44,21 @@ const CanvasPage = () => {
   });
 
   // State for the message when a user claims the NFT
-  const [openseaLink, setOpenseaLink] = useState<string>("");
+  const [hasMinted, setHasMinted] = useState<boolean>(false);
 
-  const [openDialog, setOpenDialog] = useState(true);
+  const config = {
+    angle: 210,
+    spread: 360,
+    startVelocity: 35,
+    elementCount: 126,
+    dragFriction: 0.12,
+    duration: 4090,
+    stagger: 17,
+    width: "55px",
+    height: "15px",
+    perspective: "702px",
+    colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+  };
 
   if (!address) {
     return (
@@ -73,9 +80,9 @@ const CanvasPage = () => {
         setRestoreState={setRestoreState}
       />
       <MintNFTButton
-        setOpenDialog={setOpenDialog}
-        setOpenseaLink={setOpenseaLink}
         canvasRef={canvasRef.current}
+        hasMinted={hasMinted}
+        setHasMinted={setHasMinted}
       />
       <Drawer
         setPainterState={setPainterState}
@@ -86,13 +93,7 @@ const CanvasPage = () => {
         restoreState={restoreState}
         setRestoreState={setRestoreState}
       />
-      <Dialog
-        openseaLink={openseaLink}
-        open={openDialog}
-        setOpen={setOpenDialog}
-      />
+      <Confetti active={hasMinted} config={config} />
     </CanvasContainer>
   );
-};
-
-export default CanvasPage;
+}
