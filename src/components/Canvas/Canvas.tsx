@@ -1,3 +1,4 @@
+import { styled } from "@mui/material";
 import { MouseEvent, Dispatch, SetStateAction, RefObject, useRef } from "react";
 import { PainterState, RestoreState, Position } from "src/utils/types/canvas";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
@@ -12,6 +13,27 @@ interface CanvasProps {
   nftCanvasRef: RefObject<HTMLCanvasElement>;
   setRestoreState: Dispatch<SetStateAction<RestoreState>>;
 }
+
+const NFTCanvas = styled("canvas")({
+  position: "absolute",
+  zIndex: 1,
+  left: 0,
+  top: 0,
+});
+
+const Canvas = styled("canvas")({
+  position: "absolute",
+  zIndex: 2,
+  left: 0,
+  top: 0,
+});
+
+const Container = styled("div")({
+  background: "white",
+  position: "relative",
+  height: 700,
+  width: 700,
+});
 
 export default function (props: CanvasProps) {
   const {
@@ -136,38 +158,17 @@ export default function (props: CanvasProps) {
   }, []);
 
   return (
-    <div
-      style={{
-        background: "white",
-        position: "relative",
-        height: 700,
-        width: 700,
-      }}
-    >
-      <canvas
-        ref={nftCanvasRef}
-        style={{
-          position: "absolute",
-          zIndex: 1,
-          left: 0,
-          top: 0,
-        }}
-      />
-      <canvas
+    <Container>
+      <NFTCanvas ref={nftCanvasRef} />
+      <Canvas
         data-testid="canvas"
         // We use the ref attribute to get direct access to the canvas element.
         ref={canvasRef}
-        style={{
-          position: "absolute",
-          zIndex: 2,
-          left: 0,
-          top: 0,
-        }}
         onMouseDown={onMouseDown}
         onMouseLeave={endPaintEvent}
         onMouseUp={endPaintEvent}
         onMouseMove={onMouseMove}
       />
-    </div>
+    </Container>
   );
 }
