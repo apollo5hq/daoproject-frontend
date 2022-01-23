@@ -173,11 +173,14 @@ export default function (props: DrawerProps) {
               onChangeComplete={onChangeComplete}
             />
             <Tooltip title="Pen">
-              <IconButton onClick={clickPencil}>
+              <IconButton
+                color={isErasing ? "default" : "primary"}
+                onClick={clickPencil}
+              >
                 <EditIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Eraser">
+            <Tooltip color={isErasing ? "primary" : "default"} title="Eraser">
               <IconButton onClick={clickEraser}>
                 <SvgIcon>
                   <path d={mdiEraserVariant} />

@@ -22,7 +22,7 @@ const ToolsWrapper = styled("div")({
   alignItems: "center",
   flexDirection: "column",
   height: 0,
-  width: 300,
+  width: 375,
 });
 
 export default function (props: DrawingTools) {
@@ -51,16 +51,15 @@ export default function (props: DrawingTools) {
             name="Pencil"
             onClick={clickPencil}
           />
-          {/* <DrawingTool
-            setPainterState={setPainterState}
-            canvasContext={canvasContext}
-            isErasing={isErasing}
+          <DrawingTool
+            variant={isErasing ? "contained" : "outlined"}
             name="Eraser"
-          /> */}
+            onClick={clickEraser}
+          />
           <DrawingTool variant="outlined" name="Clear" onClick={clearCanvas} />
           <DrawingTool variant="outlined" name="Undo" onClick={onUndoLast} />
         </Container>
-        <div style={{ width: 225 }}>
+        <div style={{ width: 300 }}>
           <Slider
             lineWidth={lineWidth}
             canvasContext={canvasContext}
