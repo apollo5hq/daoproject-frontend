@@ -1,6 +1,12 @@
 import { useState, useRef } from "react";
 import { Container, styled, useTheme } from "@mui/material";
-import { Canvas, ConnectButton, MintNFTButton, Drawer } from "@/components";
+import {
+  Canvas,
+  ConnectButton,
+  MintNFTButton,
+  Drawer,
+  Dialog,
+} from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 
@@ -42,33 +48,49 @@ const CanvasPage = () => {
     index: -1,
   });
 
+  // State for the message when a user claims the NFT
+  const [openseaLink, setOpenseaLink] = useState<string>("");
+
+  const [openDialog, setOpenDialog] = useState(true);
+
+  if (!address) {
+    return (
+      <CanvasContainer sx={{ justifyContent: "center" }}>
+        <ConnectButton />
+      </CanvasContainer>
+    );
+  }
+
   return (
     <CanvasContainer>
-      {address ? (
-        <>
-          <Canvas
-            canvasRef={canvasRef}
-            painterState={painterState}
-            setPainterState={setPainterState}
-            address={address}
-            canvasContext={canvasContext}
-            setCanvasContext={setCanvasContext}
-            setRestoreState={setRestoreState}
-          />
-          <MintNFTButton canvasRef={canvasRef.current} />
-          <Drawer
-            setPainterState={setPainterState}
-            canvasContext={canvasContext}
-            isErasing={isErasing}
-            lineWidth={lineWidth}
-            canvasRef={canvasRef}
-            restoreState={restoreState}
-            setRestoreState={setRestoreState}
-          />
-        </>
-      ) : (
-        <ConnectButton />
-      )}
+      <Canvas
+        canvasRef={canvasRef}
+        painterState={painterState}
+        setPainterState={setPainterState}
+        address={address}
+        canvasContext={canvasContext}
+        setCanvasContext={setCanvasContext}
+        setRestoreState={setRestoreState}
+      />
+      <MintNFTButton
+        setOpenDialog={setOpenDialog}
+        setOpenseaLink={setOpenseaLink}
+        canvasRef={canvasRef.current}
+      />
+      <Drawer
+        setPainterState={setPainterState}
+        canvasContext={canvasContext}
+        isErasing={isErasing}
+        lineWidth={lineWidth}
+        canvasRef={canvasRef}
+        restoreState={restoreState}
+        setRestoreState={setRestoreState}
+      />
+      <Dialog
+        openseaLink={openseaLink}
+        open={openDialog}
+        setOpen={setOpenDialog}
+      />
     </CanvasContainer>
   );
 };

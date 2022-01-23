@@ -1,4 +1,4 @@
-import { useState, FunctionComponent } from "react";
+import { useState, FunctionComponent, Dispatch, SetStateAction } from "react";
 import { Button } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useAppSelector } from "../../redux/app/hooks";
@@ -15,17 +15,15 @@ const ipfsClient = ipfsHttpClient({
 
 const MintNFTButton: FunctionComponent<{
   canvasRef: HTMLCanvasElement | null;
-}> = ({ canvasRef }) => {
+  setOpenseaLink: Dispatch<SetStateAction<string>>;
+  setOpenDialog: Dispatch<SetStateAction<boolean>>;
+}> = ({ canvasRef, setOpenseaLink, setOpenDialog }) => {
   const { data } = useAppSelector((state) => state.web3);
   const { address: userAddress, network } = data;
   // State for whether or not the user is minting
   const [minting, setMinting] = useState<boolean>(false);
   // State for whether the user has claimed the NFT or not
   const [hasClaimed, setHasClaimed] = useState<boolean>(false);
-  // State for the message when a user claims the NFT
-  const [claimedMessage, setclaimedMessage] = useState<string>(
-    "Congrats you have claimed your NFT :)"
-  );
 
   // Upload art and metadata to ipfs
   const createMetadata = async (blob: Blob) => {
@@ -85,9 +83,10 @@ const MintNFTButton: FunctionComponent<{
           const value: BigNumber = event.args[2];
           const tokenId = value.toNumber();
           // Return a link to the nft on opensea
-          setclaimedMessage(
-            `Congrats you have claimed your NFT :)\n\nIt can take up to 10 min to see your NFT on OpenSea! Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId}`
+          setOpenseaLink(
+            `https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId}`
           );
+          setOpenDialog(true);
         } catch (error) {
           console.log(error);
         }
@@ -110,7 +109,7 @@ const MintNFTButton: FunctionComponent<{
   }
   // Check if user has claimed NFT
   if (hasClaimed) {
-    return <div>{claimedMessage}</div>;
+    return <div>NFT Minted!</div>;
   }
 
   return (

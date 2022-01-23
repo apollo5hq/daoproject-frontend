@@ -5,6 +5,7 @@ import MintNFTButton from "./MintNFTButton";
 import Snackbar from "./Snackbar";
 import Slider from "./Slider";
 import Drawer from "./Drawer";
+import Dialog from "./Dialog";
 
 export {
   ConnectButton,
@@ -17,4 +18,5 @@ export {
   Slider,
   DrawingTool,
   Drawer,
+  Dialog,
 };
