@@ -1,4 +1,4 @@
-import { MouseEvent, Dispatch, SetStateAction, RefObject } from "react";
+import { MouseEvent, Dispatch, SetStateAction, RefObject, useRef } from "react";
 import { PainterState, RestoreState, Position } from "src/utils/types/canvas";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
@@ -9,6 +9,7 @@ interface CanvasProps {
   canvasContext: CanvasRenderingContext2D | null;
   setCanvasContext: Dispatch<SetStateAction<CanvasRenderingContext2D | null>>;
   canvasRef: RefObject<HTMLCanvasElement>;
+  nftCanvasRef: RefObject<HTMLCanvasElement>;
   setRestoreState: Dispatch<SetStateAction<RestoreState>>;
 }
 
@@ -21,9 +22,16 @@ export default function (props: CanvasProps) {
     setCanvasContext,
     canvasRef,
     setRestoreState,
+    nftCanvasRef,
   } = props;
-  const { isPainting, userStrokeStyle, prevPos, lineWidth, isErasing } =
-    painterState;
+  const {
+    isPainting,
+    userStrokeStyle,
+    prevPos,
+    lineWidth,
+    isErasing,
+    eraserRadius,
+  } = painterState;
 
   // When user clicks
   const onMouseDown = ({
@@ -80,22 +88,23 @@ export default function (props: CanvasProps) {
   ) => {
     if (!canvasContext) return;
     const { offsetX, offsetY } = currPos;
-    const { offsetX: x, offsetY: y } = prevPos;
+    const { offsetX: prevX, offsetY: prevY } = prevPos;
     canvasContext.beginPath();
-    // if (isErasing) {
-    //   canvasContext.globalCompositeOperation = "destination-out";
-    //   canvasContext.arc(offsetX, offsetY, 8, 0, Math.PI * 2);
-    //   canvasContext.fill();
-    // } else {
-    canvasContext.strokeStyle = strokeStyle;
-    canvasContext.lineWidth = lineWidth;
-    // Move the the prevPosition of the mouse
-    canvasContext.moveTo(x, y);
-    // Draw a line to the current position of the mouse
-    canvasContext.lineTo(offsetX, offsetY);
-    // Visualize the line using the strokeStyle
-    canvasContext.stroke();
-    // }
+    if (isErasing) {
+      canvasContext.globalCompositeOperation = "destination-out";
+      canvasContext.arc(offsetX, offsetY, eraserRadius, 0, Math.PI * 2);
+      canvasContext.fill();
+    } else {
+      canvasContext.globalCompositeOperation = "source-over";
+      canvasContext.strokeStyle = strokeStyle;
+      canvasContext.lineWidth = lineWidth;
+      // Move the the prevPosition of the mouse
+      canvasContext.moveTo(prevX, prevY);
+      // Draw a line to the current position of the mouse
+      canvasContext.lineTo(offsetX, offsetY);
+      // Visualize the line using the strokeStyle
+      canvasContext.stroke();
+    }
     setPainterState((prevState) => {
       return { ...prevState, prevPos: { offsetX, offsetY } };
     });
@@ -103,31 +112,62 @@ export default function (props: CanvasProps) {
 
   // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
   useIsomorphicLayoutEffect(() => {
-    // Here we set up the properties of the canvas element.
-    if (canvasRef.current && address) {
-      canvasRef.current.width = 700;
-      canvasRef.current.height = 700;
-      let ctx = canvasRef.current.getContext("2d");
-      if (ctx) {
-        ctx.lineJoin = "round";
-        ctx.lineCap = "round";
-        ctx.lineWidth = 4;
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      }
-      setCanvasContext(ctx);
+    if (!canvasRef.current || !address || !nftCanvasRef.current) return;
+    // Here we set up the properties each canvas element.
+    canvasRef.current.width = 700;
+    canvasRef.current.height = 700;
+    nftCanvasRef.current.width = 700;
+    nftCanvasRef.current.height = 700;
+    let nftCtx = nftCanvasRef.current.getContext("2d");
+    let ctx = canvasRef.current.getContext("2d");
+    if (nftCtx && ctx) {
+      nftCtx.fillStyle = "white";
+      nftCtx.fillRect(
+        0,
+        0,
+        nftCanvasRef.current.width,
+        nftCanvasRef.current.height
+      );
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.lineWidth = 4;
     }
+    setCanvasContext(ctx);
   }, []);
 
   return (
-    <canvas
-      data-testid="canvas"
-      // We use the ref attribute to get direct access to the canvas element.
-      ref={canvasRef}
-      onMouseDown={onMouseDown}
-      onMouseLeave={endPaintEvent}
-      onMouseUp={endPaintEvent}
-      onMouseMove={onMouseMove}
-    />
+    <div
+      style={{
+        background: "white",
+        position: "relative",
+        height: 700,
+        width: 700,
+      }}
+    >
+      <canvas
+        ref={nftCanvasRef}
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          left: 0,
+          top: 0,
+        }}
+      />
+      <canvas
+        data-testid="canvas"
+        // We use the ref attribute to get direct access to the canvas element.
+        ref={canvasRef}
+        style={{
+          position: "absolute",
+          zIndex: 2,
+          left: 0,
+          top: 0,
+        }}
+        onMouseDown={onMouseDown}
+        onMouseLeave={endPaintEvent}
+        onMouseUp={endPaintEvent}
+        onMouseMove={onMouseMove}
+      />
+    </div>
   );
 }
