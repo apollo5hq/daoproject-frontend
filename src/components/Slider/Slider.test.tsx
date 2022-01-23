@@ -3,10 +3,16 @@ import { Slider } from "@/components";
 
 describe("Slider", () => {
   render(
-    <Slider setPainterState={() => {}} canvasContext={null} lineWidth={4} />
+    <Slider
+      isErasing={true}
+      eraserRadius={8}
+      setPainterState={() => {}}
+      canvasContext={null}
+      lineWidth={4}
+    />
   );
 
   it("renders the canvas", async () => {
-    await screen.findByTestId("slider");
+    await screen.findByTestId("eraserSlider");
   });
 });

@@ -1,16 +1,16 @@
 import { useState, RefObject, Dispatch, SetStateAction } from "react";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import {
-  Stack,
-  Toolbar,
-  Tooltip,
-  Fade,
-  Drawer as MuiDrawer,
-  IconButton,
-} from "@mui/material";
+import { RestoreState, Tools } from "src/utils/types/canvas";
 import { Color, ColorResult, HuePicker } from "react-color";
 import { CanvasTools } from "@/components";
-import { RestoreState, Tools } from "src/utils/types/canvas";
+import { mdiEraserVariant } from "@mdi/js";
+import Stack from "@mui/material/Stack";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Fade from "@mui/material/Fade";
+import MuiDrawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import SvgIcon from "@mui/material/SvgIcon";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,6 +21,7 @@ interface DrawerProps extends Tools {
   canvasRef: RefObject<HTMLCanvasElement>;
   restoreState: RestoreState;
   setRestoreState: Dispatch<SetStateAction<RestoreState>>;
+  nftCanvasRef: RefObject<HTMLCanvasElement>;
 }
 
 const drawerWidth = 400;
@@ -70,9 +71,11 @@ export default function (props: DrawerProps) {
     setPainterState,
     isErasing,
     lineWidth,
+    eraserRadius,
     canvasRef,
     restoreState,
     setRestoreState,
+    nftCanvasRef,
   } = props;
   const [open, setOpen] = useState(false);
   const {
@@ -95,18 +98,28 @@ export default function (props: DrawerProps) {
   // State for undoing last draw
   const { index: restoreIndex } = restoreState;
 
-  // Clear the entire canvas
+  // Clear both canvas
   const clearCanvas = () => {
-    if (!canvasContext || !canvasRef.current) return;
-    canvasContext.clearRect(
+    if (!canvasContext || !canvasRef.current || !nftCanvasRef.current) return;
+    const nftCanvasContext = nftCanvasRef.current.getContext("2d");
+    if (!nftCanvasContext) return;
+    //Clear the 2nd canvas
+    nftCanvasContext.clearRect(
       0,
       0,
-      canvasRef.current.width,
-      canvasRef.current.height
+      nftCanvasRef.current.width,
+      nftCanvasRef.current.height
     );
-    canvasContext.globalCompositeOperation = "source-over";
-    canvasContext.fillStyle = "white";
-    canvasContext.fillRect(
+    // Need to refill the 2nd canvas
+    nftCanvasContext.fillStyle = "white";
+    nftCanvasContext.fillRect(
+      0,
+      0,
+      nftCanvasRef.current.width,
+      nftCanvasRef.current.height
+    );
+    // Clear the visual canvas
+    canvasContext.clearRect(
       0,
       0,
       canvasRef.current.width,
@@ -135,16 +148,12 @@ export default function (props: DrawerProps) {
   };
 
   const clickPencil = () => {
-    if (!canvasContext) return;
-    canvasContext.globalCompositeOperation = "source-over";
     setPainterState((prevState) => {
       return { ...prevState, isErasing: false };
     });
   };
 
   const clickEraser = () => {
-    if (!canvasContext) return;
-    canvasContext.globalCompositeOperation = "destination-out";
     setPainterState((prevState) => {
       return { ...prevState, isErasing: true };
     });
@@ -173,8 +182,18 @@ export default function (props: DrawerProps) {
               onChangeComplete={onChangeComplete}
             />
             <Tooltip title="Pen">
-              <IconButton onClick={clickPencil}>
+              <IconButton
+                color={isErasing ? "default" : "primary"}
+                onClick={clickPencil}
+              >
                 <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip color={isErasing ? "primary" : "default"} title="Eraser">
+              <IconButton onClick={clickEraser}>
+                <SvgIcon>
+                  <path d={mdiEraserVariant} />
+                </SvgIcon>
               </IconButton>
             </Tooltip>
             <Tooltip title="Undo">
@@ -213,6 +232,7 @@ export default function (props: DrawerProps) {
               clearCanvas={clearCanvas}
               clickPencil={clickPencil}
               clickEraser={clickEraser}
+              eraserRadius={eraserRadius}
             />
           </Toolbar>
         </Fade>

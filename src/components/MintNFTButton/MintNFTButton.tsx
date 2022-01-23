@@ -18,9 +18,15 @@ interface MintNFTProps {
   canvasRef: HTMLCanvasElement | null;
   hasMinted: boolean;
   setHasMinted: Dispatch<SetStateAction<boolean>>;
+  nftCanvasRef: HTMLCanvasElement | null;
 }
 
-export default function ({ canvasRef, hasMinted, setHasMinted }: MintNFTProps) {
+export default function ({
+  canvasRef,
+  hasMinted,
+  setHasMinted,
+  nftCanvasRef,
+}: MintNFTProps) {
   const { data } = useAppSelector((state) => state.web3);
   const { address: userAddress, network } = data;
   // State for whether or not the user is minting
@@ -54,7 +60,10 @@ export default function ({ canvasRef, hasMinted, setHasMinted }: MintNFTProps) {
   };
 
   const askContractToMintNft = async () => {
-    canvasRef?.toBlob(
+    if (!canvasRef) return;
+    const context = nftCanvasRef?.getContext("2d");
+    context?.drawImage(canvasRef, 0, 0);
+    nftCanvasRef?.toBlob(
       async (blob) => {
         // TODO: Handle error message for when blob is null
         if (!blob) return;

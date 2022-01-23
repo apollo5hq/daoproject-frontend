@@ -26,11 +26,14 @@ export default function () {
     prevPos: { offsetX: 0, offsetY: 0 },
     isErasing: false,
     lineWidth: 4,
+    eraserRadius: 8,
   });
-  const { isErasing, lineWidth } = painterState;
+  const { isErasing, lineWidth, eraserRadius } = painterState;
 
   // Reference to the canvas
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Reference to the actual canvas we are putting all the data on
+  const nftCanvasRef = useRef<HTMLCanvasElement>(null);
 
   // Canvas context
   const [canvasContext, setCanvasContext] =
@@ -78,11 +81,13 @@ export default function () {
         canvasContext={canvasContext}
         setCanvasContext={setCanvasContext}
         setRestoreState={setRestoreState}
+        nftCanvasRef={nftCanvasRef}
       />
       <MintNFTButton
         canvasRef={canvasRef.current}
         hasMinted={hasMinted}
         setHasMinted={setHasMinted}
+        nftCanvasRef={nftCanvasRef.current}
       />
       <Drawer
         setPainterState={setPainterState}
@@ -92,6 +97,8 @@ export default function () {
         canvasRef={canvasRef}
         restoreState={restoreState}
         setRestoreState={setRestoreState}
+        eraserRadius={eraserRadius}
+        nftCanvasRef={nftCanvasRef}
       />
       <Confetti active={hasMinted} config={config} />
     </CanvasContainer>
