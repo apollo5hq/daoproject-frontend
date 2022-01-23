@@ -5,7 +5,7 @@ import { CacheProvider, EmotionCache } from "@emotion/react";
 import { Provider } from "react-redux";
 import Head from "next/head";
 import CssBaseline from "@mui/material/CssBaseline";
-import theme from "../styles/theme";
+import { theme } from "../styles/theme";
 import createEmotionCache from "../utils/createEmotionCache";
 import { MenuAppBar, Snackbar } from "@/components";
 import store from "../redux/app/store";

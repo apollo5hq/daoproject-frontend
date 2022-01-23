@@ -102,7 +102,11 @@ const MintNFTButton: FunctionComponent<{
   }
 
   if (network !== "Rinkeby Testnet") {
-    return <div>Make sure you are on the Rinkeby Testnet</div>;
+    return (
+      <div style={{ paddingTop: 10 }}>
+        Make sure you are on the Rinkeby Testnet
+      </div>
+    );
   }
   // Check if user has claimed NFT
   if (hasClaimed) {
@@ -112,7 +116,7 @@ const MintNFTButton: FunctionComponent<{
   return (
     <Box sx={{ my: 4 }}>
       {minting ? (
-        <div>Minting...</div>
+        <div style={{ paddingTop: 20 }}>Minting...</div>
       ) : (
         <Button
           data-testid="mint"
