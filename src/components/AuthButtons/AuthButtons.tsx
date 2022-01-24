@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, styled, Typography, Tooltip, Avatar } from "@mui/material";
+import { styled } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "src/redux/app/hooks";
 import {
   disconnectWallet as disconnectMessage,
@@ -7,12 +7,19 @@ import {
   changeAccount,
   changeNetwork,
 } from "src/redux/features/web3/webSlice";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CheckIcon from "@mui/icons-material/Check";
-import copy from "copy-to-clipboard";
 import { walletDisconnected } from "src/redux/features/snackbar/snackbarSlice";
 import { ChainId } from "src/utils/network";
 import { useRouter } from "next/router";
+import { mdiEthereum } from "@mdi/js";
+import IconButton from "@mui/material/IconButton";
+import SvgIcon from "@mui/material/SvgIcon";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import Avatar from "@mui/material/Avatar";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
+import copy from "copy-to-clipboard";
 
 const Container = styled("div")({
   display: "flex",
@@ -66,7 +73,6 @@ export const ConnectButton = () => {
 
 export default function () {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   // State of the user's web3 instance
   const {
     data: { address: userAddress, ens, avatar, network },
@@ -104,7 +110,7 @@ export default function () {
     // Dispatch web3 action
     dispatch(walletDisconnected());
     // Dispatch snackbar action
-    dispatch(disconnectMessage({ router }));
+    dispatch(disconnectMessage());
   };
 
   // Use effect for hiding copy checkmark
@@ -129,6 +135,10 @@ export default function () {
       }
     };
   }, []);
+
+  const requestEth = () => {
+    window.open("https://faucets.chain.link/rinkeby", "_blank");
+  };
 
   // If user not connected show connect button
   if (!userAddress) {
@@ -180,6 +190,13 @@ export default function () {
       >
         Disconnect
       </AuthButton>
+      <Tooltip title="Request test ETH" placement="bottom-start">
+        <IconButton onClick={requestEth} sx={{ marginLeft: 1 }}>
+          <SvgIcon>
+            <path d={mdiEthereum} />
+          </SvgIcon>
+        </IconButton>
+      </Tooltip>
     </Container>
   );
 }
