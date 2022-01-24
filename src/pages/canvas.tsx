@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Container, styled, useTheme } from "@mui/material";
 import { Canvas, ConnectButton, MintNFTButton, Drawer } from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import Confetti from "react-dom-confetti";
+import { useRouter } from "next/router";
 
 const CanvasContainer = styled(Container)({
   display: "flex",
@@ -15,6 +16,7 @@ const CanvasContainer = styled(Container)({
 });
 
 export default function () {
+  const router = useRouter();
   const {
     palette: { primary },
   } = useTheme();
@@ -48,6 +50,11 @@ export default function () {
 
   // State for the message when a user claims the NFT
   const [hasMinted, setHasMinted] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (address) return;
+    router.push("/").catch((e) => console.log(e));
+  }, [address]);
 
   const config = {
     angle: 210,

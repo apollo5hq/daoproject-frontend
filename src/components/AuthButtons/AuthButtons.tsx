@@ -89,7 +89,6 @@ export default function () {
 
   // This runs when the user switch networks in metamask
   const handleNetworkChanged = (chainId: ChainId) => {
-    console.log(chainId);
     dispatch(changeNetwork({ chainId }));
   };
 
