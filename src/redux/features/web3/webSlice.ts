@@ -124,18 +124,13 @@ export const web3 = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    disconnectWallet: (state, action: { payload: { router?: NextRouter } }) => {
-      const {
-        payload: { router },
-      } = action;
+    disconnectWallet: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
       state.data = { ...initialState.data };
       state.isConnected = false;
-      // Route back to home page
-      router?.push("/").catch((e) => console.log(e));
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
