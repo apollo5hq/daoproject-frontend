@@ -30,7 +30,6 @@ const UserAvatar = styled(Avatar)({
 });
 
 const AuthButton = styled(Button)({
-  textTransform: "none",
   height: 35,
 });
 
