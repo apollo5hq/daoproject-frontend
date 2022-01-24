@@ -53,6 +53,7 @@ export const connectWallet = createAsyncThunk<
     if (accounts.length > 0) {
       const network: Network = selectNetwork(window.ethereum.chainId);
       const accountData = await getAccounts(accounts[0]);
+      // Show connection successful snackbar
       dispatch(walletConnected());
       // The value we return becomes the `fulfilled` action payload
       return { ...accountData, network, router };
@@ -123,7 +124,7 @@ export const web3 = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    disconnectWallet: (state, action: { payload: { router: NextRouter } }) => {
+    disconnectWallet: (state, action: { payload: { router?: NextRouter } }) => {
       const {
         payload: { router },
       } = action;
@@ -134,7 +135,7 @@ export const web3 = createSlice({
       state.data = { ...initialState.data };
       state.isConnected = false;
       // Route back to home page
-      router.push("/").catch((e) => console.log(e));
+      router?.push("/").catch((e) => console.log(e));
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
