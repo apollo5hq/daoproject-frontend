@@ -16,7 +16,7 @@ const PageContainer = styled(Container)({
 
 export default function Index() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <PageContainer maxWidth="lg">
       <Box sx={{ my: 4 }}>
@@ -26,7 +26,7 @@ export default function Index() {
         {isMobile ? (
           <Link href="/canvas">
             <Button variant="contained" color="secondary">
-              Check out canvas!
+              Check out the canvas!
             </Button>
           </Link>
         ) : (

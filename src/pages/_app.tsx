@@ -39,7 +39,7 @@ const MobileMessageWrapper = styled("div")({
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <StrictMode>
       <Provider store={store}>

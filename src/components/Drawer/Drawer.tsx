@@ -92,7 +92,7 @@ export default function (props: DrawerProps) {
     breakpoints,
   } = useTheme();
 
-  const isMobile = useMediaQuery(breakpoints.down("md"));
+  const isMobile = useMediaQuery(breakpoints.down("sm"));
 
   const handleDrawer = () => {
     setOpen(!open);

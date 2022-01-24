@@ -19,7 +19,7 @@ export default function () {
     palette: { primary },
     breakpoints,
   } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down("md"));
+  const isMobile = useMediaQuery(breakpoints.down("sm"));
   const { address: userAddress } = useAppSelector((state) => state.web3.data);
   // State of the paint brush
   const [painterState, setPainterState] = useState<PainterState>({
