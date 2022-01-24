@@ -1,9 +1,16 @@
-import { useState, RefObject, Dispatch, SetStateAction } from "react";
+import {
+  useState,
+  RefObject,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+} from "react";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import { RestoreState, Tools } from "src/utils/types/canvas";
 import { Color, ColorResult, HuePicker } from "react-color";
 import { CanvasTools } from "@/components";
 import { mdiEraserVariant } from "@mdi/js";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
@@ -77,10 +84,16 @@ export default function (props: DrawerProps) {
     setRestoreState,
     nftCanvasRef,
   } = props;
+
   const [open, setOpen] = useState(false);
+
   const {
     palette: { primary },
+    breakpoints,
   } = useTheme();
+
+  const isMobile = useMediaQuery(breakpoints.down("md"));
+
   const handleDrawer = () => {
     setOpen(!open);
   };
@@ -159,6 +172,12 @@ export default function (props: DrawerProps) {
     });
   };
 
+  // This closes the drawer if app is in a mobile view
+  useEffect(() => {
+    if (!isMobile) return;
+    setOpen(false);
+  }, [isMobile]);
+
   return (
     <Drawer
       data-testid="drawer"
@@ -208,15 +227,17 @@ export default function (props: DrawerProps) {
             </Tooltip>
           </Stack>
         </Fade>
-        <Tooltip title={open ? "Close drawer" : "Open drawer"}>
-          <IconButton onClick={handleDrawer}>
-            {open ? (
-              <KeyboardDoubleArrowDownIcon />
-            ) : (
-              <KeyboardDoubleArrowUpIcon />
-            )}
-          </IconButton>
-        </Tooltip>
+        {!isMobile && (
+          <Tooltip title={open ? "Close drawer" : "Open drawer"}>
+            <IconButton onClick={handleDrawer}>
+              {open ? (
+                <KeyboardDoubleArrowDownIcon />
+              ) : (
+                <KeyboardDoubleArrowUpIcon />
+              )}
+            </IconButton>
+          </Tooltip>
+        )}
       </Toolbar>
       <div style={{ paddingTop: 10 }}>
         <Fade in={open}>

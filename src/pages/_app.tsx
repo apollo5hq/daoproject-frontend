@@ -1,10 +1,12 @@
 import { StrictMode } from "react";
 import { AppProps } from "next/app";
-import { ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider, styled } from "@mui/material/styles";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { Provider } from "react-redux";
 import { theme } from "../styles/theme";
 import { MenuAppBar, Snackbar } from "@/components";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import CssBaseline from "@mui/material/CssBaseline";
 import createEmotionCache from "../utils/createEmotionCache";
 import store from "../redux/app/store";
@@ -24,8 +26,20 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
+const MobileMessageWrapper = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  backgroundColor: theme.palette.secondary.main,
+  height: 64,
+  justifyContent: "center",
+  padding: 30,
+  width: "100%",
+  position: "fixed",
+});
+
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   return (
     <StrictMode>
       <Provider store={store}>
@@ -40,7 +54,18 @@ export default function MyApp(props: MyAppProps) {
           <ThemeProvider theme={theme}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
-            <MenuAppBar />
+            {isMobile ? (
+              <div style={{ paddingBottom: 65 }}>
+                <MobileMessageWrapper>
+                  <Typography fontSize={15} color="black" align="center">
+                    Use DAOProject on a desktop to connect your wallet and
+                    create NFTs
+                  </Typography>
+                </MobileMessageWrapper>
+              </div>
+            ) : (
+              <MenuAppBar />
+            )}
             <Component {...pageProps} />
             <Snackbar />
           </ThemeProvider>
