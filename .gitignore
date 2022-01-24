@@ -34,8 +34,5 @@ yarn-error.log*
 # vercel
 .vercel
 
-# contract abi
-nftABI.json
-
 # eslint
 .eslintcache
