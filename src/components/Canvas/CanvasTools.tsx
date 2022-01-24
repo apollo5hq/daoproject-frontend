@@ -1,7 +1,13 @@
 import { Slider, DrawingTool } from "@/components";
-import { Color, ColorResult, SketchPicker } from "react-color";
+import { Color, ColorResult } from "react-color";
 import { Tools } from "src/utils/types/canvas";
 import { styled } from "@mui/material";
+import dynamic from "next/dynamic";
+
+// This component throws error when generated server-side
+const SketchPicker = dynamic(() => import("../Canvas/SketchPicker"), {
+  ssr: false,
+});
 
 interface DrawingTools extends Tools {
   onChangeComplete: (value: ColorResult) => void;
@@ -44,6 +50,7 @@ export default function (props: DrawingTools) {
       <SketchPicker
         color={colorPickerState}
         onChangeComplete={onChangeComplete}
+        onChange={onChangeComplete}
       />
       <ToolsWrapper>
         <Container>

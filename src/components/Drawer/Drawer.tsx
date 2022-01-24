@@ -199,6 +199,7 @@ export default function (props: DrawerProps) {
               width="200px"
               color={colorPickerState}
               onChangeComplete={onChangeComplete}
+              onChange={onChangeComplete}
             />
             <Tooltip title="Pen">
               <IconButton
