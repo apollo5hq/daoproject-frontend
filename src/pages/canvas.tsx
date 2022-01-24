@@ -1,18 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { Container, styled, useTheme } from "@mui/material";
+import { styled, useTheme } from "@mui/material";
 import { Canvas, ConnectButton, MintNFTButton, Drawer } from "@/components";
+import { useRouter } from "next/router";
 import { useAppSelector } from "src/redux/app/hooks";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import Confetti from "react-dom-confetti";
-import { useRouter } from "next/router";
+import Container from "@mui/material/Container";
 
 const CanvasContainer = styled(Container)({
   display: "flex",
   flexDirection: "column",
-  height: "100vh",
   alignItems: "center",
-  justifyContent: "flex-start",
-  padding: 10,
+  paddingTop: 50,
 });
 
 export default function () {
