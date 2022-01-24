@@ -4,7 +4,7 @@ import { Canvas } from "@/components";
 describe("Canvas", () => {
   render(
     <Canvas
-      address=""
+      nftCanvasRef={{ current: null }}
       setCanvasContext={() => {}}
       setPainterState={() => {}}
       painterState={{
@@ -13,6 +13,7 @@ describe("Canvas", () => {
         lineWidth: 4,
         prevPos: { offsetX: 0, offsetY: 0 },
         isErasing: false,
+        eraserRadius: 8,
       }}
       canvasContext={null}
       canvasRef={{ current: null }}
