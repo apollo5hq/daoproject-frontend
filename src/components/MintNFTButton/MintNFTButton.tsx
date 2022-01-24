@@ -27,7 +27,7 @@ export default function ({
   nftCanvasRef,
 }: MintNFTProps) {
   const { data } = useAppSelector((state) => state.web3);
-  const { address: userAddress, network } = data;
+  const { network } = data;
   // State for whether or not the user is minting
   const [minting, setMinting] = useState<boolean>(false);
   const [link, setLink] = useState("");
@@ -46,16 +46,6 @@ export default function ({
     });
     const base64string = Buffer.from(metadata).toString("base64");
     return `data:application/json;base64,${base64string}`;
-  };
-
-  const logTransaction = (hash: string) => {
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `Mined, see transaction: https://rinkeby.etherscan.io/tx/${hash}`
-      );
-    } else {
-      console.log(`Mined, see transaction: https://etherscan.io/tx/${hash}`);
-    }
   };
 
   const askContractToMintNft = async () => {
@@ -85,7 +75,9 @@ export default function ({
           const tx = await wait();
           setMinting(false);
           // Log link to the transaction hash on etherscan
-          logTransaction(hash);
+          console.log(
+            `Mined, see transaction: https://rinkeby.etherscan.io/tx/${hash}`
+          );
           // Get tokenId
           const event = tx.events[0];
           const value: BigNumber = event.args[2];
