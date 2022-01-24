@@ -1,12 +1,11 @@
-import { styled } from "@mui/material";
-import { MouseEvent, Dispatch, SetStateAction, RefObject, useRef } from "react";
+import { MouseEvent, Dispatch, SetStateAction, RefObject } from "react";
 import { PainterState, RestoreState, Position } from "src/utils/types/canvas";
+import { styled } from "@mui/material";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
 interface CanvasProps {
   painterState: PainterState;
   setPainterState: Dispatch<SetStateAction<PainterState>>;
-  address: string | null;
   canvasContext: CanvasRenderingContext2D | null;
   setCanvasContext: Dispatch<SetStateAction<CanvasRenderingContext2D | null>>;
   canvasRef: RefObject<HTMLCanvasElement>;
@@ -39,7 +38,6 @@ export default function (props: CanvasProps) {
   const {
     painterState,
     setPainterState,
-    address,
     canvasContext,
     setCanvasContext,
     canvasRef,
@@ -134,7 +132,7 @@ export default function (props: CanvasProps) {
 
   // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
   useIsomorphicLayoutEffect(() => {
-    if (!canvasRef.current || !address || !nftCanvasRef.current) return;
+    if (!canvasRef.current || !nftCanvasRef.current) return;
     // Here we set up the properties each canvas element.
     canvasRef.current.width = 700;
     canvasRef.current.height = 700;

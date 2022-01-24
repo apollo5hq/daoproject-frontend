@@ -1,8 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { styled, useTheme } from "@mui/material";
-import { Canvas, ConnectButton, MintNFTButton, Drawer } from "@/components";
-import { useRouter } from "next/router";
-import { useAppSelector } from "src/redux/app/hooks";
+import { Canvas, MintNFTButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import Confetti from "react-dom-confetti";
 import Container from "@mui/material/Container";
@@ -15,11 +13,9 @@ const CanvasContainer = styled(Container)({
 });
 
 export default function () {
-  const router = useRouter();
   const {
     palette: { primary },
   } = useTheme();
-  const address = useAppSelector(({ web3 }) => web3.data.address);
   // State of the paint brush
   const [painterState, setPainterState] = useState<PainterState>({
     isPainting: false,
@@ -50,11 +46,6 @@ export default function () {
   // State for the message when a user claims the NFT
   const [hasMinted, setHasMinted] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (address) return;
-    router.push("/").catch((e) => console.log(e));
-  }, [address]);
-
   const config = {
     angle: 210,
     spread: 360,
@@ -69,21 +60,12 @@ export default function () {
     colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
   };
 
-  if (!address) {
-    return (
-      <CanvasContainer sx={{ justifyContent: "center" }}>
-        <ConnectButton />
-      </CanvasContainer>
-    );
-  }
-
   return (
     <CanvasContainer>
       <Canvas
         canvasRef={canvasRef}
         painterState={painterState}
         setPainterState={setPainterState}
-        address={address}
         canvasContext={canvasContext}
         setCanvasContext={setCanvasContext}
         setRestoreState={setRestoreState}
