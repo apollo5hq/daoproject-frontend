@@ -1,10 +1,10 @@
 import { useState, Dispatch, SetStateAction } from "react";
-import { Button } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { useAppSelector } from "../../redux/app/hooks";
 import { ConnectButton } from "@/components";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { Typography, Link } from "@mui/material";
+import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import NFT from "../../../nftABI.json";
 
@@ -105,16 +105,44 @@ export default function ({
     );
   };
 
+  const promptNetworkChange = async () => {
+    const { ethereum } = window;
+    if (!ethereum) return;
+    try {
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [
+          {
+            chainId: "0x4",
+          },
+        ],
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   if (!userAddress) {
     return <ConnectButton data-testid="connectButton" />;
   }
 
   if (network !== "Rinkeby Testnet") {
     return (
-      <div style={{ paddingTop: 50 }}>
-        <Typography variant="h6" align="center">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          paddingTop: 50,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="h6" sx={{ padding: 1 }}>
           Make sure you are on the Rinkeby Testnet
         </Typography>
+        <Button variant="contained" onClick={promptNetworkChange}>
+          Switch Network
+        </Button>
       </div>
     );
   }
