@@ -23,7 +23,7 @@ test("should return initial state", () => {
 });
 
 test("disconnecting wallet should return initial state with isMetamask property true", () => {
-  expect(web3reducer(updatedState, disconnectWallet({}))).toEqual({
+  expect(web3reducer(updatedState, disconnectWallet())).toEqual({
     ...initialState,
     isMetamask: true,
     isConnected: false,

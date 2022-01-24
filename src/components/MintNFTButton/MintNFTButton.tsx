@@ -1,7 +1,6 @@
 import { useState, Dispatch, SetStateAction } from "react";
 import { BigNumber, ethers } from "ethers";
 import { useAppSelector } from "../../redux/app/hooks";
-import { ConnectButton } from "@/components";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { Typography, Link } from "@mui/material";
 import Button from "@mui/material/Button";
@@ -122,19 +121,14 @@ export default function ({
     }
   };
 
-  if (!userAddress) {
-    return <ConnectButton data-testid="connectButton" />;
-  }
-
   if (network !== "Rinkeby Testnet") {
     return (
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          paddingTop: 50,
+          paddingTop: 23,
           alignItems: "center",
-          justifyContent: "center",
         }}
       >
         <Typography variant="h6" sx={{ padding: 1 }}>
