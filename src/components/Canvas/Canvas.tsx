@@ -1,6 +1,6 @@
-import { styled } from "@mui/material";
-import { MouseEvent, Dispatch, SetStateAction, RefObject, useRef } from "react";
+import { MouseEvent, Dispatch, SetStateAction, RefObject } from "react";
 import { PainterState, RestoreState, Position } from "src/utils/types/canvas";
+import { styled } from "@mui/material";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
 interface CanvasProps {
