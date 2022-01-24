@@ -3,6 +3,7 @@ import { styled, useTheme } from "@mui/material";
 import { Canvas, MintNFTButton, Drawer, ConnectButton } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppSelector } from "src/redux/app/hooks";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Confetti from "react-dom-confetti";
 import Container from "@mui/material/Container";
 
@@ -14,10 +15,12 @@ const CanvasContainer = styled(Container)({
 });
 
 export default function () {
-  const { address: userAddress } = useAppSelector((state) => state.web3.data);
   const {
     palette: { primary },
+    breakpoints,
   } = useTheme();
+  const isMobile = useMediaQuery(breakpoints.down("sm"));
+  const { address: userAddress } = useAppSelector((state) => state.web3.data);
   // State of the paint brush
   const [painterState, setPainterState] = useState<PainterState>({
     isPainting: false,
@@ -73,18 +76,19 @@ export default function () {
         setRestoreState={setRestoreState}
         nftCanvasRef={nftCanvasRef}
       />
-      {userAddress ? (
-        <MintNFTButton
-          canvasRef={canvasRef.current}
-          hasMinted={hasMinted}
-          setHasMinted={setHasMinted}
-          nftCanvasRef={nftCanvasRef.current}
-        />
-      ) : (
-        <div style={{ paddingTop: 23 }}>
-          <ConnectButton />
-        </div>
-      )}
+      {!isMobile &&
+        (userAddress ? (
+          <MintNFTButton
+            canvasRef={canvasRef.current}
+            hasMinted={hasMinted}
+            setHasMinted={setHasMinted}
+            nftCanvasRef={nftCanvasRef.current}
+          />
+        ) : (
+          <div style={{ paddingTop: 23 }}>
+            <ConnectButton />
+          </div>
+        ))}
       <Drawer
         setPainterState={setPainterState}
         canvasContext={canvasContext}
