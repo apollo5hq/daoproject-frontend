@@ -10,11 +10,9 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import copy from "copy-to-clipboard";
-import {
-  walletConnected,
-  walletDisconnected,
-} from "src/redux/features/snackbar/snackbarSlice";
+import { walletDisconnected } from "src/redux/features/snackbar/snackbarSlice";
 import { ChainId } from "src/utils/network";
+import { useRouter } from "next/router";
 
 const Container = styled("div")({
   display: "flex",
@@ -54,10 +52,11 @@ const AddressWrapper = styled(Typography)(({ theme }) => ({
 
 export const ConnectButton = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   return (
     <AuthButton
       data-testid="connectButton"
-      onClick={() => dispatch(connectWallet())}
+      onClick={() => dispatch(connectWallet({ router }))}
       variant="contained"
     >
       Connect
@@ -67,6 +66,7 @@ export const ConnectButton = () => {
 
 export default function () {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   // State of the user's web3 instance
   const {
     data: { address: userAddress, ens, avatar, network },
@@ -104,7 +104,7 @@ export default function () {
     // Dispatch web3 action
     dispatch(walletDisconnected());
     // Dispatch snackbar action
-    dispatch(disconnectMessage());
+    dispatch(disconnectMessage({ router }));
   };
 
   // Use effect for hiding copy checkmark

@@ -5,6 +5,7 @@ import { requestAccounts } from "../../../utils/network";
 import type { Network } from "../../../utils/network";
 import type { AsyncThunkConfig } from "../../../utils/redux";
 import { walletConnected } from "../snackbar/snackbarSlice";
+import { NextRouter } from "next/router";
 
 interface Web3Data {
   address: string | null;
@@ -38,10 +39,10 @@ export const initialState: Web3State = {
 // code can then be executed and other actions can be dispatched. Thunks are
 // typically used to make async requests.
 export const connectWallet = createAsyncThunk<
-  Web3Data,
-  undefined,
+  Web3Data & { router: NextRouter },
+  { router: NextRouter },
   AsyncThunkConfig
->("web3/connectWallet", async (_undefined, { dispatch, rejectWithValue }) => {
+>("web3/connectWallet", async ({ router }, { dispatch, rejectWithValue }) => {
   try {
     const { ethereum } = window;
     if (!ethereum) {
@@ -54,7 +55,7 @@ export const connectWallet = createAsyncThunk<
       const accountData = await getAccounts(accounts[0]);
       dispatch(walletConnected());
       // The value we return becomes the `fulfilled` action payload
-      return { ...accountData, network };
+      return { ...accountData, network, router };
     }
     throw new Error("User denied permission");
   } catch (e: any) {
@@ -122,16 +123,18 @@ export const web3 = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    disconnectWallet: (state) => {
+    disconnectWallet: (state, action: { payload: { router: NextRouter } }) => {
+      const {
+        payload: { router },
+      } = action;
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
       state.data = { ...initialState.data };
       state.isConnected = false;
-    },
-    hasMetamask: (state) => {
-      state.isMetamask = true;
+      // Route back to home page
+      router.push("/").catch((e) => console.log(e));
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -139,13 +142,15 @@ export const web3 = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(connectWallet.fulfilled, (state, { payload }) => {
-        const { address } = payload;
+        const { address, router } = payload;
         state.loading = false;
         state.data = { ...payload };
         state.error = undefined;
         if (address) {
           state.isConnected = true;
         }
+        // After connecting, route to canvas page
+        router.push("/canvas").catch((e) => console.log(e));
       })
       .addCase(changeAccount.fulfilled, (state, action) => {
         const {
@@ -181,15 +186,18 @@ export const web3 = createSlice({
           changeAccount.rejected
         ),
         (state, { payload }) => {
+          // Keep this log for errors
           console.log(payload);
+          if (!payload) return;
+          const { message } = payload;
           state.loading = false;
-          state.error = payload?.message;
+          state.error = message;
         }
       );
   },
 });
 
-export const { disconnectWallet, hasMetamask } = web3.actions;
+export const { disconnectWallet } = web3.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
