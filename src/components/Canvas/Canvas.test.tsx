@@ -4,7 +4,7 @@ import { Canvas } from "@/components";
 describe("Canvas", () => {
   render(
     <Canvas
-      nftCanvasRef={{ current: null }}
+      hiddenCanvasRef={{ current: null }}
       setCanvasContext={() => {}}
       setPainterState={() => {}}
       painterState={{

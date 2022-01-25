@@ -1,10 +1,9 @@
 import { Box, Slider } from "@mui/material";
-import { Dispatch, SetStateAction, SyntheticEvent } from "react";
+import { Dispatch, RefObject, SetStateAction, SyntheticEvent } from "react";
 import { PainterState } from "src/utils/types/canvas";
 
 interface SliderProps {
   lineWidth: number;
-  canvasContext: CanvasRenderingContext2D | null;
   setPainterState: Dispatch<SetStateAction<PainterState>>;
   isErasing: boolean;
   eraserRadius: number;
@@ -16,16 +15,15 @@ function valuetext(value: number) {
 
 export default function ({
   lineWidth,
-  canvasContext,
   setPainterState,
   isErasing,
   eraserRadius,
 }: SliderProps) {
   const onChange = (
-    e: Event | SyntheticEvent<Element, Event>,
+    _e: Event | SyntheticEvent<Element, Event>,
     value: number | number[]
   ) => {
-    if (Array.isArray(value) || !canvasContext) return;
+    if (Array.isArray(value)) return;
     setPainterState((prevState) => {
       return { ...prevState, lineWidth: value };
     });
@@ -35,7 +33,7 @@ export default function ({
     e: Event | SyntheticEvent<Element, Event>,
     value: number | number[]
   ) => {
-    if (Array.isArray(value) || !canvasContext) return;
+    if (Array.isArray(value)) return;
     setPainterState((prevState) => {
       return { ...prevState, eraserRadius: value };
     });

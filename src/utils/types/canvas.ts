@@ -20,7 +20,6 @@ export interface RestoreState {
 }
 
 export interface Tools {
-  canvasContext: CanvasRenderingContext2D | null;
   setPainterState: Dispatch<SetStateAction<PainterState>>;
   isErasing: boolean;
   lineWidth: number;

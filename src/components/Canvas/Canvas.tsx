@@ -6,21 +6,19 @@ import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 interface CanvasProps {
   painterState: PainterState;
   setPainterState: Dispatch<SetStateAction<PainterState>>;
-  canvasContext: CanvasRenderingContext2D | null;
-  setCanvasContext: Dispatch<SetStateAction<CanvasRenderingContext2D | null>>;
-  canvasRef: RefObject<HTMLCanvasElement>;
-  nftCanvasRef: RefObject<HTMLCanvasElement>;
+  visualCanvasRef: RefObject<HTMLCanvasElement>;
+  hiddenCanvasRef: RefObject<HTMLCanvasElement>;
   setRestoreState: Dispatch<SetStateAction<RestoreState>>;
 }
 
-const NFTCanvas = styled("canvas")({
+const HiddenCanvas = styled("canvas")({
   position: "absolute",
   zIndex: 1,
   left: 0,
   top: 0,
 });
 
-const Canvas = styled("canvas")({
+const VisualCanvas = styled("canvas")({
   position: "absolute",
   zIndex: 2,
   left: 0,
@@ -38,11 +36,9 @@ export default function (props: CanvasProps) {
   const {
     painterState,
     setPainterState,
-    canvasContext,
-    setCanvasContext,
-    canvasRef,
+    visualCanvasRef,
     setRestoreState,
-    nftCanvasRef,
+    hiddenCanvasRef,
   } = props;
   const {
     isPainting,
@@ -81,15 +77,16 @@ export default function (props: CanvasProps) {
       return { ...prevState, isPainting: false };
     });
     if (type === "mouseup") {
+      const visualContext = visualCanvasRef.current?.getContext("2d");
       setRestoreState((prevState) => {
         const array = [...prevState.array];
-        if (canvasRef.current && canvasContext) {
+        if (visualCanvasRef.current && visualContext) {
           array.push(
-            canvasContext.getImageData(
+            visualContext.getImageData(
               0,
               0,
-              canvasRef.current.width,
-              canvasRef.current.height
+              visualCanvasRef.current.width,
+              visualCanvasRef.current.height
             )
           );
         }
@@ -106,24 +103,25 @@ export default function (props: CanvasProps) {
     strokeStyle: string,
     lineWidth: number
   ) => {
-    if (!canvasContext) return;
+    const visualContext = visualCanvasRef.current?.getContext("2d");
+    if (!visualContext) return;
     const { offsetX, offsetY } = currPos;
     const { offsetX: prevX, offsetY: prevY } = prevPos;
-    canvasContext.beginPath();
+    visualContext.beginPath();
     if (isErasing) {
-      canvasContext.globalCompositeOperation = "destination-out";
-      canvasContext.arc(offsetX, offsetY, eraserRadius, 0, Math.PI * 2);
-      canvasContext.fill();
+      visualContext.globalCompositeOperation = "destination-out";
+      visualContext.arc(offsetX, offsetY, eraserRadius, 0, Math.PI * 2);
+      visualContext.fill();
     } else {
-      canvasContext.globalCompositeOperation = "source-over";
-      canvasContext.strokeStyle = strokeStyle;
-      canvasContext.lineWidth = lineWidth;
+      visualContext.globalCompositeOperation = "source-over";
+      visualContext.strokeStyle = strokeStyle;
+      visualContext.lineWidth = lineWidth;
       // Move the the prevPosition of the mouse
-      canvasContext.moveTo(prevX, prevY);
+      visualContext.moveTo(prevX, prevY);
       // Draw a line to the current position of the mouse
-      canvasContext.lineTo(offsetX, offsetY);
+      visualContext.lineTo(offsetX, offsetY);
       // Visualize the line using the strokeStyle
-      canvasContext.stroke();
+      visualContext.stroke();
     }
     setPainterState((prevState) => {
       return { ...prevState, prevPos: { offsetX, offsetY } };
@@ -132,36 +130,35 @@ export default function (props: CanvasProps) {
 
   // This uses 'useEffect' server-side, then 'useLayoutEffect' on frontend
   useIsomorphicLayoutEffect(() => {
-    if (!canvasRef.current || !nftCanvasRef.current) return;
+    if (!visualCanvasRef.current || !hiddenCanvasRef.current) return;
     // Here we set up the properties each canvas element.
-    canvasRef.current.width = 700;
-    canvasRef.current.height = 700;
-    nftCanvasRef.current.width = 700;
-    nftCanvasRef.current.height = 700;
-    let nftCtx = nftCanvasRef.current.getContext("2d");
-    let ctx = canvasRef.current.getContext("2d");
+    visualCanvasRef.current.width = 700;
+    visualCanvasRef.current.height = 700;
+    hiddenCanvasRef.current.width = 700;
+    hiddenCanvasRef.current.height = 700;
+    let nftCtx = hiddenCanvasRef.current.getContext("2d");
+    let ctx = visualCanvasRef.current.getContext("2d");
     if (nftCtx && ctx) {
       nftCtx.fillStyle = "white";
       nftCtx.fillRect(
         0,
         0,
-        nftCanvasRef.current.width,
-        nftCanvasRef.current.height
+        hiddenCanvasRef.current.width,
+        hiddenCanvasRef.current.height
       );
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.lineWidth = 4;
     }
-    setCanvasContext(ctx);
   }, []);
 
   return (
     <Container>
-      <NFTCanvas ref={nftCanvasRef} />
-      <Canvas
+      <HiddenCanvas ref={hiddenCanvasRef} />
+      <VisualCanvas
         data-testid="canvas"
         // We use the ref attribute to get direct access to the canvas element.
-        ref={canvasRef}
+        ref={visualCanvasRef}
         onMouseDown={onMouseDown}
         onMouseLeave={endPaintEvent}
         onMouseUp={endPaintEvent}

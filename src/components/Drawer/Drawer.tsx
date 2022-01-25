@@ -25,10 +25,10 @@ import UndoIcon from "@mui/icons-material/Undo";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 
 interface DrawerProps extends Tools {
-  canvasRef: RefObject<HTMLCanvasElement>;
+  visualCanvasRef: RefObject<HTMLCanvasElement>;
   restoreState: RestoreState;
   setRestoreState: Dispatch<SetStateAction<RestoreState>>;
-  nftCanvasRef: RefObject<HTMLCanvasElement>;
+  hiddenCanvasRef: RefObject<HTMLCanvasElement>;
 }
 
 const drawerWidth = 400;
@@ -74,15 +74,14 @@ const Drawer = styled(MuiDrawer, {
 
 export default function (props: DrawerProps) {
   const {
-    canvasContext,
     setPainterState,
     isErasing,
     lineWidth,
     eraserRadius,
-    canvasRef,
+    visualCanvasRef,
     restoreState,
     setRestoreState,
-    nftCanvasRef,
+    hiddenCanvasRef,
   } = props;
 
   const [open, setOpen] = useState(false);
@@ -113,30 +112,31 @@ export default function (props: DrawerProps) {
 
   // Clear both canvas
   const clearCanvas = () => {
-    if (!canvasContext || !canvasRef.current || !nftCanvasRef.current) return;
-    const nftCanvasContext = nftCanvasRef.current.getContext("2d");
-    if (!nftCanvasContext) return;
+    if (!visualCanvasRef.current || !hiddenCanvasRef.current) return;
+    const visualContext = visualCanvasRef.current.getContext("2d");
+    const hiddenContext = hiddenCanvasRef.current.getContext("2d");
+    if (!hiddenContext || !visualContext) return;
     //Clear the 2nd canvas
-    nftCanvasContext.clearRect(
+    hiddenContext.clearRect(
       0,
       0,
-      nftCanvasRef.current.width,
-      nftCanvasRef.current.height
+      hiddenCanvasRef.current.width,
+      hiddenCanvasRef.current.height
     );
     // Need to refill the 2nd canvas
-    nftCanvasContext.fillStyle = "white";
-    nftCanvasContext.fillRect(
+    hiddenContext.fillStyle = "white";
+    hiddenContext.fillRect(
       0,
       0,
-      nftCanvasRef.current.width,
-      nftCanvasRef.current.height
+      hiddenCanvasRef.current.width,
+      hiddenCanvasRef.current.height
     );
     // Clear the visual canvas
-    canvasContext.clearRect(
+    visualContext.clearRect(
       0,
       0,
-      canvasRef.current.width,
-      canvasRef.current.height
+      visualCanvasRef.current.width,
+      visualCanvasRef.current.height
     );
     // Need to reset the restore state as well
     setRestoreState(() => {
@@ -146,7 +146,8 @@ export default function (props: DrawerProps) {
 
   // Undo last draw
   const onUndoLast = () => {
-    if (!canvasContext) return;
+    const visualContext = visualCanvasRef.current?.getContext("2d");
+    if (!visualContext) return;
     if (restoreIndex <= 0) {
       clearCanvas();
     } else {
@@ -154,7 +155,7 @@ export default function (props: DrawerProps) {
         const newIndex = index - 1;
         const newArray = [...array];
         newArray.pop();
-        canvasContext.putImageData(newArray[newIndex], 0, 0);
+        visualContext.putImageData(newArray[newIndex], 0, 0);
         return { index: newIndex, array: newArray };
       });
     }
@@ -245,7 +246,6 @@ export default function (props: DrawerProps) {
           <Toolbar sx={{ alignItems: "center", justifyContent: "center" }}>
             <CanvasTools
               setPainterState={setPainterState}
-              canvasContext={canvasContext}
               isErasing={isErasing}
               lineWidth={lineWidth}
               onChangeComplete={onChangeComplete}

@@ -33,13 +33,9 @@ export default function () {
   const { isErasing, lineWidth, eraserRadius } = painterState;
 
   // Reference to the canvas
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const visualCanvasRef = useRef<HTMLCanvasElement>(null);
   // Reference to the actual canvas we are putting all the data on
-  const nftCanvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Canvas context
-  const [canvasContext, setCanvasContext] =
-    useState<CanvasRenderingContext2D | null>(null);
+  const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [restoreState, setRestoreState] = useState<RestoreState>({
     // Array of image data to undo
@@ -68,21 +64,19 @@ export default function () {
   return (
     <CanvasContainer>
       <Canvas
-        canvasRef={canvasRef}
+        visualCanvasRef={visualCanvasRef}
         painterState={painterState}
         setPainterState={setPainterState}
-        canvasContext={canvasContext}
-        setCanvasContext={setCanvasContext}
         setRestoreState={setRestoreState}
-        nftCanvasRef={nftCanvasRef}
+        hiddenCanvasRef={hiddenCanvasRef}
       />
       {!isMobile &&
         (userAddress ? (
           <MintNFTButton
-            canvasRef={canvasRef.current}
+            visualCanvasRef={visualCanvasRef.current}
             hasMinted={hasMinted}
             setHasMinted={setHasMinted}
-            nftCanvasRef={nftCanvasRef.current}
+            hiddenCanvasRef={hiddenCanvasRef.current}
           />
         ) : (
           <div style={{ paddingTop: 23 }}>
@@ -91,14 +85,13 @@ export default function () {
         ))}
       <Drawer
         setPainterState={setPainterState}
-        canvasContext={canvasContext}
         isErasing={isErasing}
         lineWidth={lineWidth}
-        canvasRef={canvasRef}
+        visualCanvasRef={visualCanvasRef}
         restoreState={restoreState}
         setRestoreState={setRestoreState}
         eraserRadius={eraserRadius}
-        nftCanvasRef={nftCanvasRef}
+        hiddenCanvasRef={hiddenCanvasRef}
       />
       <Confetti active={hasMinted} config={config} />
     </CanvasContainer>

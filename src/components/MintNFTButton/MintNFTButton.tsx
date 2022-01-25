@@ -14,17 +14,17 @@ const ipfsClient = ipfsHttpClient({
 });
 
 interface MintNFTProps {
-  canvasRef: HTMLCanvasElement | null;
+  visualCanvasRef: HTMLCanvasElement | null;
   hasMinted: boolean;
   setHasMinted: Dispatch<SetStateAction<boolean>>;
-  nftCanvasRef: HTMLCanvasElement | null;
+  hiddenCanvasRef: HTMLCanvasElement | null;
 }
 
 export default function ({
-  canvasRef,
+  visualCanvasRef,
   hasMinted,
   setHasMinted,
-  nftCanvasRef,
+  hiddenCanvasRef,
 }: MintNFTProps) {
   const { data } = useAppSelector((state) => state.web3);
   const { network } = data;
@@ -49,10 +49,10 @@ export default function ({
   };
 
   const askContractToMintNft = async () => {
-    if (!canvasRef) return;
-    const context = nftCanvasRef?.getContext("2d");
-    context?.drawImage(canvasRef, 0, 0);
-    nftCanvasRef?.toBlob(
+    if (!visualCanvasRef) return;
+    const context = hiddenCanvasRef?.getContext("2d");
+    context?.drawImage(visualCanvasRef, 0, 0);
+    hiddenCanvasRef?.toBlob(
       async (blob) => {
         // TODO: Handle error message for when blob is null
         if (!blob) return;

@@ -33,7 +33,6 @@ const ToolsWrapper = styled("div")({
 
 export default function (props: DrawingTools) {
   const {
-    canvasContext,
     setPainterState,
     isErasing,
     eraserRadius,
@@ -70,7 +69,6 @@ export default function (props: DrawingTools) {
         <div style={{ width: 300 }}>
           <Slider
             lineWidth={lineWidth}
-            canvasContext={canvasContext}
             setPainterState={setPainterState}
             isErasing={isErasing}
             eraserRadius={eraserRadius}
