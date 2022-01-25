@@ -1,4 +1,4 @@
-import { AuthButtons, ConnectButton } from "./AuthButtons";
+import { AuthButtons } from "./AuthButtons";
 import { Canvas, CanvasTools, DrawingTool } from "./Canvas";
 import MenuAppBar from "./MenuAppBar";
 import MintNFTButton from "./MintNFTButton";
@@ -7,7 +7,6 @@ import Slider from "./Slider";
 import Drawer from "./Drawer";
 
 export {
-  ConnectButton,
   MenuAppBar,
   MintNFTButton,
   AuthButtons,

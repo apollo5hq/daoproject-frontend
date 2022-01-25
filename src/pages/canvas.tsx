@@ -1,11 +1,16 @@
 import { useState, useRef } from "react";
 import { styled, useTheme } from "@mui/material";
-import { Canvas, MintNFTButton, Drawer, ConnectButton } from "@/components";
+import { Canvas, MintNFTButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppSelector } from "src/redux/app/hooks";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Confetti from "react-dom-confetti";
 import Container from "@mui/material/Container";
+import dynamic from "next/dynamic";
+
+const ConnectButton = dynamic(
+  () => import("../components/AuthButtons/ConnectButton")
+);
 
 const CanvasContainer = styled(Container)({
   display: "flex",
