@@ -2,5 +2,14 @@
   "env": {
     "browser": true
   },
-  "extends": ["next/core-web-vitals", "prettier"]
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "import/no-anonymous-default-export",
+    "react"
+  ],
+  "rules": {
+    "react/display-name": "off",
+    "import/no-anonymous-default-export": "off"
+  }
 }
