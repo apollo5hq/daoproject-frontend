@@ -60,6 +60,7 @@ export const connectWallet = createAsyncThunk<
     }
     throw new Error("User denied permission");
   } catch (e: any) {
+    console.log(e);
     return rejectWithValue(e);
   }
 });
@@ -146,6 +147,7 @@ export const web3 = createSlice({
           state.isConnected = true;
         }
         // After connecting, route to canvas page
+        if (router.pathname === "/canvas") return;
         router.push("/canvas").catch((e) => console.log(e));
       })
       .addCase(changeAccount.fulfilled, (state, action) => {

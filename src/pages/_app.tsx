@@ -29,7 +29,7 @@ interface MyAppProps extends AppProps {
 const MobileMessageWrapper = styled("div")({
   display: "flex",
   flexDirection: "column",
-  backgroundColor: theme.palette.secondary.main,
+  backgroundColor: theme.palette.primary.main,
   height: 64,
   justifyContent: "center",
   padding: 30,
@@ -57,7 +57,7 @@ export default function MyApp(props: MyAppProps) {
             {isMobile ? (
               <div style={{ paddingBottom: 65 }}>
                 <MobileMessageWrapper>
-                  <Typography fontSize={15} color="black" align="center">
+                  <Typography fontSize={15} align="center">
                     Use DAOProject on a desktop to connect your wallet and
                     create NFTs
                   </Typography>

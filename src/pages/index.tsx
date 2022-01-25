@@ -25,9 +25,7 @@ export default function Index() {
       <Box sx={{ my: 4 }}>
         {isMobile ? (
           <Link href="/canvas">
-            <Button variant="contained" color="secondary">
-              Check out the canvas!
-            </Button>
+            <Button variant="contained">Check out the canvas!</Button>
           </Link>
         ) : (
           <ConnectButton />
