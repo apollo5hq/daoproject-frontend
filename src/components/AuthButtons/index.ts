@@ -1,3 +1,3 @@
-import AuthButtons from "./AuthButtons";
+import AuthButtons, { ConnectButton } from "./AuthButtons";
 
-export { AuthButtons };
+export { AuthButtons, ConnectButton };

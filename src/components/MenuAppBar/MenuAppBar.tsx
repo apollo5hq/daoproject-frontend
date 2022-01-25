@@ -1,9 +1,6 @@
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
-import { AuthButtons } from "@/components";
+import { AuthButtons, ConnectButton } from "@/components";
 import { useAppSelector } from "src/redux/app/hooks";
-import dynamic from "next/dynamic";
-
-const ConnectButton = dynamic(() => import("../AuthButtons/ConnectButton"));
 
 export default function MenuAppBar() {
   const { address: userAddress } = useAppSelector((state) => state.web3.data);

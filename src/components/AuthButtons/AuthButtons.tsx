@@ -3,11 +3,13 @@ import { styled } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "src/redux/app/hooks";
 import {
   disconnectWallet as disconnectMessage,
+  connectWallet,
   changeAccount,
   changeNetwork,
 } from "src/redux/features/web3/webSlice";
 import { walletDisconnected } from "src/redux/features/snackbar/snackbarSlice";
 import { ChainId } from "src/utils/network";
+import { useRouter } from "next/router";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
@@ -15,9 +17,6 @@ import Avatar from "@mui/material/Avatar";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import copy from "copy-to-clipboard";
-import dynamic from "next/dynamic";
-
-const ConnectButton = dynamic(() => import("./ConnectButton"));
 
 const Container = styled("div")({
   display: "flex",
@@ -51,6 +50,20 @@ const AddressWrapper = styled(Typography)(({ theme }) => ({
     cursor: "pointer",
   },
 }));
+
+export const ConnectButton = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  return (
+    <AuthButton
+      data-testid="connectButton"
+      onClick={() => dispatch(connectWallet({ router }))}
+      variant="contained"
+    >
+      Connect
+    </AuthButton>
+  );
+};
 
 export default function () {
   const dispatch = useAppDispatch();
