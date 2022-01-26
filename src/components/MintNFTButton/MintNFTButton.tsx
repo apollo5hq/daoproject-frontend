@@ -1,32 +1,36 @@
-import { useState, FunctionComponent } from "react";
-import { Button } from "@mui/material";
+import { useState, Dispatch, SetStateAction } from "react";
 import { BigNumber, ethers } from "ethers";
 import { useAppSelector } from "../../redux/app/hooks";
-import { ConnectButton } from "@/components";
 import { create as ipfsHttpClient } from "ipfs-http-client";
+import { Typography, Link } from "@mui/material";
+import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import NFT from "../../../nftABI.json";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
-const CONTRACT_ADDRESS = "0x689286e2D9265a237c7eAD7D8706CE158dBd2714";
+const CONTRACT_ADDRESS = "0x65da3f4Eca173B4a4A092C4ea3D6d401dBBf3ADf";
 const ipfsClient = ipfsHttpClient({
   url: "https://ipfs.infura.io:5001/api/v0",
 });
 
-const MintNFTButton: FunctionComponent<{
+interface MintNFTProps {
   canvasRef: HTMLCanvasElement | null;
-}> = ({ canvasRef }) => {
+  hasMinted: boolean;
+  setHasMinted: Dispatch<SetStateAction<boolean>>;
+  nftCanvasRef: HTMLCanvasElement | null;
+}
+
+export default function ({
+  canvasRef,
+  hasMinted,
+  setHasMinted,
+  nftCanvasRef,
+}: MintNFTProps) {
   const { data } = useAppSelector((state) => state.web3);
-  const { address: userAddress, network } = data;
+  const { network } = data;
   // State for whether or not the user is minting
   const [minting, setMinting] = useState<boolean>(false);
-  // State for whether the user has claimed the NFT or not
-  const [hasClaimed, setHasClaimed] = useState<boolean>(false);
-  // State for the message when a user claims the NFT
-  const [claimedMessage, setclaimedMessage] = useState<string>(
-    "Congrats you have claimed your NFT :)"
-  );
-
+  const [link, setLink] = useState("");
   // Upload art and metadata to ipfs
   const createMetadata = async (blob: Blob) => {
     // Create file from blob
@@ -44,18 +48,11 @@ const MintNFTButton: FunctionComponent<{
     return `data:application/json;base64,${base64string}`;
   };
 
-  const logTransaction = (hash: string) => {
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `Mined, see transaction: https://rinkeby.etherscan.io/tx/${hash}`
-      );
-    } else {
-      console.log(`Mined, see transaction: https://etherscan.io/tx/${hash}`);
-    }
-  };
-
   const askContractToMintNft = async () => {
-    canvasRef?.toBlob(
+    if (!canvasRef) return;
+    const context = nftCanvasRef?.getContext("2d");
+    context?.drawImage(canvasRef, 0, 0);
+    nftCanvasRef?.toBlob(
       async (blob) => {
         // TODO: Handle error message for when blob is null
         if (!blob) return;
@@ -78,15 +75,17 @@ const MintNFTButton: FunctionComponent<{
           const tx = await wait();
           setMinting(false);
           // Log link to the transaction hash on etherscan
-          logTransaction(hash);
-          setHasClaimed(!hasClaimed);
+          console.log(
+            `Mined, see transaction: https://rinkeby.etherscan.io/tx/${hash}`
+          );
           // Get tokenId
           const event = tx.events[0];
           const value: BigNumber = event.args[2];
           const tokenId = value.toNumber();
           // Return a link to the nft on opensea
-          setclaimedMessage(
-            `Congrats you have claimed your NFT :)\n\nIt can take up to 10 min to see your NFT on OpenSea! Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId}`
+          setHasMinted(true);
+          setLink(
+            `https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId}`
           );
         } catch (error) {
           console.log(error);
@@ -97,34 +96,76 @@ const MintNFTButton: FunctionComponent<{
     );
   };
 
-  if (!userAddress) {
-    return <ConnectButton />;
-  }
+  const promptNetworkChange = async () => {
+    const { ethereum } = window;
+    if (!ethereum) return;
+    try {
+      await ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [
+          {
+            chainId: "0x4",
+          },
+        ],
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   if (network !== "Rinkeby Testnet") {
-    return <div>Make sure you are on the Rinkeby Testnet</div>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          paddingTop: 23,
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h6" sx={{ padding: 1 }}>
+          Make sure you are on the Rinkeby Testnet
+        </Typography>
+        <Button variant="contained" onClick={promptNetworkChange}>
+          Switch Network
+        </Button>
+      </div>
+    );
   }
   // Check if user has claimed NFT
-  if (hasClaimed) {
-    return <div>{claimedMessage}</div>;
+  if (hasMinted) {
+    return (
+      <div style={{ padding: 50 }}>
+        <Typography gutterBottom variant="h6" align="center">
+          Congrats you have minted your NFT!🥳
+        </Typography>
+        <Typography gutterBottom variant="h6" align="center">
+          It can take up to 10 min to see your NFT on OpenSea. Here's the link:
+        </Typography>
+        <Typography gutterBottom variant="subtitle1" align="center">
+          <Link href={link} target="_blank" underline="hover">
+            {link}
+          </Link>
+        </Typography>
+      </div>
+    );
   }
 
   return (
     <Box sx={{ my: 4 }}>
       {minting ? (
-        <div>Minting...</div>
+        <div style={{ paddingTop: 20 }}>Minting...</div>
       ) : (
         <Button
+          data-testid="mint"
           variant="contained"
           color="secondary"
           sx={{ color: "black" }}
           onClick={askContractToMintNft}
         >
-          Mint NFT
+          Mint
         </Button>
       )}
     </Box>
   );
-};
-
-export default MintNFTButton;
+}

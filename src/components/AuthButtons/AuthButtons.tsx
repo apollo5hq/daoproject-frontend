@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, styled, Typography, Tooltip, Avatar } from "@mui/material";
+import { styled } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "src/redux/app/hooks";
 import {
   disconnectWallet as disconnectMessage,
@@ -7,14 +7,16 @@ import {
   changeAccount,
   changeNetwork,
 } from "src/redux/features/web3/webSlice";
+import { walletDisconnected } from "src/redux/features/snackbar/snackbarSlice";
+import { ChainId } from "src/utils/network";
+import { useRouter } from "next/router";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import Avatar from "@mui/material/Avatar";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import copy from "copy-to-clipboard";
-import {
-  walletConnected,
-  walletDisconnected,
-} from "src/redux/features/snackbar/snackbarSlice";
-import { ChainId } from "src/utils/network";
 
 const Container = styled("div")({
   display: "flex",
@@ -27,12 +29,9 @@ const UserAvatar = styled(Avatar)({
   height: 45,
 });
 
-const AuthButton = styled(Button)(({ theme }) => ({
-  textTransform: "none",
-  color: "black",
-  backgroundColor: theme.palette.secondary.main,
+const AuthButton = styled(Button)({
   height: 35,
-}));
+});
 
 const AddressWrapper = styled(Typography)(({ theme }) => ({
   display: "flex",
@@ -54,10 +53,11 @@ const AddressWrapper = styled(Typography)(({ theme }) => ({
 
 export const ConnectButton = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   return (
     <AuthButton
       data-testid="connectButton"
-      onClick={() => dispatch(connectWallet())}
+      onClick={() => dispatch(connectWallet({ router }))}
       variant="contained"
     >
       Connect
@@ -89,7 +89,6 @@ export default function () {
 
   // This runs when the user switch networks in metamask
   const handleNetworkChanged = (chainId: ChainId) => {
-    console.log(chainId);
     dispatch(changeNetwork({ chainId }));
   };
 
@@ -130,6 +129,10 @@ export default function () {
       }
     };
   }, []);
+
+  const requestEth = () => {
+    window.open("https://faucets.chain.link/rinkeby", "_blank");
+  };
 
   // If user not connected show connect button
   if (!userAddress) {
@@ -181,6 +184,11 @@ export default function () {
       >
         Disconnect
       </AuthButton>
+      <div style={{ paddingLeft: 5 }}>
+        <Button variant="contained" onClick={requestEth}>
+          Request Test ETH
+        </Button>
+      </div>
     </Container>
   );
 }

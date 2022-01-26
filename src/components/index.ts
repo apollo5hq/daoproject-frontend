@@ -1,23 +1,20 @@
 import { AuthButtons, ConnectButton } from "./AuthButtons";
-import { Canvas, Eraser, Pencil, CanvasTools } from "./Canvas";
-import Copyright from "./Copyright";
-import Link from "./Link";
+import { Canvas, CanvasTools, DrawingTool } from "./Canvas";
 import MenuAppBar from "./MenuAppBar";
 import MintNFTButton from "./MintNFTButton";
 import Snackbar from "./Snackbar";
 import Slider from "./Slider";
+import Drawer from "./Drawer";
 
 export {
   ConnectButton,
-  Copyright,
-  Link,
   MenuAppBar,
   MintNFTButton,
   AuthButtons,
   Snackbar,
   Canvas,
-  Eraser,
-  Pencil,
   CanvasTools,
   Slider,
+  DrawingTool,
+  Drawer,
 };

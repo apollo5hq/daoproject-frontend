@@ -1,69 +1,82 @@
-import { Dispatch, FunctionComponent, SetStateAction, useState } from "react";
-import { Eraser, Pencil, Slider } from "@/components";
-import { Color, ColorResult, SketchPicker } from "react-color";
-import { PainterState } from "src/utils/types/canvas";
-import { useTheme, styled, Typography } from "@mui/material";
+import { Slider, DrawingTool } from "@/components";
+import { Color, ColorResult } from "react-color";
+import { Tools } from "src/utils/types/canvas";
+import { styled } from "@mui/material";
+import dynamic from "next/dynamic";
 
-interface Tools {
-  canvasContext: CanvasRenderingContext2D | null;
-  setPainterState: Dispatch<SetStateAction<PainterState>>;
-  isErasing: boolean;
-  lineWidth: number;
+// This component throws error when generated server-side
+const SketchPicker = dynamic(() => import("../Canvas/SketchPicker"), {
+  ssr: false,
+});
+
+interface DrawingTools extends Tools {
+  onChangeComplete: (value: ColorResult) => void;
+  colorPickerState: Color;
+  clearCanvas: () => void;
+  onUndoLast: () => void;
+  clickPencil: () => void;
+  clickEraser: () => void;
 }
 
 const Container = styled("div")({
   display: "flex",
   flexDirection: "row",
-  flexGrow: 1,
 });
-const CanvasTools: FunctionComponent<Tools> = ({
-  canvasContext,
-  setPainterState,
-  isErasing,
-  lineWidth,
-}) => {
+
+const ToolsWrapper = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "column",
+  height: 0,
+  width: 375,
+});
+
+export default function (props: DrawingTools) {
   const {
-    palette: { primary },
-  } = useTheme();
-  // State for color picker
-  const [colorPickerState, setColorPickerState] = useState<Color>(primary.main);
-
-  // Sets color of the pencil and changes the color of the picker
-  const onChangeComplete = (value: ColorResult) => {
-    setPainterState((prevState) => {
-      return { ...prevState, userStrokeStyle: value.hex };
-    });
-    setColorPickerState(value.rgb);
-  };
-
+    canvasContext,
+    setPainterState,
+    isErasing,
+    eraserRadius,
+    lineWidth,
+    colorPickerState,
+    onChangeComplete,
+    clearCanvas,
+    onUndoLast,
+    clickPencil,
+    clickEraser,
+  } = props;
   return (
     <Container>
       <SketchPicker
         color={colorPickerState}
         onChangeComplete={onChangeComplete}
+        onChange={onChangeComplete}
       />
-      <div style={{ paddingLeft: 10 }}>
+      <ToolsWrapper>
         <Container>
-          <Pencil
-            setPainterState={setPainterState}
-            canvasContext={canvasContext}
-            isErasing={isErasing}
+          <DrawingTool
+            variant={isErasing ? "outlined" : "contained"}
+            name="Pencil"
+            onClick={clickPencil}
           />
-          <Eraser
-            setPainterState={setPainterState}
-            canvasContext={canvasContext}
-            isErasing={isErasing}
+          <DrawingTool
+            variant={isErasing ? "contained" : "outlined"}
+            name="Eraser"
+            onClick={clickEraser}
           />
+          <DrawingTool variant="outlined" name="Undo" onClick={onUndoLast} />
+          <DrawingTool variant="outlined" name="Clear" onClick={clearCanvas} />
         </Container>
-        <Typography sx={{ paddingTop: 1 }}>Thickness</Typography>
-        <Slider
-          lineWidth={lineWidth}
-          canvasContext={canvasContext}
-          setPainterState={setPainterState}
-        />
-      </div>
+        <div style={{ width: 300 }}>
+          <Slider
+            lineWidth={lineWidth}
+            canvasContext={canvasContext}
+            setPainterState={setPainterState}
+            isErasing={isErasing}
+            eraserRadius={eraserRadius}
+          />
+        </div>
+      </ToolsWrapper>
     </Container>
   );
-};
-
-export default CanvasTools;
+}

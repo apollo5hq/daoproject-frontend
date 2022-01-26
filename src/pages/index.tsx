@@ -1,31 +1,31 @@
 import { ConnectButton } from "@/components";
-import { Typography, Box, Button, Container, styled } from "@mui/material";
-import { useAppSelector } from "src/redux/app/hooks";
-import Link from "next/link";
-
-const GetStartedButton = styled(Button)({
-  textTransform: "none",
-});
+import { styled, useTheme } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 
 const PageContainer = styled(Container)({
   display: "flex",
   flexDirection: "column",
-  height: "100vh",
   alignItems: "center",
-  justifyContent: "center",
+  marginTop: 300,
 });
 
 export default function Index() {
-  const address = useAppSelector((state) => state.web3.data.address);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <PageContainer maxWidth="lg">
       <Box sx={{ my: 4 }}>
         <Typography variant="h2">Welcome to DAO Project</Typography>
       </Box>
       <Box sx={{ my: 4 }}>
-        {address ? (
-          <Link href="/canvas" passHref>
-            <GetStartedButton>Get Started</GetStartedButton>
+        {isMobile ? (
+          <Link href="/canvas">
+            <Button variant="contained">Check out the canvas!</Button>
           </Link>
         ) : (
           <ConnectButton />
