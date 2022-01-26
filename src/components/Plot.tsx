@@ -17,16 +17,16 @@ const VisualCanvas = styled("canvas")({
 });
 
 const mouseOverMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create(["background", "top"], {
+  transition: theme.transitions.create("background", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
-  background: "#546e7a",
-  top: "-10px",
+  background: "linear-gradient(white, white 50%, #333 50%, #333)",
+  backgroundPosition: "100% 100%",
 });
 
 const mouseLeaveMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create(["background", "top"], {
+  transition: theme.transitions.create("background", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
@@ -36,7 +36,8 @@ const Container = styled("div", {
   shouldForwardProp: (prop) => prop !== "isHovering",
 })<{ isHovering: boolean }>(({ theme, isHovering }) => ({
   position: "relative",
-  background: "white",
+  background: "linear-gradient(white, white 50%, black 50%, black)",
+  backgroundSize: "100% 200%",
   height: 150,
   width: 150,
   ...(isHovering && {
@@ -59,8 +60,6 @@ export default function () {
     const height = 150;
     hiddenCanvasRef.current.width = width;
     hiddenCanvasRef.current.height = height;
-    const hiddenContext = hiddenCanvasRef.current.getContext("2d");
-    if (!hiddenContext) return;
   }, []);
 
   return (
