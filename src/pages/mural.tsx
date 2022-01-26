@@ -86,7 +86,7 @@ export default function () {
     <Container>
       <Grid container sx={{ width: 750 }}>
         {plots.map(({ id }) => (
-          <Grid item xs="auto" key={id}>
+          <Grid item key={id}>
             <div style={{ width: 150, height: 150 }}>
               <Plot />
             </div>

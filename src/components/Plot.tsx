@@ -1,6 +1,7 @@
 import { CSSObject, styled, Theme } from "@mui/material";
 import { useRef, useState } from "react";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
+import Typography from "@mui/material/Typography";
 
 const HiddenCanvas = styled("canvas")({
   position: "absolute",
@@ -38,6 +39,9 @@ const Container = styled("div", {
   position: "relative",
   background: "linear-gradient(white, white 50%, black 50%, black)",
   backgroundSize: "100% 200%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
   height: 150,
   width: 150,
   ...(isHovering && {
@@ -64,6 +68,13 @@ export default function () {
 
   return (
     <Container isHovering={isHovering}>
+      <Typography
+        sx={{
+          color: ({ palette }) => (isHovering ? palette.primary.main : "black"),
+        }}
+      >
+        Not Claimed
+      </Typography>
       <HiddenCanvas ref={hiddenCanvasRef} />
       <VisualCanvas
         onMouseDown={({ nativeEvent }) =>
