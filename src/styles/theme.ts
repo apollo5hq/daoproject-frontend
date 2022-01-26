@@ -570,11 +570,3 @@ const darkTheme = createTheme(getDesignTokens("dark"));
 export const theme = responsiveFontSizes(
   deepmerge(darkTheme, getThemedComponents(darkTheme))
 );
-
-// const theme = responsiveFontSizes(createTheme({
-//   palette: {
-//     mode: "dark"
-//   }
-// }));
-
-// export default theme;
