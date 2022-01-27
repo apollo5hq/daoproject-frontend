@@ -5,6 +5,7 @@ import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
 import { createMural, updatePlot } from "src/redux/features/murals/muralsSlice";
 import Typography from "@mui/material/Typography";
+import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 import ContainerComp from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -47,6 +48,8 @@ export default function () {
     // The index of the image data we want to undo
     index: -1,
   });
+
+  const [counter, setCounter] = useState(0);
 
   const selectedPlot = useMemo(() => {
     if (murals.length === 0) return;
@@ -121,7 +124,9 @@ export default function () {
     updatedPlot.isComplete = true;
     plots.splice(selectedPlot.id - 1, 1, updatedPlot);
     mural.plots = plots;
+    setRestoreState({ array: [], index: -1 });
     dispatch(updatePlot({ mural }));
+    setCounter(counter + 1);
   };
 
   if (!userAddress) {
@@ -143,24 +148,31 @@ export default function () {
   return (
     <Container>
       {murals.map(({ plots }, index) => (
-        <Grid key={index} container sx={{ width: 750 }}>
-          {plots.map(({ id, width, height, user, isComplete }) => (
-            <Grid item key={id}>
-              <div
-                onClick={() => !isComplete && onSelect(id)}
-                style={{ width, height }}
-              >
-                <Plot
-                  isComplete={isComplete}
-                  id={id}
-                  width={width}
-                  height={height}
-                  user={user}
-                />
-              </div>
-            </Grid>
-          ))}
-        </Grid>
+        <div key={index}>
+          <Grid key={index} container sx={{ width: 750 }}>
+            {plots.map(({ id, width, height, user, isComplete }) => (
+              <Grid item key={id}>
+                <div
+                  onClick={() => !isComplete && onSelect(id)}
+                  style={{ width, height }}
+                >
+                  <Plot
+                    isComplete={isComplete}
+                    id={id}
+                    width={width}
+                    height={height}
+                    user={user}
+                  />
+                </div>
+              </Grid>
+            ))}
+          </Grid>
+          <Fade in={counter === 1}>
+            <Typography paddingTop={3} align="center">
+              You can select and draw on multiple plots 😆
+            </Typography>
+          </Fade>
+        </div>
       ))}
       {selectedPlot && (
         <div
