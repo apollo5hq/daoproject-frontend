@@ -7,10 +7,15 @@ import {
 import thunk from "redux-thunk";
 import web3Reducer from "../features/web3/webSlice";
 import snackbarReducer from "../features/snackbar/snackbarSlice";
+import muralsReducer from "../features/murals/muralsSlice";
 
 export function makeStore() {
   return configureStore({
-    reducer: { web3: web3Reducer, snackbar: snackbarReducer },
+    reducer: {
+      web3: web3Reducer,
+      snackbar: snackbarReducer,
+      murals: muralsReducer,
+    },
     middleware: new MiddlewareArray(thunk),
   });
 }

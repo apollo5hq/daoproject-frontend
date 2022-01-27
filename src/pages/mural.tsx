@@ -1,14 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useMemo } from "react";
 import { styled, useTheme } from "@mui/material";
-import { Canvas, MintNFTButton, Drawer, ConnectButton } from "@/components";
+import { Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
-import { Client, Identity, KeyInfo } from "@textile/hub";
-import { useAppSelector } from "src/redux/app/hooks";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
+import { createMural, updatePlot } from "src/redux/features/murals/muralsSlice";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import ContainerComp from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 import Plot from "src/components/Plot";
+import MuralPlot from "src/components/MuralPlot";
 
 const Container = styled(ContainerComp)({
   display: "flex",
@@ -22,8 +23,10 @@ export default function () {
     palette: { primary },
     breakpoints,
   } = useTheme();
-  const isMobile = useMediaQuery(breakpoints.down("sm"));
-  const { address: userAddress } = useAppSelector((state) => state.web3.data);
+  // const { address: userAddress } = useAppSelector((state) => state.web3.data);
+  const userAddress = "0x9BB53e7ECc52Dea3498502d1755b2892D30b730e";
+  const { murals } = useAppSelector((state) => state.murals);
+  const dispatch = useAppDispatch();
   // State of the paint brush
   const [painterState, setPainterState] = useState<PainterState>({
     isPainting: false,
@@ -34,93 +37,146 @@ export default function () {
     eraserRadius: 8,
   });
   const { isErasing, lineWidth, eraserRadius } = painterState;
-  // Reference to the canvas
-  const communityCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [{ plots }, setMuralState] = useState({
-    plots: [
-      { id: 1, user: userAddress as string, width: 150, height: 150 },
-      { id: 2, user: "", width: 150, height: 150 },
-      { id: 3, user: "", width: 150, height: 150 },
-      { id: 4, user: "", width: 150, height: 150 },
-      { id: 5, user: "", width: 150, height: 150 },
-      { id: 6, user: "", width: 150, height: 150 },
-      { id: 7, user: "", width: 150, height: 150 },
-      { id: 8, user: "", width: 150, height: 150 },
-      { id: 9, user: "", width: 150, height: 150 },
-      { id: 10, user: "", width: 150, height: 150 },
-    ],
-    width: 750,
-    height: 450,
+  // Reference to the canvas
+  const visualCanvasRef = useRef<HTMLCanvasElement>(null);
+  // Reference to the actual canvas we are putting all the data on
+  const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [restoreState, setRestoreState] = useState<RestoreState>({
+    // Array of image data to undo
+    array: [],
+    // The index of the image data we want to undo
+    index: -1,
   });
-  const keyinfo: KeyInfo = {
-    key: "b5mrqslrsun3nhvptown6hx3xfu",
+
+  const selectedPlot = useMemo(() => {
+    if (murals.length === 0) return;
+    return murals[0].plots.find(({ user }) => user === userAddress);
+  }, [murals]);
+
+  const onCreate = () => {
+    const newMural = {
+      plots: [
+        { id: 1, user: "", width: 150, height: 150, isComplete: false },
+        { id: 2, user: "", width: 150, height: 150, isComplete: false },
+        { id: 3, user: "", width: 150, height: 150, isComplete: false },
+        { id: 4, user: "", width: 150, height: 150, isComplete: false },
+        { id: 5, user: "", width: 150, height: 150, isComplete: false },
+        { id: 6, user: "", width: 150, height: 150, isComplete: false },
+        { id: 7, user: "", width: 150, height: 150, isComplete: false },
+        { id: 8, user: "", width: 150, height: 150, isComplete: false },
+        { id: 9, user: "", width: 150, height: 150, isComplete: false },
+        { id: 10, user: "", width: 150, height: 150, isComplete: false },
+      ],
+      width: 750,
+      height: 450,
+    };
+    dispatch(createMural(newMural));
   };
-  async function authorize(key: KeyInfo, identity: Identity) {
-    const client = await Client.withKeyInfo(key);
-    await client.getToken(identity);
-    return client;
+
+  const onSelect = (id: number) => {
+    let mural = { ...murals[0] };
+    const plots = [...murals[0].plots];
+    if (plots.some(({ user }) => user === (userAddress as string))) return;
+    let selectedPlot = { ...plots[id - 1] };
+    selectedPlot.user = userAddress as string;
+    plots.splice(id - 1, 1, selectedPlot);
+    mural.plots = plots;
+    dispatch(updatePlot({ mural }));
+  };
+
+  if (murals.length === 0) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button onClick={onCreate} variant="contained">
+          Create mural
+        </Button>
+      </div>
+    );
   }
 
-  // const connectDB = async () => {
-  //   try {
-
-  //   const client = await authorize(keyInfo)
-  //   } catch (e) {
-  //     console.log(e);
-  //   };
-  // }
-
-  // useEffect(() => {
-
-  //   connectDB();
-  // })
-
-  // useIsomorphicLayoutEffect(() => {
-  //   if (!communityCanvasRef.current) return;
-  //   // Here we set up the properties each canvas element.
-  //   const width = 750;
-  //   const height = 450;
-  //   communityCanvasRef.current.width = width;
-  //   communityCanvasRef.current.height = height;
-  //   const communityContext = communityCanvasRef.current.getContext("2d");
-  //   if (!communityContext) return;
-  //   communityContext.fillStyle = "white";
-  //   communityContext.fillRect(
-  //     0,
-  //     0,
-  //     communityCanvasRef.current.width,
-  //     communityCanvasRef.current.height
-  //   );
-
-  //   // Draw grid showing available parts of canvas for people to draw on
-  //   const plotSize = 150; // In pixels
-  //   // Draw grid and get number of rows and columns
-  //   for (let r = 1; r < height / plotSize; r++) {
-  //     communityContext.beginPath();
-  //     communityContext.moveTo(0, r * plotSize);
-  //     communityContext.lineTo(width, r * plotSize);
-  //     communityContext.stroke();
-  //   }
-  //   for (let c = 1; c < width / plotSize; c++) {
-  //     communityContext.beginPath();
-  //     communityContext.moveTo(c * plotSize, 0);
-  //     communityContext.lineTo(c * plotSize, height);
-  //     communityContext.stroke();
-  //   }
-  // }, []);
+  const onSubmit = () => {
+    if (!selectedPlot || !visualCanvasRef.current) return;
+    const plot = document.getElementById(
+      selectedPlot.id.toString()
+    ) as HTMLCanvasElement;
+    const context = plot.getContext("2d");
+    context?.drawImage(visualCanvasRef.current, 0, 0);
+    let mural = { ...murals[0] };
+    const plots = [...murals[0].plots];
+    let updatedPlot = { ...plots[selectedPlot.id - 1] };
+    updatedPlot.user = "";
+    updatedPlot.isComplete = true;
+    plots.splice(selectedPlot.id - 1, 1, updatedPlot);
+    mural.plots = plots;
+    dispatch(updatePlot({ mural }));
+  };
 
   return (
     <Container>
-      <Grid container sx={{ width: 750 }}>
-        {plots.map(({ id, width, height }) => (
-          <Grid item key={id}>
-            <div style={{ width, height }}>
-              <Plot width={width} height={height} />
-            </div>
-          </Grid>
-        ))}
-      </Grid>
+      {murals.map(({ plots }, index) => (
+        <Grid key={index} container sx={{ width: 750 }}>
+          {plots.map(({ id, width, height, user, isComplete }) => (
+            <Grid item key={id}>
+              <div onClick={() => onSelect(id)} style={{ width, height }}>
+                <Plot
+                  isComplete={isComplete}
+                  id={id}
+                  width={width}
+                  height={height}
+                  user={user}
+                />
+              </div>
+            </Grid>
+          ))}
+        </Grid>
+      ))}
+      {selectedPlot && (
+        <div
+          style={{
+            paddingTop: 35,
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <MuralPlot
+            hiddenCanvasRef={hiddenCanvasRef}
+            width={150}
+            height={150}
+            visualCanvasRef={visualCanvasRef}
+            painterState={painterState}
+            setPainterState={setPainterState}
+            setRestoreState={setRestoreState}
+          />
+          <Typography gutterBottom style={{ paddingTop: 10 }} align="center">
+            Draw here!
+          </Typography>
+          <Button onClick={onSubmit} variant="contained">
+            Submit plot
+          </Button>
+        </div>
+      )}
+      <Drawer
+        restoreState={restoreState}
+        hiddenCanvasRef={hiddenCanvasRef}
+        visualCanvasRef={visualCanvasRef}
+        setPainterState={setPainterState}
+        setRestoreState={setRestoreState}
+        isErasing={isErasing}
+        lineWidth={lineWidth}
+        eraserRadius={eraserRadius}
+      />
     </Container>
   );
 }

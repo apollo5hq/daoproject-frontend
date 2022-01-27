@@ -2,7 +2,6 @@ import { CSSObject, styled, Theme } from "@mui/material";
 import { useRef, useState } from "react";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/router";
 
 const HiddenCanvas = styled("canvas")({
   position: "absolute",
@@ -53,37 +52,54 @@ const Container = styled("div", {
   }),
 }));
 
-export default function ({ width, height }: { width: number; height: number }) {
+// A fancy function to shorten someones wallet address, no need to show the whole thing.
+const shortenAddress = (str: string) => {
+  return str.substring(0, 6) + "..." + str.substring(str.length - 4);
+};
+
+export default function ({
+  width,
+  height,
+  user,
+  id,
+  isComplete,
+}: {
+  width: number;
+  height: number;
+  user: string;
+  id: number;
+  isComplete: boolean;
+}) {
   // Reference to the canvas
   const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isHovering, setIsHovering] = useState(false);
-  const router = useRouter();
 
   useIsomorphicLayoutEffect(() => {
     if (!hiddenCanvasRef.current) return;
-    // Here we set up the properties each canvas element.
-    // const width = 150;
-    // const height = 150;
+    // Here we set up the properties each canvas element.a
     hiddenCanvasRef.current.width = width;
     hiddenCanvasRef.current.height = height;
   }, []);
 
   return (
     <Container isHovering={isHovering}>
-      <Typography
-        sx={{
-          color: ({ palette }) => (isHovering ? palette.primary.main : "black"),
-        }}
-      >
-        Not Claimed
-      </Typography>
-      <HiddenCanvas ref={hiddenCanvasRef} />
+      {user.length > 0 && !isComplete && (
+        <Typography
+          sx={{
+            color: ({ palette }) =>
+              isHovering ? palette.primary.main : "black",
+          }}
+        >
+          {shortenAddress(user)}
+        </Typography>
+      )}
+      <HiddenCanvas id={id.toString()} ref={hiddenCanvasRef} />
       <VisualCanvas
         onMouseDown={({ nativeEvent }) => {
           console.log(nativeEvent.offsetX, nativeEvent.offsetY);
-          router
-            .push("/plot", { query: { width, height } })
-            .catch((e) => console.log(e));
+          // router
+          //   .push("/plot", { query: { width, height } })
+          //   .catch((e) => console.log(e));
         }}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
