@@ -147,8 +147,8 @@ export const web3 = createSlice({
           state.isConnected = true;
         }
         // After connecting, route to canvas page
-        if (router.pathname === "/canvas") return;
-        router.push("/canvas").catch((e) => console.log(e));
+        // if (router.pathname === "/canvas") return;
+        // router.push("/canvas").catch((e) => console.log(e));
       })
       .addCase(changeAccount.fulfilled, (state, action) => {
         const {
