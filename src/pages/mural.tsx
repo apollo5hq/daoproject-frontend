@@ -169,7 +169,7 @@ export default function () {
           </Grid>
           <Fade in={counter === 1}>
             <Typography paddingTop={3} align="center">
-              You can select and draw on multiple plots 😆
+              Nice! Now select and draw on another one! 😆
             </Typography>
           </Fade>
         </div>
