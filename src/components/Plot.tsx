@@ -2,6 +2,7 @@ import { CSSObject, styled, Theme } from "@mui/material";
 import { useRef, useState } from "react";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/router";
 
 const HiddenCanvas = styled("canvas")({
   position: "absolute",
@@ -52,16 +53,17 @@ const Container = styled("div", {
   }),
 }));
 
-export default function () {
+export default function ({ width, height }: { width: number; height: number }) {
   // Reference to the canvas
   const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const router = useRouter();
 
   useIsomorphicLayoutEffect(() => {
     if (!hiddenCanvasRef.current) return;
     // Here we set up the properties each canvas element.
-    const width = 150;
-    const height = 150;
+    // const width = 150;
+    // const height = 150;
     hiddenCanvasRef.current.width = width;
     hiddenCanvasRef.current.height = height;
   }, []);
@@ -77,9 +79,12 @@ export default function () {
       </Typography>
       <HiddenCanvas ref={hiddenCanvasRef} />
       <VisualCanvas
-        onMouseDown={({ nativeEvent }) =>
-          console.log(nativeEvent.offsetX, nativeEvent.offsetY)
-        }
+        onMouseDown={({ nativeEvent }) => {
+          console.log(nativeEvent.offsetX, nativeEvent.offsetY);
+          router
+            .push("/plot", { query: { width, height } })
+            .catch((e) => console.log(e));
+        }}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       />

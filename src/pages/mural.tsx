@@ -35,18 +35,23 @@ export default function () {
   const { isErasing, lineWidth, eraserRadius } = painterState;
   // Reference to the canvas
   const communityCanvasRef = useRef<HTMLCanvasElement>(null);
-  const plots = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 5 },
-    { id: 6 },
-    { id: 7 },
-    { id: 8 },
-    { id: 9 },
-    { id: 10 },
-  ];
+
+  const [{ plots }, setMuralState] = useState({
+    plots: [
+      { id: 1, user: userAddress as string, width: 150, height: 150 },
+      { id: 2, user: "", width: 150, height: 150 },
+      { id: 3, user: "", width: 150, height: 150 },
+      { id: 4, user: "", width: 150, height: 150 },
+      { id: 5, user: "", width: 150, height: 150 },
+      { id: 6, user: "", width: 150, height: 150 },
+      { id: 7, user: "", width: 150, height: 150 },
+      { id: 8, user: "", width: 150, height: 150 },
+      { id: 9, user: "", width: 150, height: 150 },
+      { id: 10, user: "", width: 150, height: 150 },
+    ],
+    width: 750,
+    height: 450,
+  });
 
   // useIsomorphicLayoutEffect(() => {
   //   if (!communityCanvasRef.current) return;
@@ -85,10 +90,10 @@ export default function () {
   return (
     <Container>
       <Grid container sx={{ width: 750 }}>
-        {plots.map(({ id }) => (
+        {plots.map(({ id, width, height }) => (
           <Grid item key={id}>
-            <div style={{ width: 150, height: 150 }}>
-              <Plot />
+            <div style={{ width, height }}>
+              <Plot width={width} height={height} />
             </div>
           </Grid>
         ))}
