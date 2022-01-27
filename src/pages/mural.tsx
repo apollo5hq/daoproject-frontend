@@ -1,7 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { styled, useTheme } from "@mui/material";
 import { Canvas, MintNFTButton, Drawer, ConnectButton } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
+import { Client, Identity, KeyInfo } from "@textile/hub";
 import { useAppSelector } from "src/redux/app/hooks";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ContainerComp from "@mui/material/Container";
@@ -52,6 +53,28 @@ export default function () {
     width: 750,
     height: 450,
   });
+  const keyinfo: KeyInfo = {
+    key: "b5mrqslrsun3nhvptown6hx3xfu",
+  };
+  async function authorize(key: KeyInfo, identity: Identity) {
+    const client = await Client.withKeyInfo(key);
+    await client.getToken(identity);
+    return client;
+  }
+
+  // const connectDB = async () => {
+  //   try {
+
+  //   const client = await authorize(keyInfo)
+  //   } catch (e) {
+  //     console.log(e);
+  //   };
+  // }
+
+  // useEffect(() => {
+
+  //   connectDB();
+  // })
 
   // useIsomorphicLayoutEffect(() => {
   //   if (!communityCanvasRef.current) return;

@@ -1,6 +1,7 @@
 import { MouseEvent, Dispatch, SetStateAction, RefObject } from "react";
 import { PainterState, RestoreState, Position } from "src/utils/types/canvas";
 import { styled } from "@mui/material";
+import { Client, Identity, KeyInfo } from "@textile/hub";
 import useIsomorphicLayoutEffect from "src/utils/useIsomorphicLayoutEffect";
 
 interface MuralPlotProps {
@@ -52,6 +53,15 @@ export default function (props: MuralPlotProps) {
     isErasing,
     eraserRadius,
   } = painterState;
+
+  const keyinfo: KeyInfo = {
+    key: "b5mrqslrsun3nhvptown6hx3xfu",
+  };
+  async function authorize(key: KeyInfo, identity: Identity) {
+    const client = await Client.withKeyInfo(key);
+    await client.getToken(identity);
+    return client;
+  }
 
   // When user clicks
   const onMouseDown = ({
