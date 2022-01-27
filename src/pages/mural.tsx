@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { styled, useTheme } from "@mui/material";
-import { Drawer } from "@/components";
+import { ConnectButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
 import { createMural, updatePlot } from "src/redux/features/murals/muralsSlice";
@@ -21,10 +21,8 @@ const Container = styled(ContainerComp)({
 export default function () {
   const {
     palette: { primary },
-    breakpoints,
   } = useTheme();
-  // const { address: userAddress } = useAppSelector((state) => state.web3.data);
-  const userAddress = "0x9BB53e7ECc52Dea3498502d1755b2892D30b730e";
+  const { address: userAddress } = useAppSelector((state) => state.web3.data);
   const { murals } = useAppSelector((state) => state.murals);
   const dispatch = useAppDispatch();
   // State of the paint brush
@@ -78,7 +76,12 @@ export default function () {
   const onSelect = (id: number) => {
     let mural = { ...murals[0] };
     const plots = [...murals[0].plots];
-    if (plots.some(({ user }) => user === (userAddress as string))) return;
+    const plot = plots.find(({ user }) => user === (userAddress as string));
+    if (plot) {
+      let oldPlot = { ...plot };
+      oldPlot.user = "";
+      plots.splice(oldPlot.id - 1, 1, oldPlot);
+    }
     let selectedPlot = { ...plots[id - 1] };
     selectedPlot.user = userAddress as string;
     plots.splice(id - 1, 1, selectedPlot);
@@ -121,13 +124,32 @@ export default function () {
     dispatch(updatePlot({ mural }));
   };
 
+  if (!userAddress) {
+    return (
+      <div
+        style={{
+          height: "100vh",
+          justifyContent: "center",
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <ConnectButton />
+      </div>
+    );
+  }
+
   return (
     <Container>
       {murals.map(({ plots }, index) => (
         <Grid key={index} container sx={{ width: 750 }}>
           {plots.map(({ id, width, height, user, isComplete }) => (
             <Grid item key={id}>
-              <div onClick={() => onSelect(id)} style={{ width, height }}>
+              <div
+                onClick={() => !isComplete && onSelect(id)}
+                style={{ width, height }}
+              >
                 <Plot
                   isComplete={isComplete}
                   id={id}

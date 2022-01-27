@@ -5,8 +5,8 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 import { useAppSelector } from "src/redux/app/hooks";
+import { useRouter } from "next/router";
 
 const PageContainer = styled(Container)({
   display: "flex",
@@ -19,6 +19,8 @@ export default function Index() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const address = useAppSelector((state) => state.web3.data.address);
+  const router = useRouter();
+
   return (
     <PageContainer maxWidth="lg">
       <Box sx={{ my: 4 }}>
@@ -27,16 +29,26 @@ export default function Index() {
       <Box sx={{ my: 4 }}>
         {address ? (
           <>
-            <Link href="/canvas">
-              <div style={{ padding: 5 }}>
-                <Button variant="contained">Enter canvas playground</Button>
-              </div>
-            </Link>
-            <Link href="/mural">
-              <div style={{ padding: 5 }}>
-                <Button variant="contained">Enter mural playground</Button>
-              </div>
-            </Link>
+            <div style={{ padding: 5 }}>
+              <Button
+                onClick={() =>
+                  router.push("/canvas").catch((e) => console.log(e))
+                }
+                variant="contained"
+              >
+                Enter canvas playground
+              </Button>
+            </div>
+            <div style={{ padding: 5 }}>
+              <Button
+                onClick={() =>
+                  router.push("/mural").catch((e) => console.log(e))
+                }
+                variant="contained"
+              >
+                Enter mural playground
+              </Button>
+            </div>
           </>
         ) : (
           <ConnectButton />
