@@ -8,15 +8,15 @@ export type Plot = {
   isComplete: boolean;
 };
 
-type Murals = {
+interface Mural {
   id: string;
   plots: Plot[];
   width: number;
   height: number;
-}[];
+}
 
 export interface MuralsState {
-  murals: Murals;
+  murals: Mural[];
   loading: boolean;
 }
 
@@ -30,9 +30,10 @@ export const murals = createSlice({
   name: "murals",
   initialState,
   reducers: {
-    createMural: (state, { payload }) => {
+    createMural: (state, { payload }: { payload: { mural: Mural } }) => {
+      const { mural: newMural } = payload;
       const newData = [...state.murals];
-      newData.push(payload);
+      newData.push(newMural);
       state.murals = newData;
     },
     updatePlot: (state, { payload }) => {

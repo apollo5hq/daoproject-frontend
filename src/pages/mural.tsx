@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { styled, useTheme } from "@mui/material";
 import { ConnectButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
@@ -12,6 +12,7 @@ import ContainerComp from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Plot from "src/components/Plot";
 import MuralPlot from "src/components/MuralPlot";
+import { v4 } from "uuid";
 
 const Container = styled(ContainerComp)({
   display: "flex",
@@ -22,6 +23,8 @@ const Container = styled(ContainerComp)({
 
 const gun = Gun({
   peers: ["http://localhost:3000/gun"],
+  radisk: false,
+  localStorage: false,
 });
 
 export default function () {
@@ -41,7 +44,6 @@ export default function () {
     eraserRadius: 8,
   });
   const { isErasing, lineWidth, eraserRadius } = painterState;
-
   // Reference to the canvas
   const visualCanvasRef = useRef<HTMLCanvasElement>(null);
   // Reference to the actual canvas we are putting all the data on
@@ -61,24 +63,81 @@ export default function () {
     return murals[0].plots.find(({ user }) => user === userAddress);
   }, [murals]);
 
-  const onCreate = () => {
+  const [plotsArray, setPlotsArray] = useState<any[]>([]);
+  console.log(plotsArray);
+  useEffect(() => {
+    const newId = v4();
+    const plots = [
+      { id: 1, user: "", width: 150, height: 150, isComplete: false },
+      { id: 2, user: "", width: 150, height: 150, isComplete: false },
+      { id: 3, user: "", width: 150, height: 150, isComplete: false },
+      { id: 4, user: "", width: 150, height: 150, isComplete: false },
+      { id: 5, user: "", width: 150, height: 150, isComplete: false },
+      { id: 6, user: "", width: 150, height: 150, isComplete: false },
+      { id: 7, user: "", width: 150, height: 150, isComplete: false },
+      { id: 8, user: "", width: 150, height: 150, isComplete: false },
+      { id: 9, user: "", width: 150, height: 150, isComplete: false },
+      { id: 10, user: "", width: 150, height: 150, isComplete: false },
+    ];
     const newMural = {
-      plots: [
-        { id: 1, user: "", width: 150, height: 150, isComplete: false },
-        { id: 2, user: "", width: 150, height: 150, isComplete: false },
-        { id: 3, user: "", width: 150, height: 150, isComplete: false },
-        { id: 4, user: "", width: 150, height: 150, isComplete: false },
-        { id: 5, user: "", width: 150, height: 150, isComplete: false },
-        { id: 6, user: "", width: 150, height: 150, isComplete: false },
-        { id: 7, user: "", width: 150, height: 150, isComplete: false },
-        { id: 8, user: "", width: 150, height: 150, isComplete: false },
-        { id: 9, user: "", width: 150, height: 150, isComplete: false },
-        { id: 10, user: "", width: 150, height: 150, isComplete: false },
-      ],
       width: 750,
       height: 450,
     };
-    dispatch(createMural(newMural));
+    // Create reference to murals table in db
+    const muralsRef = gun.get("murals");
+    // Create reference to mural in db
+    const ref = muralsRef.get(v4());
+    const reftwo = muralsRef.get(v4());
+    // Add mural to mural ref
+    ref.put(newMural);
+    reftwo.put(newMural);
+    console.log(muralsRef);
+    // // Create ref to each plots table of the mural
+    // const plotsRef = ref.get("plots");
+    // // Set each plot in the table
+    // for (const plot of plots) {
+    //   plotsRef.set(plot);
+    // }
+    // // Add the mural to the mural table
+    // muralsRef.set(ref);
+    // muralsRef.map().once((data) => {
+    //   console.log(data);
+    // });
+  }, []);
+
+  const onCreate = () => {
+    const newId = v4();
+    const plots = [
+      { id: 1, user: "", width: 150, height: 150, isComplete: false },
+      { id: 2, user: "", width: 150, height: 150, isComplete: false },
+      { id: 3, user: "", width: 150, height: 150, isComplete: false },
+      { id: 4, user: "", width: 150, height: 150, isComplete: false },
+      { id: 5, user: "", width: 150, height: 150, isComplete: false },
+      { id: 6, user: "", width: 150, height: 150, isComplete: false },
+      { id: 7, user: "", width: 150, height: 150, isComplete: false },
+      { id: 8, user: "", width: 150, height: 150, isComplete: false },
+      { id: 9, user: "", width: 150, height: 150, isComplete: false },
+      { id: 10, user: "", width: 150, height: 150, isComplete: false },
+    ];
+    const newMural = {
+      width: 750,
+      height: 450,
+    };
+    // Create reference to murals table in db
+    const muralsRef = gun.get("murals");
+    // Create reference to mural in db
+    const ref = muralsRef.get(newId);
+    // Add mural to mural ref
+    ref.put(newMural);
+    // Create ref to each plots table of the mural
+    const plotsRef = ref.get("plots");
+    // Set each plot in the table
+    for (const plot of plots) {
+      plotsRef.set(plot);
+    }
+    // Add the mural to the mural table
+    muralsRef.set(ref);
+    dispatch(createMural({ mural: { ...newMural, id: newId, plots } }));
   };
 
   const onSelect = (id: number) => {
