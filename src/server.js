@@ -10,16 +10,12 @@ const handle = client.getRequestHandler();
 client.prepare().then(() => {
   const app = express();
 
-  app.use(Gun.serve);
-
   app.all("*", (req, res) => {
     return handle(req, res);
   });
 
-  const server = app.listen(port, (err) => {
+  app.listen(port, (err) => {
     if (err) throw err;
     console.log(`> Ready on http://localhost:${port}`);
   });
-
-  Gun({ web: server });
 });
