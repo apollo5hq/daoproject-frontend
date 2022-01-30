@@ -2,21 +2,23 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export type Plot = {
   id: number;
-  user: string;
+  muralId: number;
+  artist: string | null;
   width: number;
   height: number;
   isComplete: boolean;
+  created_at: Date;
 };
 
-type Murals = {
+export type Mural = {
   id: string;
-  plots: Plot[];
   width: number;
   height: number;
-}[];
+  created_at: Date;
+};
 
 export interface MuralsState {
-  murals: Murals;
+  murals: (Mural & { plots: Plot[] })[];
   loading: boolean;
 }
 

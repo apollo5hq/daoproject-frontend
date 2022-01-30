@@ -60,13 +60,13 @@ const shortenAddress = (str: string) => {
 export default function ({
   width,
   height,
-  user,
+  artist,
   id,
   isComplete,
 }: {
   width: number;
   height: number;
-  user: string;
+  artist: string | null;
   id: number;
   isComplete: boolean;
 }) {
@@ -83,14 +83,14 @@ export default function ({
 
   return (
     <Container isHovering={isHovering}>
-      {user.length > 0 && !isComplete && (
+      {artist && artist.length > 0 && !isComplete && (
         <Typography
           sx={{
             color: ({ palette }) =>
               isHovering ? palette.primary.main : "black",
           }}
         >
-          {shortenAddress(user)}
+          {shortenAddress(artist)}
         </Typography>
       )}
       <HiddenCanvas id={id.toString()} ref={hiddenCanvasRef} />

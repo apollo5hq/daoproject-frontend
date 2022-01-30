@@ -1,9 +1,15 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { styled, useTheme } from "@mui/material";
 import { ConnectButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
-import { createMural, updatePlot } from "src/redux/features/murals/muralsSlice";
+import {
+  createMural,
+  Mural,
+  Plot as PlotType,
+  updatePlot,
+} from "src/redux/features/murals/muralsSlice";
+import { supabase } from "../lib/initSupabase";
 import Typography from "@mui/material/Typography";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
@@ -53,40 +59,112 @@ export default function () {
 
   const selectedPlot = useMemo(() => {
     if (murals.length === 0) return;
-    return murals[0].plots.find(({ user }) => user === userAddress);
+    const plot = murals[0].plots.find(({ artist }) => {
+      if (!artist) return undefined;
+      return artist === userAddress;
+    });
+    return plot;
   }, [murals]);
 
-  const onCreate = () => {
-    const newMural = {
-      plots: [
-        { id: 1, user: "", width: 150, height: 150, isComplete: false },
-        { id: 2, user: "", width: 150, height: 150, isComplete: false },
-        { id: 3, user: "", width: 150, height: 150, isComplete: false },
-        { id: 4, user: "", width: 150, height: 150, isComplete: false },
-        { id: 5, user: "", width: 150, height: 150, isComplete: false },
-        { id: 6, user: "", width: 150, height: 150, isComplete: false },
-        { id: 7, user: "", width: 150, height: 150, isComplete: false },
-        { id: 8, user: "", width: 150, height: 150, isComplete: false },
-        { id: 9, user: "", width: 150, height: 150, isComplete: false },
-        { id: 10, user: "", width: 150, height: 150, isComplete: false },
-      ],
-      width: 750,
-      height: 450,
-    };
-    dispatch(createMural(newMural));
+  const onCreate = async () => {
+    try {
+      const newMural = {
+        width: 750,
+        height: 450,
+      };
+      const { body: records } = await supabase
+        .from<Mural>("murals")
+        .insert(newMural);
+      if (records) {
+        const [record] = records;
+        const muralId = Number(record.id);
+        const plots = [
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+          {
+            muralId,
+            width: 150,
+            height: 150,
+          },
+        ];
+        for (const plot of plots) {
+          await supabase.from<PlotType>("plots").insert(plot);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  useEffect(() => {
+    const subscription = supabase
+      .from<PlotType>("plots")
+      .on("INSERT", async ({ new: newPlot }) => {
+        // dispatch(createMural(newMural));
+      })
+      .subscribe();
+    return () => {
+      supabase.removeSubscription(subscription);
+    };
+  }, []);
 
   const onSelect = (id: number) => {
     let mural = { ...murals[0] };
     const plots = [...murals[0].plots];
-    const plot = plots.find(({ user }) => user === (userAddress as string));
+    const plot = plots.find(({ artist }) => {
+      if (!artist) return undefined;
+      return artist === (userAddress as string);
+    });
     if (plot) {
       let oldPlot = { ...plot };
-      oldPlot.user = "";
+      oldPlot.artist = "";
       plots.splice(oldPlot.id - 1, 1, oldPlot);
     }
     let selectedPlot = { ...plots[id - 1] };
-    selectedPlot.user = userAddress as string;
+    selectedPlot.artist = userAddress as string;
     plots.splice(id - 1, 1, selectedPlot);
     mural.plots = plots;
     dispatch(updatePlot({ mural }));
@@ -120,7 +198,7 @@ export default function () {
     let mural = { ...murals[0] };
     const plots = [...murals[0].plots];
     let updatedPlot = { ...plots[selectedPlot.id - 1] };
-    updatedPlot.user = "";
+    updatedPlot.artist = "";
     updatedPlot.isComplete = true;
     plots.splice(selectedPlot.id - 1, 1, updatedPlot);
     mural.plots = plots;
@@ -150,7 +228,7 @@ export default function () {
       {murals.map(({ plots }, index) => (
         <div key={index}>
           <Grid key={index} container sx={{ width: 750 }}>
-            {plots.map(({ id, width, height, user, isComplete }) => (
+            {plots.map(({ id, width, height, artist, isComplete }) => (
               <Grid item key={id}>
                 <div
                   onClick={() => !isComplete && onSelect(id)}
@@ -161,7 +239,7 @@ export default function () {
                     id={id}
                     width={width}
                     height={height}
-                    user={user}
+                    artist={artist}
                   />
                 </div>
               </Grid>
