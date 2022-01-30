@@ -21,10 +21,11 @@ const Container = styled(ContainerComp)({
   paddingTop: 50,
 });
 
+const dev = process.env.NODE_ENV === "production";
 const gun = Gun({
   peers: ["http://localhost:3000/gun"],
-  radisk: false,
-  localStorage: false,
+  radisk: dev,
+  localStorage: dev,
 });
 
 export default function () {
