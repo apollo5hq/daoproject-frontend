@@ -4,6 +4,8 @@ import { ConnectButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
 import { createMural, updatePlot } from "src/redux/features/murals/muralsSlice";
+import { v4 } from "uuid";
+import Gun from "gun";
 import Typography from "@mui/material/Typography";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
@@ -11,7 +13,6 @@ import ContainerComp from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Plot from "src/components/Plot";
 import MuralPlot from "src/components/MuralPlot";
-import { v4 } from "uuid";
 
 const Container = styled(ContainerComp)({
   display: "flex",
