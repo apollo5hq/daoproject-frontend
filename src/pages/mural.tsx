@@ -106,14 +106,63 @@ export default function ({
   }, []);
 
   const onCreate = async () => {
+    const plots = JSON.stringify([
+      {
+        id: 1,
+        width: 150,
+        height: 150,
+      },
+      {
+        id: 2,
+        width: 150,
+        height: 150,
+      },
+      {
+        id: 3,
+        width: 150,
+        height: 150,
+      },
+      {
+        id: 4,
+        width: 150,
+        height: 150,
+      },
+      {
+        id: 5,
+        width: 150,
+        height: 150,
+      },
+      {
+        id: 6,
+        width: 150,
+        height: 150,
+      },
+      {
+        id: 7,
+        width: 150,
+        height: 150,
+      },
+      {
+        id: 8,
+        width: 150,
+        height: 150,
+      },
+      { id: 9, width: 150, height: 150 },
+      {
+        id: 10,
+        width: 150,
+        height: 150,
+      },
+    ]);
+    // Add mural to db
+    const newMural = {
+      width: 750,
+      height: 300,
+      columns: 5,
+      rows: 2,
+      plots,
+    };
     try {
-      // Add mural to db
-      const newMural = {
-        width: 750,
-        height: 300,
-        columns: 5,
-        rows: 2,
-      };
       await supabase.from<Mural>("murals").insert(newMural);
     } catch (e) {
       console.log(e);
