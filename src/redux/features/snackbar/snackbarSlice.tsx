@@ -56,7 +56,7 @@ const handleWalletActions = (state: Snackbar, message: string) => {
 };
 
 // Snackbar reducer
-export const snackbar = createSlice({
+export const snackbarSlice = createSlice({
   name: "snackbar",
   initialState,
   reducers: {
@@ -83,8 +83,8 @@ export const {
   closeSnackbar,
   setSnackPack,
   exited,
-} = snackbar.actions;
+} = snackbarSlice.actions;
 
 export const selectData = (state: AppState) => state.snackbar;
 
-export default snackbar.reducer;
+export default snackbarSlice.reducer;

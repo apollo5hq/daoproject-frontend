@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-
 export type Plot = {
   id: number;
   muralId: number;
@@ -7,13 +6,15 @@ export type Plot = {
   width: number;
   height: number;
   isComplete: boolean;
-  created_at: Date;
 };
 
 export type Mural = {
   id: string;
   width: number;
   height: number;
+  columns: number;
+  rows: number;
+  artists: string[];
   created_at: Date;
 };
 
@@ -28,14 +29,23 @@ export const initialState: MuralsState = {
 };
 
 // Web3 reducer
-export const murals = createSlice({
+export const muralsSlice = createSlice({
   name: "murals",
   initialState,
   reducers: {
-    createMural: (state, { payload }) => {
+    createMural: (
+      state,
+      { payload }: { payload: Mural & { plots: Plot[] } }
+    ) => {
       const newData = [...state.murals];
       newData.push(payload);
       state.murals = newData;
+    },
+    getMurals: (
+      state,
+      { payload }: { payload: (Mural & { plots: Plot[] })[] }
+    ) => {
+      state.murals = [...payload];
     },
     updatePlot: (state, { payload }) => {
       const { mural } = payload;
@@ -44,6 +54,6 @@ export const murals = createSlice({
   },
 });
 
-export const { createMural, updatePlot } = murals.actions;
+export const { createMural, updatePlot, getMurals } = muralsSlice.actions;
 
-export default murals.reducer;
+export default muralsSlice.reducer;

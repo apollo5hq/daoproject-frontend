@@ -1,10 +1,12 @@
 import { useState, useRef, useMemo, useEffect } from "react";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { styled, useTheme } from "@mui/material";
 import { ConnectButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
 import {
   createMural,
+  getMurals,
   Mural,
   Plot as PlotType,
   updatePlot,
@@ -25,12 +27,22 @@ const Container = styled(ContainerComp)({
   paddingTop: 50,
 });
 
-export default function () {
+export default function ({
+  murals,
+}: {
+  murals: (Mural & { plots: PlotType[] })[];
+  error?: string;
+}) {
   const {
     palette: { primary },
   } = useTheme();
   const { address: userAddress } = useAppSelector((state) => state.web3.data);
-  const { murals } = useAppSelector((state) => state.murals);
+  // const { murals } = useAppSelector((state) => state.murals);
+
+  // useEffect(() => {
+  //   dispatch(getMurals(muralsSSR));
+  // }, []);
+
   const dispatch = useAppDispatch();
   // State of the paint brush
   const [painterState, setPainterState] = useState<PainterState>({
@@ -66,90 +78,47 @@ export default function () {
     return plot;
   }, [murals]);
 
-  const onCreate = async () => {
-    try {
-      const newMural = {
-        width: 750,
-        height: 450,
-      };
-      const { body: records } = await supabase
-        .from<Mural>("murals")
-        .insert(newMural);
-      if (records) {
-        const [record] = records;
-        const muralId = Number(record.id);
-        const plots = [
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-          {
-            muralId,
-            width: 150,
-            height: 150,
-          },
-        ];
-        for (const plot of plots) {
-          await supabase.from<PlotType>("plots").insert(plot);
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   useEffect(() => {
     const subscription = supabase
-      .from<PlotType>("plots")
-      .on("INSERT", async ({ new: newPlot }) => {
-        // dispatch(createMural(newMural));
+      .from<Mural>("murals")
+      .on("INSERT", async ({ new: newMural }) => {
+        console.log("mural created");
+        // On insert fetch mural and create plots for it
+        const { columns, height, width, rows } = newMural;
+        const plots: PlotType[] = [];
+        const plot = {
+          muralId: Number(newMural.id),
+          height: height / rows,
+          width: width / columns,
+          artist: null,
+          isComplete: false,
+        };
+        for (let i = 0; i < columns * rows; i++) {
+          plots.push({ ...plot, id: i });
+        }
+        // Dispatch mural with plots to redux store
+        dispatch(createMural({ ...newMural, plots }));
       })
       .subscribe();
     return () => {
       supabase.removeSubscription(subscription);
     };
   }, []);
+
+  const onCreate = async () => {
+    try {
+      // Add mural to db
+      const newMural = {
+        width: 750,
+        height: 300,
+        columns: 5,
+        rows: 2,
+      };
+      await supabase.from<Mural>("murals").insert(newMural);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const onSelect = (id: number) => {
     let mural = { ...murals[0] };
@@ -169,25 +138,6 @@ export default function () {
     mural.plots = plots;
     dispatch(updatePlot({ mural }));
   };
-
-  if (murals.length === 0) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Button onClick={onCreate} variant="contained">
-          Create mural
-        </Button>
-      </div>
-    );
-  }
-
   const onSubmit = () => {
     if (!selectedPlot || !visualCanvasRef.current) return;
     const plot = document.getElementById(
@@ -206,6 +156,24 @@ export default function () {
     dispatch(updatePlot({ mural }));
     setCounter(counter + 1);
   };
+
+  if (murals.length === 0) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button onClick={onCreate} variant="contained">
+          Create mural
+        </Button>
+      </div>
+    );
+  }
 
   if (!userAddress) {
     return (
@@ -264,8 +232,8 @@ export default function () {
         >
           <MuralPlot
             hiddenCanvasRef={hiddenCanvasRef}
-            width={150}
-            height={150}
+            width={selectedPlot.width}
+            height={selectedPlot.height}
             visualCanvasRef={visualCanvasRef}
             painterState={painterState}
             setPainterState={setPainterState}
@@ -292,3 +260,32 @@ export default function () {
     </Container>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (
+  _ctx: GetServerSidePropsContext
+) => {
+  try {
+    const { body } = await supabase.from<Mural>("murals").select();
+    if (body) {
+      if (body.length === 0) return { props: { murals: body } };
+      const mural = body[0];
+      const { columns, height, width, rows, id } = mural;
+      const plots: PlotType[] = [];
+      const plot = {
+        muralId: Number(id),
+        height: height / rows,
+        width: width / columns,
+        artist: null,
+        isComplete: false,
+      };
+      for (let i = 0; i < columns * rows; i++) {
+        plots.push({ ...plot, id: i });
+      }
+      return { props: { murals: [{ ...mural, plots }] } };
+    }
+    return { props: { murals: [] } };
+  } catch (e) {
+    console.log(e);
+    return { props: { murals: [], error: "Error server side" } };
+  }
+};

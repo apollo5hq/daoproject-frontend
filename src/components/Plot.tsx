@@ -97,9 +97,6 @@ export default function ({
       <VisualCanvas
         onMouseDown={({ nativeEvent }) => {
           console.log(nativeEvent.offsetX, nativeEvent.offsetY);
-          // router
-          //   .push("/plot", { query: { width, height } })
-          //   .catch((e) => console.log(e));
         }}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}

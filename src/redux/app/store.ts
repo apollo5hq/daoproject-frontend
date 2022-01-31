@@ -5,16 +5,16 @@ import {
   MiddlewareArray,
 } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
-import web3Reducer from "../features/web3/webSlice";
-import snackbarReducer from "../features/snackbar/snackbarSlice";
-import muralsReducer from "../features/murals/muralsSlice";
+import { web3Slice } from "../features/web3/webSlice";
+import { snackbarSlice } from "../features/snackbar/snackbarSlice";
+import { muralsSlice } from "../features/murals/muralsSlice";
 
 export function makeStore() {
   return configureStore({
     reducer: {
-      web3: web3Reducer,
-      snackbar: snackbarReducer,
-      murals: muralsReducer,
+      [web3Slice.name]: web3Slice.reducer,
+      [snackbarSlice.name]: snackbarSlice.reducer,
+      [muralsSlice.name]: muralsSlice.reducer,
     },
     middleware: new MiddlewareArray(thunk),
   });

@@ -120,7 +120,7 @@ export const changeNetwork = createAsyncThunk<
 });
 
 // Web3 reducer
-export const web3 = createSlice({
+export const web3Slice = createSlice({
   name: "web3",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
@@ -195,11 +195,11 @@ export const web3 = createSlice({
   },
 });
 
-export const { disconnectWallet } = web3.actions;
+export const { disconnectWallet } = web3Slice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectData = (state: AppState) => state.web3.data;
 
-export default web3.reducer;
+export default web3Slice.reducer;

@@ -26,6 +26,7 @@
     "@mui/lab": "^5.0.0-alpha.59",
     "@mui/material": "^5.2.6",
     "@reduxjs/toolkit": "^1.6.2",
+    "@supabase/supabase-js": "^1.29.4",
     "copy-to-clipboard": "^3.3.1",
     "ethers": "^5.5.3",
     "ipfs-http-client": "^55.0.0",
