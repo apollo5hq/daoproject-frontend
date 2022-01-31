@@ -31,7 +31,7 @@ const Container = styled(ContainerComp)({
 export default function ({
   murals: muralsSSR,
 }: {
-  murals: (Mural & { plots: PlotType[] })[];
+  murals: (Mural & { plots: (PlotType & { imageData: ImageData | null })[] })[];
   error?: string;
 }) {
   const {
@@ -39,6 +39,8 @@ export default function ({
   } = useTheme();
   const { address: userAddress } = useAppSelector((state) => state.web3.data);
   const { murals, loading } = useAppSelector((state) => state.murals);
+  console.log(murals);
+  // Loading state for creating a mural
   const [isCreatingMural, setIsCreatingMural] = useState(false);
   const dispatch = useAppDispatch();
   // State of the paint brush
@@ -57,6 +59,7 @@ export default function ({
   // Reference to the actual canvas we are putting all the data on
   const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  // State for undoing lines
   const [restoreState, setRestoreState] = useState<RestoreState>({
     // Array of image data to undo
     array: [],
@@ -81,7 +84,9 @@ export default function ({
 
   useEffect(() => {
     const subscription = supabase
-      .from<Mural & { plots: PlotType[] }>("murals")
+      .from<Mural & { plots: (PlotType & { imageData: ImageData | null })[] }>(
+        "murals"
+      )
       .on("INSERT", async ({ new: newMural }) => {
         // Dispatch mural with plots to redux store
         dispatch(createMural({ ...newMural }));
@@ -102,47 +107,56 @@ export default function ({
         id: 1,
         width: 150,
         height: 150,
+        imageData: null,
       },
       {
         id: 2,
         width: 150,
         height: 150,
+        imageData: null,
       },
       {
         id: 3,
         width: 150,
         height: 150,
+        imageData: null,
       },
       {
         id: 4,
         width: 150,
         height: 150,
+        imageData: null,
       },
       {
         id: 5,
         width: 150,
         height: 150,
+        imageData: null,
       },
       {
         id: 6,
         width: 150,
         height: 150,
+        imageData: null,
       },
       {
         id: 7,
         width: 150,
         height: 150,
+        imageData: null,
       },
       {
         id: 8,
         width: 150,
         height: 150,
+        imageData: null,
       },
-      { id: 9, width: 150, height: 150 },
+      { id: 9, width: 150, height: 150, imageData: null },
       {
         id: 10,
         width: 150,
         height: 150,
+        imageData: null,
       },
     ]);
     // Add mural to db
@@ -157,7 +171,6 @@ export default function ({
       await supabase.from<Mural & { plots: string }>("murals").insert(newMural);
       setIsCreatingMural(!isCreatingMural);
     } catch (e) {
-      console.log("creating error");
       console.log(e);
       setIsCreatingMural(!isCreatingMural);
     }
@@ -181,23 +194,40 @@ export default function ({
     mural.plots = plots;
     dispatch(updatePlot({ mural }));
   };
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!selectedPlot || !visualCanvasRef.current) return;
-    const plot = document.getElementById(
-      selectedPlot.id.toString()
-    ) as HTMLCanvasElement;
-    const context = plot.getContext("2d");
-    context?.drawImage(visualCanvasRef.current, 0, 0);
+    const visualContext = visualCanvasRef.current.getContext("2d");
+    if (!visualContext) return;
+    const imageData: ImageData = visualContext.getImageData(
+      0,
+      0,
+      visualCanvasRef.current.width,
+      visualCanvasRef.current.height
+    );
+    // const plot = document.getElementById(
+    //   selectedPlot.id.toString()
+    // ) as HTMLCanvasElement;
+    // const context = plot.getContext("2d");
+    // context?.drawImage(visualCanvasRef.current, 0, 0);
     let mural = { ...murals[0] };
     const plots = [...murals[0].plots];
     let updatedPlot = { ...plots[selectedPlot.id - 1] };
-    updatedPlot.artist = "";
     updatedPlot.isComplete = true;
+    updatedPlot.imageData = imageData;
     plots.splice(selectedPlot.id - 1, 1, updatedPlot);
     mural.plots = plots;
-    setRestoreState({ array: [], index: -1 });
-    dispatch(updatePlot({ mural }));
-    setCounter(counter + 1);
+    try {
+      await supabase
+        .from("murals")
+        .update({ plots: JSON.stringify(plots) })
+        .eq("id", mural.id);
+      dispatch(updatePlot({ mural }));
+      setRestoreState({ array: [], index: -1 });
+      // dispatch(updatePlot({ mural }));
+      setCounter(counter + 1);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   if (!userAddress) {
@@ -210,9 +240,11 @@ export default function ({
 
   // Show loader if murals are being fetched or if a mural is being created
   if (loading || isCreatingMural) {
-    <AlignCenter>
-      <CircularProgress />;
-    </AlignCenter>;
+    return (
+      <AlignCenter>
+        <CircularProgress />;
+      </AlignCenter>
+    );
   }
 
   // If no mural is created allow user to create one
@@ -231,22 +263,25 @@ export default function ({
       {murals.map(({ plots }, index) => (
         <div key={index}>
           <Grid key={index} container sx={{ width: 750 }}>
-            {plots.map(({ id, width, height, artist, isComplete }) => (
-              <Grid item key={id}>
-                <div
-                  onClick={() => !isComplete && onSelect(id)}
-                  style={{ width, height }}
-                >
-                  <Plot
-                    isComplete={isComplete}
-                    id={id}
-                    width={width}
-                    height={height}
-                    artist={artist}
-                  />
-                </div>
-              </Grid>
-            ))}
+            {plots.map(
+              ({ id, width, height, artist, isComplete, imageData }) => (
+                <Grid item key={id}>
+                  <div
+                    onClick={() => !isComplete && onSelect(id)}
+                    style={{ width, height }}
+                  >
+                    <Plot
+                      isComplete={isComplete}
+                      id={id}
+                      width={width}
+                      height={height}
+                      artist={artist}
+                      imageData={imageData}
+                    />
+                  </div>
+                </Grid>
+              )
+            )}
           </Grid>
           <Fade in={counter === 1}>
             <Typography paddingTop={3} align="center">
@@ -305,7 +340,9 @@ export const getServerSideProps: GetServerSideProps = async (
       .from<Mural & { plots: string }>("murals")
       .select();
     if (body) {
-      const murals: (Mural & { plots: PlotType[] })[] = [];
+      const murals: (Mural & {
+        plots: (PlotType & { imageData: string | null })[];
+      })[] = [];
       for (const mural of body) {
         const { plots: plotsJSON } = mural;
         murals.push({ ...mural, plots: JSON.parse(plotsJSON) });

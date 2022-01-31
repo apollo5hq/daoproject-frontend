@@ -18,7 +18,7 @@ export type Mural = {
 };
 
 export interface MuralsState {
-  murals: (Mural & { plots: Plot[] })[];
+  murals: (Mural & { plots: (Plot & { imageData: ImageData | null })[] })[];
   loading: boolean;
 }
 
@@ -34,7 +34,11 @@ export const muralsSlice = createSlice({
   reducers: {
     createMural: (
       state,
-      { payload }: { payload: Mural & { plots: Plot[] } }
+      {
+        payload,
+      }: {
+        payload: Mural & { plots: (Plot & { imageData: ImageData | null })[] };
+      }
     ) => {
       const newData = [...state.murals];
       newData.push(payload);
@@ -42,7 +46,13 @@ export const muralsSlice = createSlice({
     },
     getMurals: (
       state,
-      { payload }: { payload: (Mural & { plots: Plot[] })[] }
+      {
+        payload,
+      }: {
+        payload: (Mural & {
+          plots: (Plot & { imageData: ImageData | null })[];
+        })[];
+      }
     ) => {
       state.murals = [...payload];
       state.loading = false;

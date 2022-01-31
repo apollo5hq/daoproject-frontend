@@ -63,12 +63,14 @@ export default function ({
   artist,
   id,
   isComplete,
+  imageData,
 }: {
   width: number;
   height: number;
   artist: string | null;
   id: number;
   isComplete: boolean;
+  imageData: ImageData | null;
 }) {
   // Reference to the canvas
   const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -79,11 +81,19 @@ export default function ({
     // Here we set up the properties each canvas element.a
     hiddenCanvasRef.current.width = width;
     hiddenCanvasRef.current.height = height;
+    // If plot is complete, put the image data
+    if (imageData) {
+      const hiddenContext = hiddenCanvasRef.current.getContext("2d");
+      if (!hiddenContext) return;
+      hiddenContext.fillStyle = "white";
+      hiddenContext.fill();
+      hiddenContext.putImageData(imageData, 0, 0);
+    }
   }, []);
 
   return (
     <Container isHovering={isHovering}>
-      {artist && artist.length > 0 && !isComplete && (
+      {artist && !isComplete && (
         <Typography
           sx={{
             color: ({ palette }) =>
