@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 export type Plot = {
   id: number;
-  muralId: number;
   artist: string | null;
   width: number;
   height: number;
@@ -25,7 +24,7 @@ export interface MuralsState {
 
 export const initialState: MuralsState = {
   murals: [],
-  loading: false,
+  loading: true,
 };
 
 // Web3 reducer
@@ -46,6 +45,7 @@ export const muralsSlice = createSlice({
       { payload }: { payload: (Mural & { plots: Plot[] })[] }
     ) => {
       state.murals = [...payload];
+      state.loading = false;
     },
     updatePlot: (state, { payload }) => {
       const { mural } = payload;

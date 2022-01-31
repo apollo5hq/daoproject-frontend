@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { styled, useTheme } from "@mui/material";
-import { ConnectButton, Drawer } from "@/components";
+import { AlignCenter, ConnectButton, Drawer } from "@/components";
 import { PainterState, RestoreState } from "src/utils/types/canvas";
 import { useAppDispatch, useAppSelector } from "src/redux/app/hooks";
 import {
@@ -12,6 +12,7 @@ import {
   updatePlot,
 } from "src/redux/features/murals/muralsSlice";
 import { supabase } from "../lib/initSupabase";
+import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
@@ -28,7 +29,7 @@ const Container = styled(ContainerComp)({
 });
 
 export default function ({
-  murals,
+  murals: muralsSSR,
 }: {
   murals: (Mural & { plots: PlotType[] })[];
   error?: string;
@@ -37,12 +38,8 @@ export default function ({
     palette: { primary },
   } = useTheme();
   const { address: userAddress } = useAppSelector((state) => state.web3.data);
-  // const { murals } = useAppSelector((state) => state.murals);
-
-  // useEffect(() => {
-  //   dispatch(getMurals(muralsSSR));
-  // }, []);
-
+  const { murals, loading } = useAppSelector((state) => state.murals);
+  const [isCreatingMural, setIsCreatingMural] = useState(false);
   const dispatch = useAppDispatch();
   // State of the paint brush
   const [painterState, setPainterState] = useState<PainterState>({
@@ -79,33 +76,27 @@ export default function ({
   }, [murals]);
 
   useEffect(() => {
+    dispatch(getMurals(muralsSSR));
+  }, []);
+
+  useEffect(() => {
     const subscription = supabase
-      .from<Mural>("murals")
+      .from<Mural & { plots: PlotType[] }>("murals")
       .on("INSERT", async ({ new: newMural }) => {
-        console.log("mural created");
-        // On insert fetch mural and create plots for it
-        const { columns, height, width, rows } = newMural;
-        const plots: PlotType[] = [];
-        const plot = {
-          muralId: Number(newMural.id),
-          height: height / rows,
-          width: width / columns,
-          artist: null,
-          isComplete: false,
-        };
-        for (let i = 0; i < columns * rows; i++) {
-          plots.push({ ...plot, id: i });
-        }
         // Dispatch mural with plots to redux store
-        dispatch(createMural({ ...newMural, plots }));
+        dispatch(createMural({ ...newMural }));
       })
       .subscribe();
+    subscription.onError((e: any) => {
+      console.log(e);
+    });
     return () => {
       supabase.removeSubscription(subscription);
     };
   }, []);
 
   const onCreate = async () => {
+    setIsCreatingMural(!isCreatingMural);
     const plots = JSON.stringify([
       {
         id: 1,
@@ -163,9 +154,12 @@ export default function ({
       plots,
     };
     try {
-      await supabase.from<Mural>("murals").insert(newMural);
+      await supabase.from<Mural & { plots: string }>("murals").insert(newMural);
+      setIsCreatingMural(!isCreatingMural);
     } catch (e) {
+      console.log("creating error");
       console.log(e);
+      setIsCreatingMural(!isCreatingMural);
     }
   };
 
@@ -206,37 +200,29 @@ export default function ({
     setCounter(counter + 1);
   };
 
-  if (murals.length === 0) {
+  if (!userAddress) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Button onClick={onCreate} variant="contained">
-          Create mural
-        </Button>
-      </div>
+      <AlignCenter>
+        <ConnectButton />
+      </AlignCenter>
     );
   }
 
-  if (!userAddress) {
+  // Show loader if murals are being fetched or if a mural is being created
+  if (loading || isCreatingMural) {
+    <AlignCenter>
+      <CircularProgress />;
+    </AlignCenter>;
+  }
+
+  // If no mural is created allow user to create one
+  if (murals.length === 0) {
     return (
-      <div
-        style={{
-          height: "100vh",
-          justifyContent: "center",
-          alignItems: "center",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <ConnectButton />
-      </div>
+      <AlignCenter>
+        <Button onClick={onCreate} variant="contained">
+          Create mural
+        </Button>
+      </AlignCenter>
     );
   }
 
@@ -310,27 +296,21 @@ export default function ({
   );
 }
 
+// Fetch murals server side
 export const getServerSideProps: GetServerSideProps = async (
   _ctx: GetServerSidePropsContext
 ) => {
   try {
-    const { body } = await supabase.from<Mural>("murals").select();
+    const { body } = await supabase
+      .from<Mural & { plots: string }>("murals")
+      .select();
     if (body) {
-      if (body.length === 0) return { props: { murals: body } };
-      const mural = body[0];
-      const { columns, height, width, rows, id } = mural;
-      const plots: PlotType[] = [];
-      const plot = {
-        muralId: Number(id),
-        height: height / rows,
-        width: width / columns,
-        artist: null,
-        isComplete: false,
-      };
-      for (let i = 0; i < columns * rows; i++) {
-        plots.push({ ...plot, id: i });
+      const murals: (Mural & { plots: PlotType[] })[] = [];
+      for (const mural of body) {
+        const { plots: plotsJSON } = mural;
+        murals.push({ ...mural, plots: JSON.parse(plotsJSON) });
       }
-      return { props: { murals: [{ ...mural, plots }] } };
+      return { props: { murals } };
     }
     return { props: { murals: [] } };
   } catch (e) {
