@@ -6,6 +6,7 @@ import { Typography, Link } from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import NFT from "../../../nftABI.json";
+import { useAccount, useContract, useSigner } from "wagmi";
 
 // Contract address to the ERC-721 or ERC-1155 token contract needed to create a connection to the contract
 const CONTRACT_ADDRESS = "0x65da3f4Eca173B4a4A092C4ea3D6d401dBBf3ADf";
@@ -26,8 +27,18 @@ export default function ({
   setHasMinted,
   nftCanvasRef,
 }: MintNFTProps) {
-  const { data } = useAppSelector((state) => state.web3);
-  const { network } = data;
+  // const { data } = useAppSelector((state) => state.web3);
+  // const { network } = data;
+  const { data: walletData } = useAccount();
+  const { data: signer } = useSigner();
+  const contract = useContract({
+    addressOrName: CONTRACT_ADDRESS,
+    contractInterface: NFT.abi,
+    signerOrProvider: signer,
+  });
+
+  // console.log(provider)
+  console.log(walletData);
   // State for whether or not the user is minting
   const [minting, setMinting] = useState<boolean>(false);
   const [link, setLink] = useState("");
@@ -59,14 +70,6 @@ export default function ({
         try {
           // Create metadata
           const url = await createMetadata(blob);
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner();
-          // Create connection to NFT contract
-          const contract = new ethers.Contract(
-            CONTRACT_ADDRESS,
-            NFT.abi,
-            signer
-          );
           console.log("Going to pop wallet now to pay gas...");
           // Begin mint
           let { hash, wait } = await contract.mint(url);
@@ -96,42 +99,42 @@ export default function ({
     );
   };
 
-  const promptNetworkChange = async () => {
-    const { ethereum } = window;
-    if (!ethereum) return;
-    try {
-      await ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [
-          {
-            chainId: "0x4",
-          },
-        ],
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  // const promptNetworkChange = async () => {
+  //   const { ethereum } = window;
+  //   if (!ethereum) return;
+  //   try {
+  //     await ethereum.request({
+  //       method: "wallet_switchEthereumChain",
+  //       params: [
+  //         {
+  //           chainId: "0x4",
+  //         },
+  //       ],
+  //     });
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
 
-  if (network !== "Rinkeby Testnet") {
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          paddingTop: 23,
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h6" sx={{ padding: 1 }}>
-          Make sure you are on the Rinkeby Testnet
-        </Typography>
-        <Button variant="contained" onClick={promptNetworkChange}>
-          Switch Network
-        </Button>
-      </div>
-    );
-  }
+  // if (network !== "Rinkeby Testnet") {
+  //   return (
+  //     <div
+  //       style={{
+  //         display: "flex",
+  //         flexDirection: "column",
+  //         paddingTop: 23,
+  //         alignItems: "center",
+  //       }}
+  //     >
+  //       <Typography variant="h6" sx={{ padding: 1 }}>
+  //         Make sure you are on the Rinkeby Testnet
+  //       </Typography>
+  //       <Button variant="contained" onClick={promptNetworkChange}>
+  //         Switch Network
+  //       </Button>
+  //     </div>
+  //   );
+  // }
   // Check if user has claimed NFT
   if (hasMinted) {
     return (

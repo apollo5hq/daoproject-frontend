@@ -1,5 +1,6 @@
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
-import { AuthButtons, ConnectButton } from "@/components";
+import { AuthButtons } from "@/components";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAppSelector } from "src/redux/app/hooks";
 
 export default function MenuAppBar() {
